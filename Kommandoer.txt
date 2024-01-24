@@ -1,0 +1,3 @@
+Dokumentasjon: https://www.npmjs.com/package/json-server"
+Installere json-server: npm install json-server
+set opp server: json-server --watch data/db.json --port 8000
