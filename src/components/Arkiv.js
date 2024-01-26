@@ -10,11 +10,26 @@ export const Arkiv = () => {
     const [arkiv, setArkiv] = useState([]);
     console.log(arkiv)
 
-    useEffect(() =>{
-        fetch("http://localhost:8000/arkiv")
+    useEffect(() => {
+        const query = `
+            query {
+                arkiv {
+                    brukerId
+                    name
+                    dato
+                    status
+                }
+            }
+        `;
+
+        fetch("http://localhost:8080/graphql", {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ query })
+        })
         .then(response => response.json())
-        .then(data => setArkiv(data))
-    },[]);
+        .then(data => setArkiv(data.data.arkiv)) // Pass på at du navigerer riktig i responsen for å finne dataene
+    }, []);
 
 
   return (
