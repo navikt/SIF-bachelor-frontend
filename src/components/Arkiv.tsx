@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import Home from "./Button";
 
 // TypeScript interfaces for the arkiv state
 interface ArkivItem {
@@ -47,6 +48,7 @@ export const Arkiv = () => {
                     </p>
                 </div>            
             )) }
+            <Home></Home>
         </section>
     )
 }
