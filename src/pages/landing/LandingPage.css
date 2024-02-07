@@ -15,7 +15,7 @@
     padding-top: 10px;
     padding-bottom: 10px;
     border-bottom: 2px solid #ccc; 
-    margin-bottom: 20px; 
+    margin-bottom: 100px; 
   }
   
   .navbar h1 {
@@ -31,25 +31,29 @@
 }
 
 .content {
-    display: flex; 
-    flex-direction: column; 
-    justify-content: center; 
-    align-items: center; 
-    height: 50vh; 
-    max-width: 600px;
-    /* Må bruke margin: auto for at den skal sentreres... why??? */
+    text-align: center;
+    max-width: 650px;
     margin: auto;
 }
 
-
+.search-container {
+    display: flex;
+    align-items: center; /* Center the items vertically */
+}
+.search-bar{
+    margin-right: 10px;
+}
 .content h2 {
+    margin-top:200px;
     text-align: left;
-    font-size: 2.2rem; 
+    font-size: 2.5rem; 
     color: #323A45; 
     margin-bottom: 24px; 
 }
 
-
+.img {
+    margin-top: 50px;
+}
 
 footer {
     margin-top: 50px;
