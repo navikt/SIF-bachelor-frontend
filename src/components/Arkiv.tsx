@@ -1,54 +1,50 @@
-import { useEffect, useState } from "react";
-import Home from "./Button";
+import { useEffect, useState } from "react"
 
-// TypeScript interfaces for the arkiv state
-interface ArkivItem {
-    brukerId: string;
-    name: string;
-    dato: string;
-    status: boolean;
-}
+
+//Dokumentasjon: https://www.npmjs.com/package/json-server" 
+//npm install json-server
+//json-server --watch data/db.json --port 8000
 
 export const Arkiv = () => {
-    // Define the state with TypeScript type
-    const [arkiv, setArkiv] = useState<ArkivItem[]>([]);
 
-    console.log(arkiv)
+    const [journalposter, setJournalposter] = useState([]);
+    console.log(journalposter)
 
     useEffect(() => {
         const query = `
             query {
-                arkiv {
-                    brukerId
-                    name
-                    dato
-                    status
+                journalpost(journalpostId: "453857319") {
+                    journalposttype
+                    journalstatus
+                    tema
+                    tittel
+                    dokumenter {
+                        dokumentInfoId
+                        tittel
+                    }
+                    avsenderMottaker {
+                        navn
+                    }
                 }
             }
         `;
 
-        fetch("http://localhost:8080/graphql", {
+        fetch("http://localhost:8081/journalpost-post", {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ query })
+            headers: { 'Content-Type': 'application/json' }
+           
         })
         .then(response => response.json())
-        .then(data => setArkiv(data.data.arkiv)) // Ensure correct navigation in the response to find the data
+        .then(data => {
+            // Logg hele responsobjektet for inspeksjon
+            console.log(data);
+        });
     }, []);
+
 
     return (
         <section>
-            { arkiv.map((item: ArkivItem) => (
-                <div className="card" key={item.brukerId}>
-                    <p className="id">{item.brukerId}</p>
-                    <p className="name">Navn: {item.name}</p>
-                    <p className="info">
-                        <span>Dato: {item.dato}</span>
-                        <span className={item.status ? "ja" : "nei"}>{item.status ? "Ferdig" : "Venter"}</span>
-                    </p>
-                </div>            
-            )) }
-            <Home></Home>
+            <p>Sjekk konsollen for responsdata fra WireMock.</p>
         </section>
-    )
+    );
 }
