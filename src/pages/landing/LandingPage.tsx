@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import './LandingPage.css';
 import { Search, Button } from "@navikt/ds-react"; 
 import dokSearchIcon from "../../images/dokSearchIcon.svg";
@@ -40,7 +40,7 @@ export const LandingPage = () => {
       </div>
       <img className='img' src={dokSearchIcon} alt="Bilde av et dokument som blir forstørret med en magnifying glass" />
       <footer>
-        <p>Dokkis er et verktøy for henting og behandling av journalposter for Sykdom i familien</p>
+        <p>Vju er et verktøy for henting og behandling av journalposter for Sykdom i familien</p>
       </footer>
     </div>
   );
