@@ -5,18 +5,18 @@ import '@navikt/ds-css'; // Import the design system styles
 import Greeting from './components/Greeting';
 import Journalpost from './components/Journalpost';
 import Get from './components/Get'
-
+import LandingPage from './pages/landing/LandingPage';
 
 function App() {
   return (
     <div className="App">
-      <h1>Arkiv</h1>
+      <LandingPage></LandingPage>
+
+      {/*       
       <Greeting/>
-
       <Get/>
-
-      <Journalpost/>
-
+      <Journalpost/>               
+      */}      
       
     </div>
   );
