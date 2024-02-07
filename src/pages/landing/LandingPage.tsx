@@ -1,16 +1,17 @@
 import React, { useState } from 'react';
 import './LandingPage.css';
 import { Search, Button } from "@navikt/ds-react"; 
+import dokSearchIcon from "../../images/dokSearchIcon.svg";
 
 export const LandingPage = () => {
   const [userId, setUserId] = useState('');
 
   const handleSearch = () => {
-    // Implement your search logic here
+    // Søke logikken skal inn i denne funksjonen her!
     console.log(userId);
   };
 
-  // This function updates the userId state when the input changes
+  // Denne søke funksjonen oppdaterer userId state når vi skriver og endrer på inputen!
   const handleInputChange = (value: string) => {
     setUserId(value);
   };
@@ -21,7 +22,7 @@ export const LandingPage = () => {
         <h1>Vju</h1>
         <Button className="log-in-button">Logg inn</Button>
       </nav>
-      <main>
+      <div className="content">
         <h2>Søk etter bruker-ID</h2>
         <Search
           className="searchBar"
@@ -32,7 +33,8 @@ export const LandingPage = () => {
           onChange={handleInputChange}
           onSearchClick={handleSearch} // Changed from onSearch to onSearchClick
         />
-      </main>
+      </div>
+      <img className='img' src={dokSearchIcon} alt="Bilde av et dokument som blir forstørret med en magnifying glass" />
       <footer>
         <p>Dokkis er et verktøy for henting og behandling av journalposter for Sykdom i familien</p>
       </footer>

@@ -30,14 +30,21 @@
     margin-right: 20px;
 }
 
-main {
-    margin-top: 25vh;
+.content {
+    display: flex; 
+    flex-direction: column; 
+    justify-content: center; 
+    align-items: center; 
+    height: 50vh; 
     max-width: 600px;
+    /* Må bruke margin: auto for at den skal sentreres... why??? */
+    margin: auto;
 }
 
-main h2 {
+
+.content h2 {
     text-align: left;
-    font-size: 1.5rem; 
+    font-size: 2.2rem; 
     color: #323A45; 
     margin-bottom: 24px; 
 }
@@ -45,6 +52,6 @@ main h2 {
 
 
 footer {
-    margin-top: 100px;
+    margin-top: 50px;
     color: #505F79; 
 }
