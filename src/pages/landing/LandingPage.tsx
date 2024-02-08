@@ -19,13 +19,9 @@ export const LandingPage = () => {
 
   return (
     <div className="landing-container">
-      <nav className="navbar">
-        <h1>Vju</h1>
-        <Button className="log-in-button">Logg inn</Button>
-      </nav>
       <div className="content">
         <h2>Søk etter bruker-ID</h2>
-        <div className="search-container">
+        <form className="search-container">
           <Search
             className="search-bar"
             label="Søk etter bruker-ID"
@@ -36,12 +32,9 @@ export const LandingPage = () => {
             onSearchClick={handleSearch} // Changed from onSearch to onSearchClick
           />
           <FilterIcon title="a11y-title" fontSize="2.5rem" />
-        </div>
+        </form>
       </div>
       <img className='img' src={dokSearchIcon} alt="Bilde av et dokument som blir forstørret med en magnifying glass" />
-      <footer>
-        <p>Vju er et verktøy for henting og behandling av journalposter for Sykdom i familien</p>
-      </footer>
     </div>
   );
 };

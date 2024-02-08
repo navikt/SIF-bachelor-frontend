@@ -8,24 +8,6 @@
     font-family: 'Source Sans Pro', sans-serif; 
 }
 
-.navbar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding-top: 10px;
-    padding-bottom: 10px;
-    border-bottom: 2px solid #ccc; 
-    margin-bottom: 100px; 
-  }
-  
-  .navbar h1 {
-    font-size: 2.5rem; 
-    font-weight: bold; 
-    color: #005B82; 
-    margin: 0;
-    margin-left: 30px; 
-  }
-
 .log-in-button {
     margin-right: 30px;
 }
@@ -55,7 +37,3 @@
     margin-top: 50px;
 }
 
-footer {
-    margin-top: 50px;
-    color: #505F79; 
-}
