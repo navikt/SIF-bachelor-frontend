@@ -11,24 +11,22 @@ export const LandingPage = () => {
   const [error, setError] = useState(null);
 
   const handleSearch = () => {
+    console.log("The button is being clicked!")
     setIsLoading(true);
     setError(null);
     // Assuming /hentJournalposter endpoint expects a query parameter `brukerID`
-    fetch(`/hentJournalposter?brukerID=${userId}`)
+    fetch(`'http://localhost:8080/simple_hentJournalPoster`)
       .then(response => {
         if (!response.ok) {
           throw new Error('Network response was not ok');
         }
-        return response.json();
+        return response.text(); // Parse response as text
       })
       .then(data => {
-        setJournalposts(data); // Assuming the data structure matches your needs
-        setIsLoading(false);
+        console.log(data);
       })
       .catch(error => {
         console.error('Error fetching data:', error);
-        setError(error.toString());
-        setIsLoading(false);
       });
   };
 
@@ -42,7 +40,7 @@ export const LandingPage = () => {
     <div className="landing-container">
       <div className="content">
         <h2>Søk etter bruker-ID</h2>
-        <form className="search-container">
+        <div className="search-container">
           <Search
             className="search-bar"
             label="Søk etter bruker-ID"
@@ -50,10 +48,10 @@ export const LandingPage = () => {
             placeholder="Skriv inn bruker-ID"
             value={userId}
             onChange={handleInputChange}
-            onSearchClick={handleSearch} // Changed from onSearch to onSearchClick because of the Aksel documentation
+            onSearchClick={handleSearch}
           />
           <FilterIcon title="a11y-title" fontSize="2.5rem" />
-        </form>
+        </div>
       </div>
       <img className='img' src={dokSearchIcon} alt="Bilde av et dokument som blir forstørret med en magnifying glass" />
     </div>
