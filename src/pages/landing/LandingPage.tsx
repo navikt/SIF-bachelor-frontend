@@ -7,15 +7,11 @@ import { FilterIcon } from '@navikt/aksel-icons';
 export const LandingPage = () => {
   const [userId, setUserId] = useState('');
   const [journalposts, setJournalposts] = useState(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState(null);
 
   const handleSearch = () => {
     console.log("The button is being clicked!")
-    setIsLoading(true);
-    setError(null);
     // Assuming /hentJournalposter endpoint expects a query parameter `brukerID`
-    fetch(`'http://localhost:8080/simple_hentJournalPoster`)
+    fetch("http://localhost:8080/simple_hentJournalPoster")
       .then(response => {
         if (!response.ok) {
           throw new Error('Network response was not ok');
