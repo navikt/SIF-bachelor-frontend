@@ -1,22 +1,25 @@
 .filter-content-container {
     display: flex;
-    align-items: center; /* This will vertically center the items if they have different heights */
-    gap: 16px; /* This adds space between the items, adjust as needed */
   }
   
   /* If you need to ensure the search bar doesn't grow too large, you can set a flex-basis or max-width */
-  .search-container {
-    flex: 1; /* Allows the search bar to grow and take up available space */
-  }
-  
-  .datepicker-container {
-    flex-basis: 175px; /* Adjust the width as needed */
-  }
-  
-  .icon-container {
+.search-container {
+    margin-right: 20px;
+}
+
+ .datepicker-container {
+    --a-spacing-2: 0; /* Super irritating grid spacing that caused the datePicker components to not be properly vertically aligned */
+} 
+
+.navds-date__field-wrapper input{
+    padding-left:10px; /* Also when I manually overried the grid spacing-2 above, the padding on the left would go all the way to the div itself.
+    We need to have the above. Also super annoying */
+}
+
+.icon-container {
     display: flex;
     justify-content: center; /* Center the icon horizontally */
     align-items: center; /* Center the icon vertically */
-    flex-basis: 50px; /* Adjust the width as needed */
-  }
-  
+    margin-right: 5px;
+    margin-left: 5px;
+}
