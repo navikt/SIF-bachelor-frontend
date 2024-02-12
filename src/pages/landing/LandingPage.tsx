@@ -3,6 +3,7 @@ import './LandingPage.css';
 import { Search, Popover } from "@navikt/ds-react"; 
 import dokSearchIcon from "../../images/dokSearchIcon.svg";
 import { FilterIcon } from '@navikt/aksel-icons';
+import FilterPopover from '../../components/search/FilterPopover';
 
 export const LandingPage = () => {
   const [brukerId, setBrukerId] = useState('');
@@ -60,13 +61,7 @@ export const LandingPage = () => {
             title="a11y-title" 
             fontSize="2.5rem" 
             onClick={toggleIconRotation} />
-          <Popover
-            open={openState}
-            onClose={() => setOpenState(false)}
-            anchorEl={FilterIconRef.current}
-              >
-                <Popover.Content>Innhold her!</Popover.Content>
-              </Popover>
+          <FilterPopover anchorEl={FilterIconRef} openState={openState} setOpenState={setOpenState}></FilterPopover>
         </div>
       </div>
       <img className='img' src={dokSearchIcon} alt="Bilde av et dokument som blir forstørret med en magnifying glass" />
