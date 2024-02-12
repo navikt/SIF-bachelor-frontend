@@ -1,20 +1,23 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import './LandingPage.css';
-import { Search } from "@navikt/ds-react"; 
+import { Search, Popover } from "@navikt/ds-react"; 
 import dokSearchIcon from "../../images/dokSearchIcon.svg";
 import { FilterIcon } from '@navikt/aksel-icons';
+import FilterPopover from '../../components/search/FilterPopover';
 
 export const LandingPage = () => {
-  const [userId, setUserId] = useState('');
+  const [brukerId, setBrukerId] = useState('');
   const [journalposts, setJournalposts] = useState(null);
+  const [openState, setOpenState] = useState(false);
+  const [isRotated, setIsRotated] = useState(false);
 
-  
+  const FilterIconRef = useRef(null);
 
   const handleSearch = () => {
 
     // Opprett JSON body med userId
     const requestBody = {
-      dokumentoversiktBruker: userId
+      dokumentoversiktBruker: brukerId
     };
 
     // Definer headers for POST request
@@ -43,10 +46,14 @@ export const LandingPage = () => {
     });
   };
 
+  const toggleIconRotation = () => {
+    setOpenState(!openState);
+    setIsRotated(!isRotated);
+  };
 
   // Denne søke funksjonen oppdaterer userId state når vi skriver og endrer på inputen!
   const handleInputChange = (value: string) => {
-    setUserId(value);
+    setBrukerId(value);
   };
 
   return (
@@ -59,11 +66,17 @@ export const LandingPage = () => {
             label="Søk etter bruker-ID"
             variant="primary"
             placeholder="Skriv inn bruker-ID"
-            value={userId}
+            value={brukerId}
             onChange={handleInputChange}
             onSearchClick={handleSearch}
           />
-          <FilterIcon title="a11y-title" fontSize="2.5rem" />
+          <FilterIcon
+            className={`filter-icon ${isRotated ? 'rotated' : ''}`} 
+            ref={FilterIconRef} 
+            title="a11y-title" 
+            fontSize="2.5rem" 
+            onClick={toggleIconRotation} />
+          <FilterPopover anchorEl={FilterIconRef} openState={openState} setOpenState={setOpenState}></FilterPopover>
         </div>
       </div>
       <img className='img' src={dokSearchIcon} alt="Bilde av et dokument som blir forstørret med en magnifying glass" />
