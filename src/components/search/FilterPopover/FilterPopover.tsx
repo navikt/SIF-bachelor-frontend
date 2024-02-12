@@ -1,6 +1,7 @@
 import React, { Dispatch, SetStateAction } from 'react';
 import { Popover } from "@navikt/ds-react";
 import "./FilterPopover.css";
+import FilterPopoverContent from '../FilterPopoverContent/FilterPopoverContent';
 
 type FilterPopoverProps = {
   anchorEl: React.RefObject<HTMLElement>;
@@ -17,8 +18,9 @@ const FilterPopover = ({ anchorEl, openState, setOpenState }: FilterPopoverProps
       anchorEl={anchorEl.current}
       placement='bottom-end'
     >
-      <Popover.Content
-        >Innhold her!</Popover.Content>
+      <Popover.Content>
+        <FilterPopoverContent /* pass any required props here */ />
+      </Popover.Content>
     </Popover>
   );
 }

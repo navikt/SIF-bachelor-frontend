@@ -1,13 +1,13 @@
 import { useState, useRef } from 'react';
 import './LandingPage.css';
-import { Search, Popover } from "@navikt/ds-react"; 
+import { Search } from "@navikt/ds-react"; 
 import dokSearchIcon from "../../images/dokSearchIcon.svg";
 import { FilterIcon } from '@navikt/aksel-icons';
-import FilterPopover from '../../components/search/FilterPopover';
+import FilterPopover from '../../components/search/FilterPopover/FilterPopover';
 
 export const LandingPage = () => {
   const [brukerId, setBrukerId] = useState('');
-  const [journalposts, setJournalposts] = useState(null);
+  // const [journalposts, setJournalposts] = useState(null);
   const [openState, setOpenState] = useState(false);
   const [isRotated, setIsRotated] = useState(false);
 
