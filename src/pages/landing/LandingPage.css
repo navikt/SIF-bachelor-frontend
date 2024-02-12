@@ -40,3 +40,8 @@
 .filter-icon{
     cursor: pointer;
 }
+
+.rotated {
+    transform: rotate(180deg);
+    transition: transform 0.5s ease; /* Smooth transition for rotation */
+  }

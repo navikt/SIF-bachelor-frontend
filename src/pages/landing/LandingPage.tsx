@@ -8,6 +8,7 @@ export const LandingPage = () => {
   const [brukerId, setBrukerId] = useState('');
   const [journalposts, setJournalposts] = useState(null);
   const [openState, setOpenState] = useState(false);
+  const [isRotated, setIsRotated] = useState(false);
 
   const FilterIconRef = useRef(null);
 
@@ -29,6 +30,10 @@ export const LandingPage = () => {
       });
   };
 
+  const toggleIconRotation = () => {
+    setOpenState(!openState);
+    setIsRotated(!isRotated);
+  };
 
   // Denne søke funksjonen oppdaterer userId state når vi skriver og endrer på inputen!
   const handleInputChange = (value: string) => {
@@ -49,7 +54,12 @@ export const LandingPage = () => {
             onChange={handleInputChange}
             onSearchClick={handleSearch}
           />
-          <FilterIcon className="filter-icon" ref={FilterIconRef} title="a11y-title" fontSize="2.5rem" onClick={() => setOpenState(!openState)} />
+          <FilterIcon
+            className={`filter-icon ${isRotated ? 'rotated' : ''}`} 
+            ref={FilterIconRef} 
+            title="a11y-title" 
+            fontSize="2.5rem" 
+            onClick={toggleIconRotation} />
           <Popover
             open={openState}
             onClose={() => setOpenState(false)}
