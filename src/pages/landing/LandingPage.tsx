@@ -1,22 +1,25 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import './LandingPage.css';
-import { Search } from "@navikt/ds-react"; 
+import { Search, Popover } from "@navikt/ds-react"; 
 import dokSearchIcon from "../../images/dokSearchIcon.svg";
 import { FilterIcon } from '@navikt/aksel-icons';
 
 export const LandingPage = () => {
-  const [userId, setUserId] = useState('');
+  const [brukerId, setBrukerId] = useState('');
   const [journalposts, setJournalposts] = useState(null);
+  const [openState, setOpenState] = useState(false);
+
+  const FilterIconRef = useRef(null);
 
   const handleSearch = () => {
     console.log("The button is being clicked!")
     // Assuming /hentJournalposter endpoint expects a query parameter `brukerID`
-    fetch("http://localhost:8080/simple_hentJournalPoster")
+    fetch(`http://localhost:8080/hentJournalPosterListe/${brukerId}`)
       .then(response => {
         if (!response.ok) {
           throw new Error('Network response was not ok');
         }
-        return response.text(); // Parse response as text
+        return response.json(); // Parse response as text
       })
       .then(data => {
         console.log(data);
@@ -29,7 +32,7 @@ export const LandingPage = () => {
 
   // Denne søke funksjonen oppdaterer userId state når vi skriver og endrer på inputen!
   const handleInputChange = (value: string) => {
-    setUserId(value);
+    setBrukerId(value);
   };
 
   return (
@@ -42,11 +45,18 @@ export const LandingPage = () => {
             label="Søk etter bruker-ID"
             variant="primary"
             placeholder="Skriv inn bruker-ID"
-            value={userId}
+            value={brukerId}
             onChange={handleInputChange}
             onSearchClick={handleSearch}
           />
-          <FilterIcon title="a11y-title" fontSize="2.5rem" />
+          <FilterIcon className="filter-icon" ref={FilterIconRef} title="a11y-title" fontSize="2.5rem" onClick={() => setOpenState(!openState)} />
+          <Popover
+            open={openState}
+            onClose={() => setOpenState(false)}
+            anchorEl={FilterIconRef.current}
+              >
+                <Popover.Content>Innhold her!</Popover.Content>
+              </Popover>
         </div>
       </div>
       <img className='img' src={dokSearchIcon} alt="Bilde av et dokument som blir forstørret med en magnifying glass" />
