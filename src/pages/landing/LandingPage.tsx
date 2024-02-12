@@ -8,22 +8,39 @@ export const LandingPage = () => {
   const [userId, setUserId] = useState('');
   const [journalposts, setJournalposts] = useState(null);
 
+  
+
   const handleSearch = () => {
-    console.log("The button is being clicked!")
-    // Assuming /hentJournalposter endpoint expects a query parameter `brukerID`
-    fetch("http://localhost:8080/simple_hentJournalPoster")
-      .then(response => {
-        if (!response.ok) {
-          throw new Error('Network response was not ok');
-        }
-        return response.text(); // Parse response as text
-      })
-      .then(data => {
-        console.log(data);
-      })
-      .catch(error => {
-        console.error('Error fetching data:', error);
-      });
+
+    // Opprett JSON body med userId
+    const requestBody = {
+      dokumentoversiktBruker: userId
+    };
+
+    // Definer headers for POST request
+    const headers = new Headers();
+    headers.append("Content-Type", "application/json");
+
+      console.log("The button is being clicked!")
+      // Assuming /hentJournalposter endpoint expects a query parameter `brukerID`
+      fetch("http://localhost:8080/hentJournalpostListe", {
+      method: 'POST',
+      headers: headers,
+      body: JSON.stringify(requestBody), // Konverterer JavaScript objekt til en JSON string
+    })
+    .then(response => {
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      return response.json(); // Parse response as JSON
+    })
+    .then(data => {
+      console.log(data);
+      // Oppdater tilstand her om nødvendig, f.eks. setJournalposts(data)
+    })
+    .catch(error => {
+      console.error('Error fetching data:', error);
+    });
   };
 
 
