@@ -1,19 +1,34 @@
 import "./FilterPopoverContent.css";
 import { Search, DatePicker, useDatepicker, Chips, Checkbox, CheckboxGroup, Button } from "@navikt/ds-react"; 
 import { ArrowRightLeftIcon } from '@navikt/aksel-icons';
-import { useState } from 'react';
+import { useState, Dispatch, SetStateAction } from 'react';
 
 type FilterPopoverContentProps = {
-    // Define any props needed for your search bars, date pickers, and checkboxes here.
+    startDate: Date;
+    setStartDate: Dispatch<SetStateAction<Date>>;
+    endDate: Date;
+    setEndDate: Dispatch<SetStateAction<Date>>;
+    filter: string[];
+    setFilter: Dispatch<SetStateAction<string[]>>;
+    selectedStatus: string[];
+    setSelectedStatus: Dispatch<SetStateAction<string[]>>;
+    selectedType: string[];
+    setSelectedType: Dispatch<SetStateAction<string[]>>;
 };
 
-const FilterPopoverContent = () => {
+const FilterPopoverContent = ( props : FilterPopoverContentProps) => {
 
     const tema = ["AAP", "AAR", "AGR", "ARP", "ARS", "BAR", "BID", "BIL", "DAG", "ENF", "ERS",
         "EYB", "EYO", "FAR", "FEI", "FIP", "FOR", "FOS", "FRI", "FUL", "GEN", "GRA", "GRU", "HEL", "HJE",
         "IAR", "IND", "KON", "KLL", "KTA", "KTR", "MED", "MOB", "OMS", "OPA", "OPP", "PEN", "PER", "REH",
         "REK", "RPO", "RVE", "SAA", "SAK", "SAP", "SER", "STO", "SUP", "SYK", "SYM", "TIL", "TRK", "TRY",
         "TSO", "TSR", "UFM", "UFO", "UKJ", "VEN", "YRA", "YRK"];
+
+
+    // Local State management for the search input
+    const [searchValue, setSearchValue] = useState('');
+    /*
+    Commented out the local states, because the state will be managed by the parent container. But why?
 
     // State management for the useDates    
     const [startDate, setStartDate] = useState(new Date());
@@ -22,13 +37,11 @@ const FilterPopoverContent = () => {
     // State management for the chips
     const [filter, setFilter] = useState<string[]>([]);
 
-    // State management for the search input
-    const [searchValue, setSearchValue] = useState('');
-
     // State management for the the Status and Type checkboxes
     const [selectedStatus, setSelectedStatus] = useState<string[]>([]);
     const [selectedType, setSelectedType] = useState<string[]>([]);
 
+    */
     // Change the state of the input once we type in it
     const handleInputChange = (value : string) => {
         setSearchValue(value);
@@ -36,8 +49,8 @@ const FilterPopoverContent = () => {
 
     // Modify applyTemaFilter to add searched tema to filter if it exists in tema array
     const applyTemaFilter = () => {
-        if (tema.includes(searchValue) && !filter.includes(searchValue)) {
-            setFilter([...filter, searchValue]);
+        if (tema.includes(searchValue) && !props.filter.includes(searchValue)) {
+            props.setFilter([...props.filter, searchValue]);
             setSearchValue(''); // Reset search input after adding
         }
     };
@@ -46,18 +59,18 @@ const FilterPopoverContent = () => {
     const handleFirstDatePicker = (selectedDate?: Date) => {
         console.log("Date picked: " + selectedDate);
         if(selectedDate){
-            setStartDate(selectedDate || new Date()); 
+            props.setStartDate(selectedDate || new Date()); 
             console.log("We have set the start date useState hook!")
-            if (selectedDate > endDate) {
+            if (selectedDate > props.endDate) {
                 console.log("SelectedDate is greater than the endDate so we update the state");
-                setEndDate(selectedDate);
+                props.setEndDate(selectedDate);
             }
         }
     };
 
     const handleSecondDatePicker = (selectedDate?: Date) => {
         if(selectedDate){
-            setEndDate(selectedDate);
+            props.setEndDate(selectedDate);
         }
     }
 
@@ -82,26 +95,26 @@ const FilterPopoverContent = () => {
 
     const { datepickerProps: pickToDateProp, inputProps: inputToDate } = useDatepicker({
         required: true,
-        fromDate: startDate,
+        fromDate: props.startDate,
         onDateChange: handleSecondDatePicker,
     });
 
     // For the status checkboxes
     const handleStatus = (val: any[]) => {
-        setSelectedStatus(val);
+        props.setSelectedStatus(val);
     }
 
     // For the type checkboxes
     const handleType = (val: any[]) => {
-        setSelectedType(val);
+        props.setSelectedType(val);
     }
 
     const submitFilter = () => {
         console.log("Form submitted");
-        console.log("StartDate is: " + startDate + " and the endDate is: " + endDate);
-        console.log("The chosen temaer are: " + filter);
-        console.log("The chosen Status checkboxes are: " + selectedStatus);
-        console.log("The chosen Type checkboxes are: " + selectedType);
+        console.log("StartDate is: " + props.startDate + " and the endDate is: " + props.endDate);
+        console.log("The chosen temaer are: " + props.filter);
+        console.log("The chosen Status checkboxes are: " + props.selectedStatus);
+        console.log("The chosen Type checkboxes are: " + props.selectedType);
     }
 
     /* ...datepickerProps ensures that we can select a date from the calender whilst datePicker input ensures that our selected date
@@ -122,7 +135,7 @@ const FilterPopoverContent = () => {
                 <div className="datepicker-container">
                     <DatePicker 
                         {...pickFromDateProp}>
-                        <DatePicker.Input className="heihei" {...inputFromDate} label="" hideLabel value={formatDate(startDate)} />
+                        <DatePicker.Input className="heihei" {...inputFromDate} label="" hideLabel value={formatDate(props.startDate)} />
                     </DatePicker>
                 </div>
                 <div className="icon-container">
@@ -131,18 +144,18 @@ const FilterPopoverContent = () => {
                 <div className="datepicker-container">
                     <DatePicker
                         {...pickToDateProp}>
-                        <DatePicker.Input {...inputToDate} label="" hideLabel value={formatDate(endDate)}/>
+                        <DatePicker.Input {...inputToDate} label="" hideLabel value={formatDate(props.endDate)}/>
                     </DatePicker>
                 </div>
             </div>
             <div className="chips-container">
                 <Chips>
-                    {filter.map((c) => (
+                    {props.filter.map((c) => (
                         <Chips.Removable
                             key={c}
                             variant="action"
                             onClick={() =>
-                                setFilter((x) =>
+                                props.setFilter((x) =>
                                     x.length === 1 ? tema : x.filter((y) => y !== c),
                                 )
                             }

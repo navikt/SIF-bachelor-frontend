@@ -13,8 +13,23 @@ export const LandingPage = () => {
 
   const FilterIconRef = useRef(null);
 
-  const handleSearch = () => {
+  /* Managing state that we used to do locally in FilterPopoverContent.tsx,
+     but we'll lift the state up to the LandingPage to use it to search */
+  const [startDate, setStartDate] = useState(new Date());
+  const [endDate, setEndDate] = useState(new Date());
+  const [filter, setFilter] = useState<string[]>([]);
+  const [selectedStatus, setSelectedStatus] = useState<string[]>([]);
+  const [selectedType, setSelectedType] = useState<string[]>([]);
 
+  const checkProps = () => {
+    console.log("Form submitted");
+    console.log("StartDate is: " + startDate + " and the endDate is: " + endDate);
+    console.log("The chosen temaer are: " + filter);
+    console.log("The chosen Status checkboxes are: " + selectedStatus);
+    console.log("The chosen Type checkboxes are: " + selectedType);
+  }
+
+  const handleSearch = () => {
     // Opprett JSON body med userId
     const requestBody = {
       dokumentoversiktBruker: brukerId
@@ -68,7 +83,7 @@ export const LandingPage = () => {
             placeholder="Skriv inn bruker-ID"
             value={brukerId}
             onChange={handleInputChange}
-            onSearchClick={handleSearch}
+            onSearchClick={checkProps}
           />
           <FilterIcon
             className={`filter-icon ${isRotated ? 'rotated' : ''}`} 
@@ -76,7 +91,20 @@ export const LandingPage = () => {
             title="Filtericon for filterdropdown" 
             fontSize="2.5rem" 
             onClick={toggleIconRotation} />
-          <FilterPopover anchorEl={FilterIconRef} openState={openState} setOpenState={setOpenState}></FilterPopover>
+          <FilterPopover
+            anchorEl={FilterIconRef}
+            openState={openState}
+            setOpenState={setOpenState}
+            startDate={startDate}
+            setStartDate={setStartDate}
+            endDate={endDate}
+            setEndDate={setEndDate}
+            filter={filter}
+            setFilter={setFilter}
+            selectedStatus={selectedStatus}
+            setSelectedStatus={setSelectedStatus}
+            selectedType={selectedType}
+            setSelectedType={setSelectedType}/>
         </div>
       </div>
       <img className='img' src={dokSearchIcon} alt="Bilde av et dokument som blir forstørret med en magnifying glass" />
