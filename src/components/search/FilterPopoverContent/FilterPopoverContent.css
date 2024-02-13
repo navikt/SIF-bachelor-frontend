@@ -36,18 +36,18 @@
 .checkboxParent{
     display:flex;
     flex-direction: row;
-    margin-right: 25px;
+    margin-right: 40px;
 }
 
-.left-column{
+.top-row{
     display: flex;
 }
-.left-column .navds-checkbox:first-child {
-    margin-right: 15px;
+.top-row .navds-checkbox:first-child {
+    margin-right: 20px;
 }
 
 .saveButton{
     display: flex;
     align-items: center;
-    margin-left: 20px;
+    margin-left: 25px;
 }

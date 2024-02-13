@@ -82,7 +82,9 @@ const FilterPopoverContent = () => {
         onDateChange: handleSecondDatePicker,
     });
 
-    const handleChange = (val: any[]) => console.log(val);
+    const handleChange = (val: any[]) => {
+        console.log(val);
+    }
 
     /* ...datepickerProps ensures that we can select a date from the calender whilst datePicker input ensures that our selected date
        shows up in the input field. */
@@ -138,25 +140,25 @@ const FilterPopoverContent = () => {
                     onChange={(val: any[]) => handleChange(val)}
                     className="checkboxParent"    
                 >
-                    <div className="left-column">
+                    <div className="top-row">
                         <Checkbox value="Ferdigstilt">Ferdigstilt</Checkbox>
                         <Checkbox value="Journalført">Journalført</Checkbox>
                     </div>
-                    <div className="right-column">
+                    <div className="bottom-row">
                         <Checkbox value="Ekspedert">Ekspedert</Checkbox> 
                     </div>
                 </CheckboxGroup>
                 <CheckboxGroup
-                    legend="Status"
+                    legend="Type"
                     onChange={(val: any[]) => handleChange(val)}
                     className="checkboxParent"    
                 >
-                    <div className="left-column">
-                        <Checkbox value="Ferdigstilt">Ferdigstilt</Checkbox>
-                        <Checkbox value="Journalført">Journalført</Checkbox>
+                    <div className="top-row">
+                        <Checkbox value="Inngående">Inngående</Checkbox>
+                        <Checkbox value="Notat">Notat</Checkbox>
                     </div>
-                    <div className="right-column">
-                        <Checkbox value="Ekspedert">Ekspedert</Checkbox> 
+                    <div className="bottom-row">
+                        <Checkbox value="Utgående">Utgående</Checkbox> 
                     </div>
                 </CheckboxGroup>
                 <div className="saveButton">
