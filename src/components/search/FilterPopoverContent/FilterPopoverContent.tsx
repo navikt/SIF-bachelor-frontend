@@ -1,7 +1,7 @@
 import "./FilterPopoverContent.css";
-import { Search, DatePicker, useDatepicker } from "@navikt/ds-react"; 
+import { Search, DatePicker, useDatepicker, Chips } from "@navikt/ds-react"; 
 import { ArrowRightLeftIcon } from '@navikt/aksel-icons';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 
 type FilterPopoverContentProps = {
     // Define any props needed for your search bars, date pickers, and checkboxes here.
@@ -15,8 +15,28 @@ const FilterPopoverContent = () => {
         "REK", "RPO", "RVE", "SAA", "SAK", "SAP", "SER", "STO", "SUP", "SYK", "SYM", "TIL", "TRK", "TRY",
         "TSO", "TSR", "UFM", "UFO", "UKJ", "VEN", "YRA", "YRK"];
 
+    // State management for the useDates    
     const [startDate, setStartDate] = useState(new Date());
     const [endDate, setEndDate] = useState(new Date());
+
+    // State management for the chips
+    const [filter, setFilter] = useState<string[]>([]);
+
+    // State management for the search input
+    const [searchValue, setSearchValue] = useState('');
+
+    // Change the state of the input once we type in it
+    const handleInputChange = (value : string) => {
+        setSearchValue(value);
+    };
+
+    // Modify applyTemaFilter to add searched tema to filter if it exists in tema array
+    const applyTemaFilter = () => {
+        if (tema.includes(searchValue) && !filter.includes(searchValue)) {
+            setFilter([...filter, searchValue]);
+            setSearchValue(''); // Reset search input after adding
+        }
+    };
 
     // Modify the onDateChange function to also close the date pickers
     const handleFirstDatePicker = (selectedDate?: Date) => {
@@ -37,6 +57,7 @@ const FilterPopoverContent = () => {
         }
     }
 
+    /* formatDate to get DD.MM.YYYY */
     const formatDate = (date: Date) => {
         const day = date.getDate().toString().padStart(2, '0');
         const month = (date.getMonth() + 1).toString().padStart(2, '0');
@@ -47,7 +68,9 @@ const FilterPopoverContent = () => {
 
     // Define the props for both date pickers using useDatepicker
     /* useDatepicker is a custom hook that returns an object that configures the and interacts with the datepicker. This is called object destructuring
-       where we extract only the properties we need  */
+       where we extract only the properties we need. datepickerProps is the variable we get once we have chosen a date in the calender. inputProps
+       is the prop responsible for displaying the date in the input box itself. required means that we MUST fill it out and onDateChange is a prop
+       in the useDatePicker hook, which will trigger handleFirstDatePicker everytime the date changes. */
     const { datepickerProps: pickFromDateProp, inputProps: inputFromDate } = useDatepicker({
         required: true,
         onDateChange: handleFirstDatePicker,
@@ -65,12 +88,18 @@ const FilterPopoverContent = () => {
         <div>
             <div className="filter-content-container">
                 <div className="search-container">
-                    <Search label="" variant="simple" placeholder="Søk etter tema" />
+                    <Search 
+                        label="heihei"
+                        hideLabel 
+                        variant="secondary" 
+                        placeholder="Søk etter tema"
+                        onChange={handleInputChange}
+                        onSearchClick={applyTemaFilter} />
                 </div>
                 <div className="datepicker-container">
                     <DatePicker 
                         {...pickFromDateProp}>
-                        <DatePicker.Input className="heihei" {...inputFromDate} label="" value={formatDate(startDate)} />
+                        <DatePicker.Input className="heihei" {...inputFromDate} label="" hideLabel value={formatDate(startDate)} />
                     </DatePicker>
                 </div>
                 <div className="icon-container">
@@ -79,12 +108,26 @@ const FilterPopoverContent = () => {
                 <div className="datepicker-container">
                     <DatePicker
                         {...pickToDateProp}>
-                        <DatePicker.Input {...inputToDate} label="" value={formatDate(endDate)}/>
+                        <DatePicker.Input {...inputToDate} label="" hideLabel value={formatDate(endDate)}/>
                     </DatePicker>
                 </div>
             </div>
-            <div>
-                Heihei
+            <div className="chips-container">
+                <Chips>
+                    {filter.map((c) => (
+                        <Chips.Removable
+                            key={c}
+                            variant="action"
+                            onClick={() =>
+                                setFilter((x) =>
+                                    x.length === 1 ? tema : x.filter((y) => y !== c),
+                                )
+                            }
+                        >
+                            {c}
+                        </Chips.Removable>
+                    ))}
+                </Chips>
             </div>
         </div>
     );

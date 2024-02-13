@@ -1,5 +1,6 @@
 .filter-content-container {
     display: flex;
+    margin-bottom: 10px;
   }
   
   /* If you need to ensure the search bar doesn't grow too large, you can set a flex-basis or max-width */
@@ -22,4 +23,8 @@
     align-items: center; /* Center the icon vertically */
     margin-right: 5px;
     margin-left: 5px;
+}
+
+.chips-container{
+    display:flex;
 }
