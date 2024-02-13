@@ -1,5 +1,5 @@
 import "./FilterPopoverContent.css";
-import { Search, DatePicker, useDatepicker, Chips } from "@navikt/ds-react"; 
+import { Search, DatePicker, useDatepicker, Chips, Checkbox, CheckboxGroup, Button } from "@navikt/ds-react"; 
 import { ArrowRightLeftIcon } from '@navikt/aksel-icons';
 import { useState } from 'react';
 
@@ -82,10 +82,12 @@ const FilterPopoverContent = () => {
         onDateChange: handleSecondDatePicker,
     });
 
+    const handleChange = (val: any[]) => console.log(val);
+
     /* ...datepickerProps ensures that we can select a date from the calender whilst datePicker input ensures that our selected date
        shows up in the input field. */
     return (
-        <div>
+        <form>
             <div className="filter-content-container">
                 <div className="search-container">
                     <Search 
@@ -93,6 +95,7 @@ const FilterPopoverContent = () => {
                         hideLabel 
                         variant="secondary" 
                         placeholder="Søk etter tema"
+                        value={searchValue}
                         onChange={handleInputChange}
                         onSearchClick={applyTemaFilter} />
                 </div>
@@ -129,7 +132,38 @@ const FilterPopoverContent = () => {
                     ))}
                 </Chips>
             </div>
-        </div>
+            <div className="checkboxesAndButton">
+                <CheckboxGroup
+                    legend="Status"
+                    onChange={(val: any[]) => handleChange(val)}
+                    className="checkboxParent"    
+                >
+                    <div className="left-column">
+                        <Checkbox value="Ferdigstilt">Ferdigstilt</Checkbox>
+                        <Checkbox value="Journalført">Journalført</Checkbox>
+                    </div>
+                    <div className="right-column">
+                        <Checkbox value="Ekspedert">Ekspedert</Checkbox> 
+                    </div>
+                </CheckboxGroup>
+                <CheckboxGroup
+                    legend="Status"
+                    onChange={(val: any[]) => handleChange(val)}
+                    className="checkboxParent"    
+                >
+                    <div className="left-column">
+                        <Checkbox value="Ferdigstilt">Ferdigstilt</Checkbox>
+                        <Checkbox value="Journalført">Journalført</Checkbox>
+                    </div>
+                    <div className="right-column">
+                        <Checkbox value="Ekspedert">Ekspedert</Checkbox> 
+                    </div>
+                </CheckboxGroup>
+                <div className="saveButton">
+                    <Button>Lagre</Button>
+                </div>
+            </div>
+        </form>
     );
 };
 

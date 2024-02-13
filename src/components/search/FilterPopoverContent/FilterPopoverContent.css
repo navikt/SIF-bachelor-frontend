@@ -1,9 +1,7 @@
 .filter-content-container {
     display: flex;
-    margin-bottom: 10px;
   }
   
-  /* If you need to ensure the search bar doesn't grow too large, you can set a flex-basis or max-width */
 .search-container {
     margin-right: 20px;
 }
@@ -13,8 +11,8 @@
 } 
 
 .navds-date__field-wrapper input{
-    padding-left:10px; /* Also when I manually overried the grid spacing-2 above, the padding on the left would go all the way to the div itself.
-    We need to have the above. Also super annoying */
+    padding-left:10px; /* Also when I manually overried the grid spacing-2 above, the padding would disappear and the text
+    went all the way to the left. Very annoying */
 }
 
 .icon-container {
@@ -27,4 +25,29 @@
 
 .chips-container{
     display:flex;
+    margin-top:15px;
+}
+
+.checkboxesAndButton{
+    display:flex;
+    margin-top:15px;
+}
+
+.checkboxParent{
+    display:flex;
+    flex-direction: row;
+    margin-right: 25px;
+}
+
+.left-column{
+    display: flex;
+}
+.left-column .navds-checkbox:first-child {
+    margin-right: 15px;
+}
+
+.saveButton{
+    display: flex;
+    align-items: center;
+    margin-left: 20px;
 }

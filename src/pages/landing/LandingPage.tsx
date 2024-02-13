@@ -73,7 +73,7 @@ export const LandingPage = () => {
           <FilterIcon
             className={`filter-icon ${isRotated ? 'rotated' : ''}`} 
             ref={FilterIconRef} 
-            title="a11y-title" 
+            title="Filtericon for filterdropdown" 
             fontSize="2.5rem" 
             onClick={toggleIconRotation} />
           <FilterPopover anchorEl={FilterIconRef} openState={openState} setOpenState={setOpenState}></FilterPopover>
