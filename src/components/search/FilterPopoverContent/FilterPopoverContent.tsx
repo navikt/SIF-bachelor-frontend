@@ -25,6 +25,10 @@ const FilterPopoverContent = () => {
     // State management for the search input
     const [searchValue, setSearchValue] = useState('');
 
+    // State management for the the Status and Type checkboxes
+    const [selectedStatus, setSelectedStatus] = useState<string[]>([]);
+    const [selectedType, setSelectedType] = useState<string[]>([]);
+
     // Change the state of the input once we type in it
     const handleInputChange = (value : string) => {
         setSearchValue(value);
@@ -82,14 +86,28 @@ const FilterPopoverContent = () => {
         onDateChange: handleSecondDatePicker,
     });
 
-    const handleChange = (val: any[]) => {
-        console.log(val);
+    // For the status checkboxes
+    const handleStatus = (val: any[]) => {
+        setSelectedStatus(val);
+    }
+
+    // For the type checkboxes
+    const handleType = (val: any[]) => {
+        setSelectedType(val);
+    }
+
+    const submitFilter = () => {
+        console.log("Form submitted");
+        console.log("StartDate is: " + startDate + " and the endDate is: " + endDate);
+        console.log("The chosen temaer are: " + filter);
+        console.log("The chosen Status checkboxes are: " + selectedStatus);
+        console.log("The chosen Type checkboxes are: " + selectedType);
     }
 
     /* ...datepickerProps ensures that we can select a date from the calender whilst datePicker input ensures that our selected date
        shows up in the input field. */
     return (
-        <form>
+        <div>
             <div className="filter-content-container">
                 <div className="search-container">
                     <Search 
@@ -137,7 +155,7 @@ const FilterPopoverContent = () => {
             <div className="checkboxesAndButton">
                 <CheckboxGroup
                     legend="Status"
-                    onChange={(val: any[]) => handleChange(val)}
+                    onChange={(val: any[]) => handleStatus(val)}
                     className="checkboxParent"    
                 >
                     <div className="top-row">
@@ -150,7 +168,7 @@ const FilterPopoverContent = () => {
                 </CheckboxGroup>
                 <CheckboxGroup
                     legend="Type"
-                    onChange={(val: any[]) => handleChange(val)}
+                    onChange={(val: any[]) => handleType(val)}
                     className="checkboxParent"    
                 >
                     <div className="top-row">
@@ -162,10 +180,10 @@ const FilterPopoverContent = () => {
                     </div>
                 </CheckboxGroup>
                 <div className="saveButton">
-                    <Button>Lagre</Button>
+                    <Button onClick={submitFilter}>Lagre</Button>
                 </div>
             </div>
-        </form>
+        </div>
     );
 };
 
