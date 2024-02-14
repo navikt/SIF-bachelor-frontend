@@ -1,7 +1,7 @@
 import "./FilterPopoverContent.css";
 import { Search, DatePicker, useDatepicker, Chips, Checkbox, CheckboxGroup, Button } from "@navikt/ds-react"; 
 import { ArrowRightLeftIcon } from '@navikt/aksel-icons';
-import { useState, Dispatch, SetStateAction } from 'react';
+import { useState } from 'react';
 
 type FilterPopoverContentProps = {
     onFilterSubmit: (filterData: {
@@ -10,7 +10,7 @@ type FilterPopoverContentProps = {
         filter: string[],
         selectedStatus: string[],
         selectedType: string[],
-    }) => void; // Adjusting to expect a function instead of an object
+    }) => void; 
 };
 
 const FilterPopoverContent = ( props : FilterPopoverContentProps) => {
@@ -41,6 +41,14 @@ const FilterPopoverContent = ( props : FilterPopoverContentProps) => {
     const handleInputChange = (value : string) => {
         setSearchValue(value);
     };
+
+    // Added this so that if we want to press enter to trigger the applyTemaFilter, then it should be possible
+    const handleKeyDown = (event : React.KeyboardEvent<HTMLInputElement>) => {
+        if (event.key === 'Enter') {
+          applyTemaFilter();
+        }
+      };
+      
 
     // Modify applyTemaFilter to add searched tema to filter if it exists in tema array
     const applyTemaFilter = () => {
@@ -136,6 +144,7 @@ const FilterPopoverContent = ( props : FilterPopoverContentProps) => {
                         placeholder="Søk etter tema"
                         value={searchValue}
                         onChange={handleInputChange}
+                        onKeyDown={handleKeyDown}
                         onSearchClick={applyTemaFilter} />
                 </div>
                 <div className="datepicker-container">
