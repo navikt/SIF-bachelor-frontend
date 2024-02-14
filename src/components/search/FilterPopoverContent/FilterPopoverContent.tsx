@@ -4,6 +4,7 @@ import { ArrowRightLeftIcon } from '@navikt/aksel-icons';
 import { useState } from 'react';
 
 type FilterPopoverContentProps = {
+    onClose: () => void;
     onFilterSubmit: (filterData: {
         startDate: Date,
         endDate: Date,
@@ -119,15 +120,17 @@ const FilterPopoverContent = ( props : FilterPopoverContentProps) => {
         console.log("The chosen Status checkboxes are: " + selectedStatus);
         console.log("The chosen Type checkboxes are: " + selectedType);
 
+        const closePopover = false;
+
         const filterData = {
             startDate,
             endDate,
             filter,
             selectedStatus,
-            selectedType,
-          };
-          props.onFilterSubmit(filterData);
-        
+            selectedType
+        };
+        props.onFilterSubmit(filterData);
+        props.onClose();
         console.log("Lagret");
     }
 

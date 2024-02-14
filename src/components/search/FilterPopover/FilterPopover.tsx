@@ -9,6 +9,7 @@ type FilterPopoverProps = {
   anchorEl: React.RefObject<HTMLElement>;
   openState: boolean;
   setOpenState: Dispatch<SetStateAction<boolean>>;
+  onClose: () => void;
   onFilterSubmit: (filterData: {
     startDate: Date,
     endDate: Date,
@@ -19,7 +20,6 @@ type FilterPopoverProps = {
 };
 
 const FilterPopover = (props : FilterPopoverProps) => {
-
   return (
     <Popover
       className="popover-container"
@@ -29,7 +29,7 @@ const FilterPopover = (props : FilterPopoverProps) => {
       placement='bottom-end'
     >
       <Popover.Content>
-        <FilterPopoverContent onFilterSubmit={props.onFilterSubmit} />
+        <FilterPopoverContent onFilterSubmit={props.onFilterSubmit} onClose={props.onClose} />
       </Popover.Content>
     </Popover>
   );

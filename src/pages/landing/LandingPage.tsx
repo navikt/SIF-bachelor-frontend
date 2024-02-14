@@ -8,7 +8,10 @@ import FilterPopover from '../../components/search/FilterPopover/FilterPopover';
 export const LandingPage = () => {
   const [brukerId, setBrukerId] = useState('');
   // const [journalposts, setJournalposts] = useState(null);
+
+  // Manage state for opening the dropdown menu, which is initially false, aka dropdown menu not triggered.
   const [openState, setOpenState] = useState(false);
+  // Manage state for rotating the filterIcon when clicking on it, initially false, aka not rotated
   const [isRotated, setIsRotated] = useState(false);
 
   const FilterIconRef = useRef(null);
@@ -110,6 +113,7 @@ export const LandingPage = () => {
             openState={openState}
             setOpenState={setOpenState}
             onFilterSubmit={handleSubmitFilter}
+            onClose={toggleIconRotation}
             />
         </div>
       </div>
