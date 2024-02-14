@@ -13,20 +13,33 @@ export const LandingPage = () => {
 
   const FilterIconRef = useRef(null);
 
+  // Needed the type here because if not, we could get never[] arrays, which we don't want
+  type filteredData = {
+    startDate: Date,
+    endDate: Date,
+    filter: string[],
+    selectedStatus: string[],
+    selectedType: string[],
+  }
+
+  // Manage state for the filterData object that we receive in the dropdown to use in handleSearch
+  const [filterData, setFilterData] = useState<filteredData>({
+    startDate: new Date(),
+    endDate: new Date(),
+    filter: [],
+    selectedStatus: [],
+    selectedType: [],
+  });
+
+  const handleSubmitFilter = (receivedFilterData: filteredData) => {
+    setFilterData(receivedFilterData);
+  };
+
   /* Managing state that we used to do locally in FilterPopoverContent.tsx,
      but we'll lift the state up to the LandingPage to use it to search */
-  const [startDate, setStartDate] = useState(new Date());
-  const [endDate, setEndDate] = useState(new Date());
-  const [filter, setFilter] = useState<string[]>([]);
-  const [selectedStatus, setSelectedStatus] = useState<string[]>([]);
-  const [selectedType, setSelectedType] = useState<string[]>([]);
 
   const checkProps = () => {
-    console.log("Form submitted");
-    console.log("StartDate is: " + startDate + " and the endDate is: " + endDate);
-    console.log("The chosen temaer are: " + filter);
-    console.log("The chosen Status checkboxes are: " + selectedStatus);
-    console.log("The chosen Type checkboxes are: " + selectedType);
+      console.log(filterData);
   }
 
   const handleSearch = () => {
@@ -95,16 +108,8 @@ export const LandingPage = () => {
             anchorEl={FilterIconRef}
             openState={openState}
             setOpenState={setOpenState}
-            startDate={startDate}
-            setStartDate={setStartDate}
-            endDate={endDate}
-            setEndDate={setEndDate}
-            filter={filter}
-            setFilter={setFilter}
-            selectedStatus={selectedStatus}
-            setSelectedStatus={setSelectedStatus}
-            selectedType={selectedType}
-            setSelectedType={setSelectedType}/>
+            onFilterSubmit={handleSubmitFilter}
+            />
         </div>
       </div>
       <img className='img' src={dokSearchIcon} alt="Bilde av et dokument som blir forstørret med en magnifying glass" />

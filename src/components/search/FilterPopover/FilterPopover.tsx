@@ -9,16 +9,13 @@ type FilterPopoverProps = {
   anchorEl: React.RefObject<HTMLElement>;
   openState: boolean;
   setOpenState: Dispatch<SetStateAction<boolean>>;
-  startDate: Date;
-  setStartDate: Dispatch<SetStateAction<Date>>;
-  endDate: Date;
-  setEndDate: Dispatch<SetStateAction<Date>>;
-  filter: string[];
-  setFilter: Dispatch<SetStateAction<string[]>>;
-  selectedStatus: string[];
-  setSelectedStatus: Dispatch<SetStateAction<string[]>>;
-  selectedType: string[];
-  setSelectedType: Dispatch<SetStateAction<string[]>>;
+  onFilterSubmit: (filterData: {
+    startDate: Date,
+    endDate: Date,
+    filter: string[],
+    selectedStatus: string[],
+    selectedType: string[],
+}) => void;
 };
 
 const FilterPopover = (props : FilterPopoverProps) => {
@@ -32,17 +29,7 @@ const FilterPopover = (props : FilterPopoverProps) => {
       placement='bottom-end'
     >
       <Popover.Content>
-        <FilterPopoverContent
-          startDate={props.startDate}
-          setStartDate={props.setStartDate}
-          endDate={props.endDate}
-          setEndDate={props.setEndDate}
-          filter={props.filter}
-          setFilter={props.setFilter}
-          selectedStatus={props.selectedStatus}
-          setSelectedStatus={props.setSelectedStatus}
-          selectedType={props.selectedType}
-          setSelectedType={props.setSelectedType}/>
+        <FilterPopoverContent onFilterSubmit={props.onFilterSubmit} />
       </Popover.Content>
     </Popover>
   );
