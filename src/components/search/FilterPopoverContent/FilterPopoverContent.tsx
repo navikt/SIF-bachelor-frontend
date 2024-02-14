@@ -1,7 +1,7 @@
 import "./FilterPopoverContent.css";
 import { Search, DatePicker, useDatepicker, Chips, Checkbox, CheckboxGroup, Button } from "@navikt/ds-react"; 
 import { ArrowRightLeftIcon } from '@navikt/aksel-icons';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 type FilterPopoverContentProps = {
     onClose: () => void;
@@ -26,6 +26,12 @@ const FilterPopoverContent = ( props : FilterPopoverContentProps) => {
     // Local State management for the search input
     const [searchValue, setSearchValue] = useState('');
 
+    // State management for the suggestions in the search input
+    const [suggestions, setSuggestions] = useState<string[]>([]);
+
+    // State management for highlighting and selecting suggestion in search input
+    const [selectedSuggestionIndex, setSelectedSuggestionIndex] = useState(0);
+
     // State management for the useDates    
     const [startDate, setStartDate] = useState(new Date());
     const [endDate, setEndDate] = useState(new Date());
@@ -43,18 +49,40 @@ const FilterPopoverContent = ( props : FilterPopoverContentProps) => {
         setSearchValue(value);
     };
 
+    /*  Update the suggestions every time the search value changes. Had to change the useEffect code because when
+    we started typing for example "C" it would briefly flash the list starting with AAP AAR AGR before it figured
+    out the list didn't have "C" and would THEN display nothing. This was because suggestions were updated async
+    in useEffect and so when I typed "C", the suggestions are updated, but before they are rendered, useEffect runs
+    again and updates the suggestions to an empty array  */
+    useEffect(() => {
+        if (searchValue !== '') {
+            const newSuggestions = tema
+                .filter(t => t.toUpperCase().startsWith(searchValue.toUpperCase()) && !filter.includes(t))
+                .slice(0, 3);
+            setSuggestions(newSuggestions);
+        } else {
+            setSuggestions([]);
+        }
+    }, [searchValue, filter]);
+
     // Added this so that if we want to press enter to trigger the applyTemaFilter, then it should be possible
     const handleKeyDown = (event : React.KeyboardEvent<HTMLInputElement>) => {
-        if (event.key === 'Enter') {
-          applyTemaFilter();
+        if (event.key === 'ArrowDown') {
+            event.preventDefault();
+            setSelectedSuggestionIndex(prev => (prev + 1) % suggestions.length);
+        } else if (event.key === 'ArrowUp') {
+            event.preventDefault();
+            setSelectedSuggestionIndex(prev => (prev - 1 + suggestions.length) % suggestions.length);
+        } else if (event.key === 'Enter') {          
+            applyTemaFilter(suggestions[selectedSuggestionIndex]);
         }
-      };
+    };
       
 
     // Modify applyTemaFilter to add searched tema to filter if it exists in tema array
-    const applyTemaFilter = () => {
-        if (tema.includes(searchValue) && !filter.includes(searchValue)) {
-            setFilter([...filter, searchValue]);
+    const applyTemaFilter = (value: string) => {
+        if (tema.includes(value) && !filter.includes(searchValue)) {
+            setFilter([...filter, value]);
             setSearchValue(''); // Reset search input after adding
         }
     };
@@ -120,8 +148,6 @@ const FilterPopoverContent = ( props : FilterPopoverContentProps) => {
         console.log("The chosen Status checkboxes are: " + selectedStatus);
         console.log("The chosen Type checkboxes are: " + selectedType);
 
-        const closePopover = false;
-
         const filterData = {
             startDate,
             endDate,
@@ -141,7 +167,7 @@ const FilterPopoverContent = ( props : FilterPopoverContentProps) => {
             <div className="filter-content-container">
                 <div className="search-container">
                     <Search 
-                        label="heihei"
+                        label="Search engine for tema"
                         hideLabel 
                         variant="secondary" 
                         placeholder="Søk etter tema"
@@ -149,6 +175,17 @@ const FilterPopoverContent = ( props : FilterPopoverContentProps) => {
                         onChange={handleInputChange}
                         onKeyDown={handleKeyDown}
                         onSearchClick={applyTemaFilter} />
+                    <div className="suggestions">
+                        {searchValue.length > 0 && suggestions.map((suggestion, index) => (
+                            <div 
+                                key={suggestion} 
+                                onClick={() => applyTemaFilter(suggestion)}
+                                style={{backgroundColor: index === selectedSuggestionIndex ? '#eee' : '#fff'}} 
+                            >
+                                {suggestion}
+                            </div>
+                        ))}
+                    </div>
                 </div>
                 <div className="datepicker-container">
                     <DatePicker 
