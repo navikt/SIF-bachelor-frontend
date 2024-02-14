@@ -13,7 +13,8 @@ export const LandingPage = () => {
 
   const FilterIconRef = useRef(null);
 
-  // Needed the type here because if not, we could get never[] arrays, which we don't want
+  /* Needed the type here because if not, we could get never[] arrays, which means that we wouldn't be able
+     to add strings to these later which we don't want */
   type filteredData = {
     startDate: Date,
     endDate: Date,

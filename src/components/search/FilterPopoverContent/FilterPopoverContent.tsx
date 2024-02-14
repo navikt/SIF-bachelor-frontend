@@ -160,10 +160,8 @@ const FilterPopoverContent = ( props : FilterPopoverContentProps) => {
                         <Chips.Removable
                             key={c}
                             variant="action"
-                            onClick={() =>
-                                setFilter((x) =>
-                                    x.length === 1 ? tema : x.filter((y) => y !== c),
-                                )
+                            onClick={() => 
+                                setFilter(currentFilter => currentFilter.filter((chip) => chip !== c))
                             }
                         >
                             {c}
