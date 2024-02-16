@@ -18,3 +18,16 @@
 .log-in-button {
     margin-right: 30px;
 }
+
+.logged-in{
+  background-color: white;
+  color:#005B82;
+  border: 1px solid #005B82;
+}
+
+.status{
+  border-radius: 99999px;
+  border: none;
+  width: 25px;
+  height: 25px;
+}
