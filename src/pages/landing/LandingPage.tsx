@@ -47,20 +47,24 @@ export const LandingPage = () => {
   }
 
   const handleSearch = () => {
+    const token = sessionStorage.getItem("token");
     // Opprett JSON body med userId
     const requestBody = {
       dokumentoversiktBruker: brukerId
     };
 
     // Definer headers for POST request
-    const headers = new Headers();
-    headers.append("Content-Type", "application/json");
+  
 
       console.log("The button is being clicked!")
       // Assuming /hentJournalposter endpoint expects a query parameter `brukerID`
       fetch("http://localhost:8080/hentJournalpostListe", {
       method: 'POST',
-      headers: headers,
+      headers: { 
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        'Authorization': `Bearer ${token}`, // Including access token in the Authorization header
+      },
       body: JSON.stringify(requestBody), // Konverterer JavaScript objekt til en JSON string
     })
     .then(response => {
@@ -100,7 +104,7 @@ export const LandingPage = () => {
             placeholder="Skriv inn bruker-ID"
             value={brukerId}
             onChange={handleInputChange}
-            onSearchClick={checkProps}
+            onSearchClick={handleSearch}
           />
           <FilterIcon
             className={`filter-icon ${isRotated ? 'rotated' : ''}`} 
