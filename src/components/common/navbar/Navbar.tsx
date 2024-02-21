@@ -39,7 +39,7 @@ const Navbar = () => {
   const toggleLogin = async () => {
     if (!isLoggedIn) {
       try {
-        const response = await fetch("http://localhost:20587/default/token", {
+        const response = await fetch("http://localhost:34553/default/token", {
           method: 'POST',
           headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
