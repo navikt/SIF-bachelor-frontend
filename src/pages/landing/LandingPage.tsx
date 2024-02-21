@@ -50,11 +50,11 @@ export const LandingPage = () => {
   }
 
   const handleSearch = () => {
+    const token = sessionStorage.getItem("token");
     // Opprett JSON body med userId
     const requestBody = {
       dokumentoversiktBruker: brukerId
     };
-    const token = sessionStorage.getItem("token");
     // Definer headers for POST request
     const headers = new Headers();
     headers.append("Content-Type", "application/json");

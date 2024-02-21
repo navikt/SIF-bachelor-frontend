@@ -42,7 +42,7 @@ const Navbar = () => {
 
    // Function to toggle login/logout
   const toggleLogin = async () => {
-    if (!isLoggedIn) {
+    if (!isLoggedIn) { 
       try {
         const response = await fetch("http://localhost:8282/default/token", {
           method: 'POST',
