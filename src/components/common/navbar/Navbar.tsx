@@ -1,15 +1,20 @@
 import { Button } from "@navikt/ds-react";
 import React, { useState, useEffect } from "react";
+import { Link, useNavigate} from "react-router-dom";
 
 import './Navbar.css';
 const Navbar = () => {
+
+  const navigate = useNavigate()
 
   const [isLoggedIn, setIsLoggedIn] = useState(sessionStorage.getItem('token') !== null);
   const [buttonText, setButtonText] = useState(sessionStorage.getItem('token') ? "Logg ut" : "Logg inn");
   //For statussymbol - kan fjernes (Er her bare for å se at alt funker)
   const [statusColor, setStatusColor] = useState("gray");
 
-
+  const returnHome = () =>{
+    navigate("/")
+  }
   const callProtectedEndpoint = async () => {
     const token = sessionStorage.getItem("token");
 
@@ -39,7 +44,7 @@ const Navbar = () => {
   const toggleLogin = async () => {
     if (!isLoggedIn) {
       try {
-        const response = await fetch("http://localhost:34553/default/token", {
+        const response = await fetch("http://localhost:8282/default/token", {
           method: 'POST',
           headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
@@ -71,7 +76,8 @@ const Navbar = () => {
 
   return (
     <nav className="navbar">
-      <h1>Vju</h1>
+      
+      <h1 className="logo" onClick={()=>{returnHome()}}>Vju</h1>
       <div className="status" style={{ backgroundColor: statusColor}}></div>
       <Button onClick={callProtectedEndpoint}>
         Call protected endpoint

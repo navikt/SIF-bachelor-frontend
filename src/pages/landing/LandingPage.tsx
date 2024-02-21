@@ -1,6 +1,7 @@
 import { useState, useRef } from 'react';
 import './LandingPage.css';
 import { Search } from "@navikt/ds-react"; 
+import { useLocation, useNavigate } from "react-router-dom";
 import dokSearchIcon from "../../images/dokSearchIcon.svg";
 import { FilterIcon } from '@navikt/aksel-icons';
 import FilterPopover from '../../components/search/FilterPopover/FilterPopover';
@@ -16,11 +17,13 @@ export const LandingPage = () => {
 
   const FilterIconRef = useRef(null);
 
+  const navigate = useNavigate()
+
   /* Needed the type here because if not, we could get never[] arrays, which means that we wouldn't be able
      to add strings to these later which we don't want */
   type filteredData = {
-    startDate: Date,
-    endDate: Date,
+    startDate?: Date,
+    endDate?: Date,
     filter: string[],
     selectedStatus: string[],
     selectedType: string[],
@@ -28,8 +31,8 @@ export const LandingPage = () => {
 
   // Manage state for the filterData object that we receive in the dropdown to use in handleSearch
   const [filterData, setFilterData] = useState<filteredData>({
-    startDate: new Date(),
-    endDate: new Date(),
+    startDate: undefined,
+    endDate: undefined,
     filter: [],
     selectedStatus: [],
     selectedType: [],
@@ -51,16 +54,20 @@ export const LandingPage = () => {
     const requestBody = {
       dokumentoversiktBruker: brukerId
     };
-
+    const token = sessionStorage.getItem("token");
     // Definer headers for POST request
     const headers = new Headers();
     headers.append("Content-Type", "application/json");
+    headers.append(`Authorization`, `Bearer ${token}`)
 
       console.log("The button is being clicked!")
       // Assuming /hentJournalposter endpoint expects a query parameter `brukerID`
       fetch("http://localhost:8080/hentJournalpostListe", {
       method: 'POST',
-      headers: headers,
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
       body: JSON.stringify(requestBody), // Konverterer JavaScript objekt til en JSON string
     })
     .then(response => {
@@ -71,6 +78,9 @@ export const LandingPage = () => {
     })
     .then(data => {
       console.log(data);
+      data.filterOptions = filterData
+      data.userkey = brukerId
+      navigate("/SearchResults", {state: data})
       // Oppdater tilstand her om nødvendig, f.eks. setJournalposts(data)
     })
     .catch(error => {
@@ -100,7 +110,7 @@ export const LandingPage = () => {
             placeholder="Skriv inn bruker-ID"
             value={brukerId}
             onChange={handleInputChange}
-            onSearchClick={checkProps}
+            onSearchClick={handleSearch}
           />
           <FilterIcon
             className={`filter-icon ${isRotated ? 'rotated' : ''}`} 
@@ -118,6 +128,7 @@ export const LandingPage = () => {
         </div>
       </div>
       <img className='img' src={dokSearchIcon} alt="Bilde av et dokument som blir forstørret med en magnifying glass" />
+      <p>Vju er et verktøy for henting og behandling av journalposter for Sykdom i familien</p>
     </div>
   );
 };

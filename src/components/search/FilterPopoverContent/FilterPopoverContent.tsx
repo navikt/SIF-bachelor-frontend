@@ -6,8 +6,8 @@ import { useState, useEffect } from 'react';
 type FilterPopoverContentProps = {
     onClose: () => void;
     onFilterSubmit: (filterData: {
-        startDate: Date,
-        endDate: Date,
+        startDate?: Date,
+        endDate?: Date,
         filter: string[],
         selectedStatus: string[],
         selectedType: string[],
@@ -33,8 +33,8 @@ const FilterPopoverContent = ( props : FilterPopoverContentProps) => {
     const [selectedSuggestionIndex, setSelectedSuggestionIndex] = useState(0);
 
     // State management for the useDates    
-    const [startDate, setStartDate] = useState(new Date());
-    const [endDate, setEndDate] = useState(new Date());
+    const [startDate, setStartDate] = useState<Date | undefined>(undefined);
+    const [endDate, setEndDate] = useState<Date | undefined>(undefined);
 
     // State management for the chips
     const [filter, setFilter] = useState<string[]>([]);
@@ -90,13 +90,18 @@ const FilterPopoverContent = ( props : FilterPopoverContentProps) => {
     // Modify the onDateChange function to also close the date pickers
     const handleFirstDatePicker = (selectedDate?: Date) => {
         console.log("Date picked: " + selectedDate);
-        if(selectedDate){
-            setStartDate(selectedDate || new Date()); 
+        if(selectedDate && endDate){
+            setStartDate(selectedDate); 
             console.log("We have set the start date useState hook!")
             if (selectedDate > endDate) {
                 console.log("SelectedDate is greater than the endDate so we update the state");
                 setEndDate(selectedDate);
             }
+        }else{
+            const currentDate = new Date();
+            const sixMonthsAgo = new Date(currentDate);
+            sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
+            setStartDate(sixMonthsAgo)
         }
     };
 
@@ -144,9 +149,9 @@ const FilterPopoverContent = ( props : FilterPopoverContentProps) => {
     const submitFilter = () => {
         console.log("Form submitted");
         console.log("StartDate is: " + startDate + " and the endDate is: " + endDate);
-        console.log("The chosen temaer are: " + filter);
+        /*console.log("The chosen temaer are: " + filter);
         console.log("The chosen Status checkboxes are: " + selectedStatus);
-        console.log("The chosen Type checkboxes are: " + selectedType);
+        console.log("The chosen Type checkboxes are: " + selectedType);*/
 
         const filterData = {
             startDate,
@@ -158,6 +163,7 @@ const FilterPopoverContent = ( props : FilterPopoverContentProps) => {
         props.onFilterSubmit(filterData);
         props.onClose();
         console.log("Lagret");
+        console.log(filterData)
     }
 
     /* ...datepickerProps ensures that we can select a date from the calender whilst datePicker input ensures that our selected date
@@ -190,7 +196,7 @@ const FilterPopoverContent = ( props : FilterPopoverContentProps) => {
                 <div className="datepicker-container">
                     <DatePicker 
                         {...pickFromDateProp}>
-                        <DatePicker.Input className="heihei" {...inputFromDate} label="" hideLabel value={formatDate(startDate)} />
+                        <DatePicker.Input className="heihei" {...inputFromDate} label="" hideLabel  />
                     </DatePicker>
                 </div>
                 <div className="icon-container">
@@ -199,7 +205,7 @@ const FilterPopoverContent = ( props : FilterPopoverContentProps) => {
                 <div className="datepicker-container">
                     <DatePicker
                         {...pickToDateProp}>
-                        <DatePicker.Input {...inputToDate} label="" hideLabel value={formatDate(endDate)}/>
+                        <DatePicker.Input {...inputToDate} label="" hideLabel />
                     </DatePicker>
                 </div>
             </div>

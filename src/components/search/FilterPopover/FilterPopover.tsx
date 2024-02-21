@@ -11,8 +11,8 @@ type FilterPopoverProps = {
   setOpenState: Dispatch<SetStateAction<boolean>>;
   onClose: () => void;
   onFilterSubmit: (filterData: {
-    startDate: Date,
-    endDate: Date,
+    startDate?: Date,
+    endDate?: Date,
     filter: string[],
     selectedStatus: string[],
     selectedType: string[],
