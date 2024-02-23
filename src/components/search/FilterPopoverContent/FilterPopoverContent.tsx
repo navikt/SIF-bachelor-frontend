@@ -65,7 +65,7 @@ const FilterPopoverContent = ( props : FilterPopoverContentProps) => {
         }
     }, [searchValue, filter]);
 
-    // Added this so that if we want to press enter to trigger the applyTemaFilter, then it should be possible
+    // Added this so that if we want to press enter and use arrow keys to trigger the applyTemaFilter, then it should be possible
     const handleKeyDown = (event : React.KeyboardEvent<HTMLInputElement>) => {
         if (event.key === 'ArrowDown') {
             event.preventDefault();
