@@ -1,55 +1,70 @@
-import React, { useState, useEffect } from "react";
-//todo: 
-export const PDFViewer = ({ journalId }: { journalId: string}) => {
-    
-    const [pdfReferences, setPdfReferences] = useState<{[key: string]: string}>({});
-    const [loading, setLoading] = useState<boolean>(true);
-    const [error, setError] = useState<string>('');
+import { useState, useEffect } from "react";
+import { Document, Page, pdfjs } from "react-pdf";
+import "react-pdf/dist/esm/Page/TextLayer.css";
+import 'react-pdf/dist/Page/AnnotationLayer.css';
+import { IDocument } from "./types";
+import { PDFDocument } from "pdf-lib";
+
+pdfjs.GlobalWorkerOptions.workerSrc = new URL(
+    'pdfjs-dist/build/pdf.worker.min.js',
+    import.meta.url,
+  ).toString();
+
+  export const PDFViewer = ({ documentUrls, documents }: { documentUrls: Map<string, string>; documents: IDocument[] }) => {
+
+    const [numPages, setNumPages] = useState<number | null >(null);
+    const [mergedPdfUrl, setMergedPdfUrl] = useState<string | undefined>(undefined);
 
     useEffect(() => {
-        const fetchPdf = async() => {
-            try{
-                if (pdfReferences[journalId]) {
-                    setLoading(false);
-                    return;
+        const mergePdfs = async () => {
+            const mergedPdf = await PDFDocument.create();
+            for (const document of documents) {
+                const url = documentUrls.get(document.dokumentInfoId);
+                if (!url) {
+                    console.error(`URL not found for document with ID ${document.dokumentInfoId}`);
+                    break;
                 }
-                const token = sessionStorage.getItem("token")
-                const response = await fetch("http://localhost:8080/get-simple-pdf?id="+journalId, {
-                    headers: {
-                        Authorization: `Bearer ${token}`
-                    }
-                })
-                if(!response.ok){
-                    throw new Error('Failed to fetch PDF');
-                }
-                
-                const blob = await response.blob();
-                const objectReference = URL.createObjectURL(blob);
-                setPdfReferences((prevReferences) => ({
-                    ...prevReferences,
-                    [journalId]: objectReference
-                  }));
-                console.log(JSON.stringify(pdfReferences))
-                setLoading(false);
-            }catch(err){
-                console.error("Internal server error: ", err)   
+                const pdfBytes = await fetch(url).then(response => response.arrayBuffer());
+                const pdf = await PDFDocument.load(pdfBytes);
+                const copiedPages = await mergedPdf.copyPages(pdf, pdf.getPageIndices());
+                copiedPages.forEach((page) => {
+                    mergedPdf.addPage(page);
+                });
             }
+            const mergedPdfBytes = await mergedPdf.save();
+            const mergedPdfUrl = URL.createObjectURL(new Blob([mergedPdfBytes], { type: "application/pdf" }));
+            setMergedPdfUrl(mergedPdfUrl);
+        };
+
+        if (documentUrls && documents) {
+          mergePdfs();
         }
-        
-        fetchPdf()
+      }, [documents]);
 
-    }, [journalId])
-
-    if(loading ) return <p>Loading...</p>
-    if(error) return <p>{error}</p>
+    const onDocumentLoadSuccess = ({numPages}: {numPages: number}) => {
+        setNumPages(numPages)
+    }
 
     return (
-        <>
-            <div className="pdfDoc" style={{ height: "80%"}}>
-                <iframe src={pdfReferences[journalId]} style={{ width: '100%', height: "100%"}} title="PDF Viewer"></iframe>
-            </div>
-        </>
-    )
-}
+        <div style={{backgroundColor: "red", width: "fit-content", padding: "1rem", maxHeight:"calc(100vh - 75px)", overflowY: "scroll"}}>
+          {mergedPdfUrl ? (
+            <Document
+              file={mergedPdfUrl}
+              onLoadSuccess={onDocumentLoadSuccess}
+            >
+              {Array.from({ length: numPages || 0 }, (_, index) => (
+                <>
+                    <Page key={index + 1} pageNumber={index + 1} />
+                    <p>Page {index + 1} of {numPages}</p>
+                </>
+              ))}
+            </Document>
+          ) : (
+            <p>Loading...</p>
+          )}
+        </div>
+        
+      );
+};
 
 export default PDFViewer;

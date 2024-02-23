@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react"
 import { useLocation, useNavigate } from "react-router-dom";
 import { Table, Button, Tag, Chips } from "@navikt/ds-react"
 import { PDFViewer } from "../../components/PDFViewer"
-
+import { IDocument } from "../../components/types";
 import './SearchResults.css';
 
 interface SearchResult {
@@ -11,6 +11,7 @@ interface SearchResult {
     journalposttype: string;
     journalstatus: string;
     tema: string;
+    dokumenter: IDocument[];
 }
 
 interface FilterOptions {
@@ -20,6 +21,11 @@ interface FilterOptions {
     selectedStatus: string[]
     selectedType: string[]
 }
+
+//saf interfaces
+
+
+
 /* formatDate to get DD.MM.YYYY */
 const formatDate = (date: Date) => {
     const day = date.getDate().toString().padStart(2, '0');
@@ -54,7 +60,7 @@ const transformFilterOptionsToList = (options: FilterOptions): any[] => {
 export const SearchResults = () => {
 
     const location = useLocation()
-    console.log(location.state)
+    //console.log(location.state)
     const [userkey, setUserkey] = useState<string>(location.state.userkey)
     const [searchData, setSearchData] = useState<SearchResult[]>(location.state.data.dokumentoversiktBruker.journalposter as SearchResult[]) || []
     const [filterOptions, setFilterOptions] = useState<FilterOptions>(location.state.filterOptions);
@@ -64,10 +70,55 @@ export const SearchResults = () => {
 
     const [selectedRows, selectRow] = useState<string[]>([])
 
+    const [documentUrls, setDocumentUrls] = useState<Map<string, string>>(new Map());
+    const [documents, setDocuments] = useState<IDocument[]>(searchData[0].dokumenter);
+    //[1, 2, 3, 4, 5, 6]
     useEffect(() => {
         // Transform filterOptions into filterList
         setFilterList(transformFilterOptionsToList(filterOptions));
-    }, [filterOptions]);
+    
+        const fetchDocuments = async () => {
+            const token = sessionStorage.getItem("token")
+            const fetchedUrls = new Map<string, string>()
+
+            for (const document of documents) {
+                const docId: string = document.dokumentInfoId;
+
+                if(documentUrls.has(docId) !== (undefined || true)){
+                    console.log(documentUrls.has(docId))
+                    //console.log("Couldnt find saved document:", docId); // Add this line to check if documents are being fetched
+                    const response = await fetch("http://localhost:8080/get-document?documentId=" + docId, {
+                        headers: {
+                            Authorization: `Bearer ${token}`
+                        }
+                    })
+                    if (!response.ok) {
+                        console.error("Failed to fetch document: " + docId)
+                    }
+    
+                    const blob = await response.blob()
+                    const objectReference = URL.createObjectURL(blob)
+                    fetchedUrls.set(docId, objectReference)
+                }else{
+                    console.log("Found saved document: " + documentUrls.get(docId))
+                }
+                
+            }
+    
+            setDocumentUrls(prevUrls => {
+                const newUrls = new Map([...prevUrls, ...fetchedUrls])
+                return newUrls
+            })
+    
+            //console.log("Fetched documents:", fetchedUrls); // Add this line to check the fetched documents
+        }
+    
+        if (documents.length > 0) {
+            fetchDocuments()
+        }
+    
+    }, [filterOptions, documents]);
+
 
 
 
@@ -85,17 +136,17 @@ export const SearchResults = () => {
     }
     const isRowClicked = (id: string) => clickedRow === id;
 
-    const updatePdfViewer = (journalId: string) => {
+    const updateDocuments = (journalId: string) => {
+        const journal = searchData.find(journal => journal.journalpostId === journalId)
+        if(journal){
+            setDocuments(journal.dokumenter);
+        }
+        
         setClickedJournalId(journalId)
         handleRowClick(journalId)
-        console.log("initiating updating the pdf viewer. Here is the clicked id: " + journalId)
     }
 
-    
 
-    //setFilterList(transformFilterOptionsToList(filterOptions))
-    console.log("FILTERLIST: " + JSON.stringify(filterList))
-    console.log("OPTIONLIST: " +  JSON.stringify(filterOptions))
 
     const selectTagVariant = (journalStatus: string) => {
         switch(journalStatus.toUpperCase()){
@@ -161,7 +212,7 @@ export const SearchResults = () => {
                                 //onClick={() => toggleRowSelection(journalpostId)} selected={selectedRows.includes(journalpostId)}
                                 <Table.Row 
                                     key={journalpostId}
-                                    onClick={() => updatePdfViewer(journalpostId)}
+                                    onClick={() => updateDocuments(journalpostId)}
                                     selected={selectedRows.includes(journalpostId)}
                                     className={isRowClicked(journalpostId) ? "selectedRowOutline" : ""}
                                 >
@@ -186,9 +237,11 @@ export const SearchResults = () => {
                     </Table>
                 </div>
                     
-                <div className="searchResultsRight">
-                    <PDFViewer journalId={clickedJournalId} />
-                </div>
+                {documentUrls.size > 0 && (
+                    <div className="searchResultsRight">
+                        <PDFViewer key={documentUrls.size} documentUrls={documentUrls} documents={documents} />
+                    </div>
+                )}
             </div>
         </>
     )
