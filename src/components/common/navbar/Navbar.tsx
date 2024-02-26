@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { Link, useNavigate, useLocation} from "react-router-dom";
 
 import './Navbar.css';
+import NavSearchEngine from "../navSearchEngine/NavSearchEngine";
 const Navbar = () => {
 
   const navigate = useNavigate();
@@ -92,7 +93,7 @@ const Navbar = () => {
       <Button onClick={callProtectedEndpoint}>
         Call protected endpoint
       </Button>
-      {location.pathname === "/SearchResults" && <Search label="" className="searchNav" />}
+      {location.pathname === "/SearchResults" && <NavSearchEngine />}
       <Button
         className={`log-in-button ${isLoggedIn ? 'logged-in' : ''}`}
         onClick={toggleLogin}

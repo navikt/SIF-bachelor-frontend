@@ -36,7 +36,3 @@
   transform: scale(110%);
   transition: ease-in-out 0.2s;
 }
-
-.searchNav{
-  max-width: 200px;
-}
