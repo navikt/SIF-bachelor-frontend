@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react"
 import { useLocation, useNavigate } from "react-router-dom";
 import { Table, Button, Tag, Chips } from "@navikt/ds-react"
-import { PDFViewer } from "../../components/PDFViewer"
+import { PDFViewer } from "../../components/PDFViewer/PDFViewer"
+import { DocumentViewer } from "../../components/DocumentViewer/DocumentViewer"
 import { IDocument } from "../../components/types";
 import './SearchResults.css';
 
@@ -21,8 +22,6 @@ interface FilterOptions {
     selectedStatus: string[]
     selectedType: string[]
 }
-
-//saf interfaces
 
 
 
@@ -55,6 +54,7 @@ const transformFilterOptionsToList = (options: FilterOptions): any[] => {
     return list;
 };
 
+
   // Manage state for the filterData object that we receive in the dropdown to use in handleSearch
   
 export const SearchResults = () => {
@@ -65,15 +65,14 @@ export const SearchResults = () => {
     const [searchData, setSearchData] = useState<SearchResult[]>(location.state.data.dokumentoversiktBruker.journalposter as SearchResult[]) || []
     const [filterOptions, setFilterOptions] = useState<FilterOptions>(location.state.filterOptions);
     const [filterList, setFilterList] = useState<string[]>([])
-    const [clickedJournalId, setClickedJournalId] = useState<string>(searchData[0].journalpostId);
-    const [clickedRow, setClickedRow] = useState<string>(searchData[0].journalpostId);
 
-    const [selectedRows, selectRow] = useState<string[]>([])
+    const [selectedRows, selectRow] = useState<string[]>([searchData[0].journalpostId])
 
     const [documentUrls, setDocumentUrls] = useState<Map<string, string>>(new Map());
     const [documents, setDocuments] = useState<IDocument[]>(searchData[0].dokumenter);
     //[1, 2, 3, 4, 5, 6]
     useEffect(() => {
+        //console.log(documents)
         // Transform filterOptions into filterList
         setFilterList(transformFilterOptionsToList(filterOptions));
     
@@ -85,7 +84,7 @@ export const SearchResults = () => {
                 const docId: string = document.dokumentInfoId;
 
                 if(documentUrls.has(docId) !== (undefined || true)){
-                    console.log(documentUrls.has(docId))
+                    //console.log(documentUrls.has(docId))
                     //console.log("Couldnt find saved document:", docId); // Add this line to check if documents are being fetched
                     const response = await fetch("http://localhost:8080/get-document?documentId=" + docId, {
                         headers: {
@@ -100,7 +99,7 @@ export const SearchResults = () => {
                     const objectReference = URL.createObjectURL(blob)
                     fetchedUrls.set(docId, objectReference)
                 }else{
-                    console.log("Found saved document: " + documentUrls.get(docId))
+                    //console.log("Found saved document: " + documentUrls.get(docId))
                 }
                 
             }
@@ -123,28 +122,75 @@ export const SearchResults = () => {
 
 
     const toggleRowSelection = (id: string) => {
-        if(selectedRows.includes(id)){
-            selectRow(selectedRows.filter(rowId => rowId !== id))
-        }else{
-            selectRow([...selectedRows, id])
-            console.log(id + " ble lagt til!")
-        }
+        
     }
 
     const handleRowClick = (id: string) => {
-        setClickedRow(id)
+        selectRow(prevSelectedRows => {
+            if (prevSelectedRows.includes(id)) {
+                // Row already selected, remove it
+                return prevSelectedRows.filter(rowId => rowId !== id);
+            } else {
+                // Row not selected, add it
+                return [...prevSelectedRows, id];
+            }
+        });
     }
-    const isRowClicked = (id: string) => clickedRow === id;
 
-    const updateDocuments = (journalId: string) => {
-        const journal = searchData.find(journal => journal.journalpostId === journalId)
-        if(journal){
-            setDocuments(journal.dokumenter);
+    //For border og shading
+    const isRowClicked = (id: string) => selectedRows.includes(id)
+
+
+    const addRowDocuments = (journalId: string) => {
+        const journal = searchData.find(journal => journal.journalpostId === journalId);
+
+        if (journal) {
+            if (isRowClicked(journalId)) {
+                // If the row is clicked, remove every document in the journal from the documents state
+                setDocuments(prevDocuments => {
+                    // Filter out documents that are present in the journal
+                    return prevDocuments.filter(document =>
+                        !journal.dokumenter.some(newDocument => newDocument.dokumentInfoId === document.dokumentInfoId)
+                    );
+                });
+            } else {
+                // If the row is not clicked, add every document to the documents state
+                setDocuments(prevDocuments => {
+                    // Filter out documents that are already present
+                    const updatedDocuments = prevDocuments.filter(document =>
+                        !journal.dokumenter.some(newDocument => newDocument.dokumentInfoId === document.dokumentInfoId)
+                    );
+
+                    // Concatenate new documents from the journal
+                    return [...updatedDocuments, ...journal.dokumenter];
+                });
+            }
         }
-        
-        setClickedJournalId(journalId)
-        handleRowClick(journalId)
-    }
+
+        handleRowClick(journalId);
+    };
+
+    const addDocument = (documentToAdd: IDocument) => {
+        // Find the document to add based on its ID
+        console.log("documents before:")
+        console.log(documents)
+        if (documentToAdd) {
+            setDocuments(prevDocuments => {
+                // Check if the document already exists in the documents state
+                const isDocumentExist = prevDocuments.some(document => document.dokumentInfoId === documentToAdd.dokumentInfoId);
+    
+                // If the document doesn't exist, add it to the documents state
+                if (!isDocumentExist) {
+                    return [...prevDocuments, documentToAdd];
+                } else {
+                    // If the document already exists, filter it out from the documents state
+                    return prevDocuments.filter(document => document.dokumentInfoId !== documentToAdd.dokumentInfoId);
+                }
+            });
+        }
+        console.log("documents after:")
+        console.log(documents)
+    };
 
 
 
@@ -160,7 +206,9 @@ export const SearchResults = () => {
                 return "neutral"
         }
     }
-    
+    const logDoc = () => {
+        console.log(documents)
+    }
     if(!sessionStorage.getItem("token")){
         return <p style={{color: "red"}}>401 Forbidden!</p>
     }
@@ -171,7 +219,7 @@ export const SearchResults = () => {
                 <div className="searchResultsLeft">
                     <div className="searchResultsShelf">
                         <h2>{searchData.length} treff for "{userkey}"</h2>
-                        <Button variant="secondary">Hent {selectedRows.length} dokumenter</Button>
+                        {/*<Button variant="secondary" onClick={logDoc}>Hent {selectedRows.length} dokumenter</Button>*/}
                     </div>
                     {filterList.length>0 &&(
                         <div className="filterList">
@@ -208,21 +256,23 @@ export const SearchResults = () => {
                         </Table.Header>
                         <Table.Body>
                             {searchData.map(({ journalpostId, tittel, journalposttype, journalstatus, tema }) => (
-                                // ! Denne kan legges på table.row for å enable onclick for quickview !
-                                //onClick={() => toggleRowSelection(journalpostId)} selected={selectedRows.includes(journalpostId)}
-                                <Table.Row 
+                                <Table.ExpandableRow 
                                     key={journalpostId}
-                                    onClick={() => updateDocuments(journalpostId)}
+                                    onClick={() => addRowDocuments(journalpostId)}
                                     selected={selectedRows.includes(journalpostId)}
-                                    className={isRowClicked(journalpostId) ? "selectedRowOutline" : ""}
+                                    className={`tableRow ${isRowClicked(journalpostId) ? "selectedRowOutline" : ""}`}
+                                    content={
+                                        <>
+                                        <h4 style={{margin: "0", marginBottom: "0.75rem"}}>Dokumenter</h4>
+                                            <DocumentViewer 
+                                                documentsToView={searchData.find(entry => entry.journalpostId === journalpostId)?.dokumenter || []}
+                                                addDocument={addDocument}
+                                                documents={documents}
+                                            />
+                                        </>
+                                        
+                                    }
                                 >
-                                    <Table.DataCell>
-                                        <input
-                                        type="checkbox"
-                                        checked={selectedRows.includes(journalpostId)}
-                                        onChange={() => toggleRowSelection(journalpostId)}
-                                        />
-                                    </Table.DataCell>
                                     <Table.DataCell>{journalpostId}</Table.DataCell>
                                     <Table.DataCell>{tittel}</Table.DataCell>
                                     <Table.DataCell>{journalposttype}</Table.DataCell>
@@ -231,7 +281,7 @@ export const SearchResults = () => {
                                         
                                     </Table.DataCell>
                                     <Table.DataCell>{tema}</Table.DataCell>
-                                </Table.Row>
+                                </Table.ExpandableRow>
                             ))}
                         </Table.Body>
                     </Table>

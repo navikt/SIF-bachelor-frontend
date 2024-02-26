@@ -24,8 +24,11 @@
 }
 .selectedRowOutline {
     border: 3px solid #0067c5 !important;
+    box-sizing: border-box !important;
+}
+.tableRow:hover{
+    cursor: pointer;
 }
 .filterList{
     width: 50%;
-
 }
