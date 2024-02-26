@@ -1,7 +1,8 @@
-import { Button, Search } from "@navikt/ds-react";
+import {Search } from "@navikt/ds-react";
 import { useState, useEffect, useRef } from "react";
 import { FilterIcon } from '@navikt/aksel-icons';
 import FilterPopover from '../../search/FilterPopover/FilterPopover';
+import {useNavigate } from "react-router-dom";
 
 import "./NavSearchEngine.css";
 import "../../../pages/landing/LandingPage.css"
@@ -16,6 +17,8 @@ const NavSearchEngine = () => {
     const [openState, setOpenState] = useState(false);
   
     const FilterIconRef = useRef(null);
+
+    const navigate = useNavigate()
 
     // Manage state for the filterData object that we receive in the dropdown to use in handleSearch
     const [filterData, setFilterData] = useState<filteredData>({
@@ -43,12 +46,52 @@ const NavSearchEngine = () => {
 
     const handleSubmitFilter = (receivedFilterData: filteredData) => {
         setFilterData(receivedFilterData);
+        // console.log(filterData);
       };
 
     const toggleIconRotation = () => {
         setOpenState(!openState);
         setIsRotated(!isRotated);
       };
+
+    const handleSearch = () => {
+        const token = sessionStorage.getItem("token");
+        // Opprett JSON body med userId
+        const requestBody = {
+            dokumentoversiktBruker: brukerId
+        };
+        // Definer headers for POST request
+        const headers = new Headers();
+        headers.append("Content-Type", "application/json");
+        headers.append(`Authorization`, `Bearer ${token}`)
+
+            console.log("The button is being clicked!" + "the filters are: " + filterData)
+            // Assuming /hentJournalposter endpoint expects a query parameter `brukerID`
+            fetch("http://localhost:8080/hentJournalpostListe", {
+            method: 'POST',
+            headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+            },
+            body: JSON.stringify(requestBody), // Konverterer JavaScript objekt til en JSON string
+        })
+        .then(response => {
+            if (!response.ok) {
+            throw new Error('Network response was not ok');
+            }
+            return response.json(); // Parse response as JSON
+        })
+        .then(data => {
+            console.log(data);
+            const updatedData = {
+                ...data,
+                filterOptions: filterData,
+                userkey: brukerId
+            };
+            navigate("/SearchResults", {state: updatedData})
+            // Oppdater tilstand her om nødvendig, f.eks. setJournalposts(data)
+        });
+    };
 
 return(
     <div>
@@ -57,7 +100,8 @@ return(
                 label="" 
                 className="search-bar"
                 placeholder="Skriv inn bruker-ID"
-                onChange={handleInputChange} />
+                onChange={handleInputChange}
+                onSearchClick={handleSearch} />                
             <FilterIcon
                 className={`filter-icon ${isRotated ? 'rotated' : ''}`} 
                 ref={FilterIconRef} 

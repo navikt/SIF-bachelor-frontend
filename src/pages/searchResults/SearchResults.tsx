@@ -72,10 +72,20 @@ export const SearchResults = () => {
     const [documents, setDocuments] = useState<IDocument[]>(searchData[0].dokumenter);
     //[1, 2, 3, 4, 5, 6]
     useEffect(() => {
+
+        if (location.state) {
+            setFilterOptions(location.state.filterOptions);
+            setSearchData(location.state.data.dokumentoversiktBruker.journalposter as SearchResult[]);
+            setDocuments(location.state.data.dokumentoversiktBruker.journalposter[0].dokumenter);
+            setUserkey(location.state.userkey);
+        }
+
         //console.log(documents)
         // Transform filterOptions into filterList
         setFilterList(transformFilterOptionsToList(filterOptions));
     
+        console.log("Det nye filteret er: " + filterList);
+
         const fetchDocuments = async () => {
             const token = sessionStorage.getItem("token")
             const fetchedUrls = new Map<string, string>()
@@ -116,10 +126,7 @@ export const SearchResults = () => {
             fetchDocuments()
         }
     
-    }, [filterOptions, documents]);
-
-
-
+    }, [filterOptions, documents, location.state]);
 
     const toggleRowSelection = (id: string) => {
         
