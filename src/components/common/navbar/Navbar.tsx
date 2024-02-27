@@ -42,12 +42,14 @@ const Navbar = () => {
   /*  */
   const callProtectedEndpoint = async () => {
 
+    /* Up to us if we want this below, which makes sure that if we aren't logged in, it will automatically
+     log us in when clicking the Call Protected Endpoint button
     if (!isTokenValid()) {
       // Handle token expiration (e.g., refresh the token or log out)
       console.error('The token has expired');
       toggleLogin(); // This could be changed to a refresh token logic
       return;
-    }
+    } */
 
     const token = sessionStorage.getItem("token");
 
