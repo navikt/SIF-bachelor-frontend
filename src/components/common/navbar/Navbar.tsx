@@ -1,13 +1,17 @@
-import { Button } from "@navikt/ds-react";
-import React, { useState, useEffect } from "react";
-import { Link, useNavigate} from "react-router-dom";
+import { Button, Search } from "@navikt/ds-react";
+import { useState, useEffect } from "react";
+import { Link, useNavigate, useLocation} from "react-router-dom";
 
 import './Navbar.css';
+import NavSearchEngine from "../navSearchEngine/NavSearchEngine";
 const Navbar = () => {
 
-  const navigate = useNavigate()
+  const navigate = useNavigate();
+  const location = useLocation();
 
+  // We have a useState hook to check if there is a token stored in sessionStorage and we set the isLoggedIn to true if found.
   const [isLoggedIn, setIsLoggedIn] = useState(sessionStorage.getItem('token') !== null);
+  // Another boolean hook which sets itself to true if a token stored in sessionStorage is found and we set the button's content to "Logg ut" if true.
   const [buttonText, setButtonText] = useState(sessionStorage.getItem('token') ? "Logg ut" : "Logg inn");
   //For statussymbol - kan fjernes (Er her bare for å se at alt funker)
   const [statusColor, setStatusColor] = useState("gray");
@@ -15,6 +19,7 @@ const Navbar = () => {
   const returnHome = () =>{
     navigate("/")
   }
+  /*  */
   const callProtectedEndpoint = async () => {
     const token = sessionStorage.getItem("token");
 
@@ -47,12 +52,18 @@ const Navbar = () => {
         const response = await fetch("http://localhost:8282/default/token", {
           method: 'POST',
           headers: {
+            // Means that the form data is encoded as URL encoded format, stndard convention
             'Content-Type': 'application/x-www-form-urlencoded',
             // Include other necessary headers here
           },
-          // Update with your actual client_id and client_secret values if necessary
+          /* This is the the encoded body where grant-type=client credentials is a typical OAuth terminology. client_credentials is a grant type
+          typically used where client applications (in our case React frontend) authenticates by the CLIENT itself, instead of a user writing
+          a username and password. In order to use the client_credentials grant type, we need to hardcode our client_id which is in our case just
+          called dittCleintId as our unique identifier which the server will identify and authenticate. Client_secret represents the client secret
+          which is a confidential value known only to the client and server.   */
           body: 'grant_type=client_credentials&client_id=dittClientId&client_secret=dinClientSecret',
         });
+        // If the response status is 200 - 299, then we go into the if statement
         if (response.ok) {
           const data = await response.json();
           console.log(data.access_token);
@@ -82,6 +93,7 @@ const Navbar = () => {
       <Button onClick={callProtectedEndpoint}>
         Call protected endpoint
       </Button>
+      {location.pathname === "/SearchResults" && <NavSearchEngine />}
       <Button
         className={`log-in-button ${isLoggedIn ? 'logged-in' : ''}`}
         onClick={toggleLogin}

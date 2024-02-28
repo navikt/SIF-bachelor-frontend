@@ -72,10 +72,20 @@ export const SearchResults = () => {
     const [documents, setDocuments] = useState<IDocument[]>(searchData[0].dokumenter);
     //[1, 2, 3, 4, 5, 6]
     useEffect(() => {
+
+        if (location.state) {
+            setFilterOptions(location.state.filterOptions);
+            setSearchData(location.state.data.dokumentoversiktBruker.journalposter as SearchResult[]);
+        //    setDocuments(location.state.data.dokumentoversiktBruker.journalposter[0].dokumenter);
+            setUserkey(location.state.userkey);
+        }
+
         //console.log(documents)
         // Transform filterOptions into filterList
         setFilterList(transformFilterOptionsToList(filterOptions));
     
+        console.log("Det nye filteret er: " + filterList);
+
         const fetchDocuments = async () => {
             const token = sessionStorage.getItem("token")
             const fetchedUrls = new Map<string, string>()
@@ -116,10 +126,7 @@ export const SearchResults = () => {
             fetchDocuments()
         }
     
-    }, [filterOptions, documents]);
-
-
-
+    }, [filterOptions, documents, location.state]);
 
     const toggleRowSelection = (id: string) => {
         
@@ -225,18 +232,14 @@ export const SearchResults = () => {
                         <div className="filterList">
                             <h4 style={{padding: 0, margin: 0, marginBottom: "0.75rem"}}>Aktive filtere</h4>
                             <Chips>
-                                {filterList.map((c) => (
-                                    <Chips.Removable
+                                {filterList.map((c, y) => (
+                                    <Chips.Toggle
                                         key={c}
-                                        variant="action"
-                                        onClick={() =>
-                                            setFilterList((x) =>
-                                            x.length === 1 ? filterList : x.filter((y) => y !== c),
-                                            )
-                                        }
+                                        checkmark={false}
+                                        style={{ backgroundColor: "var(--a-blue-700)", color: "var(--a-white)", cursor: "default" }}
                                     >
                                     {c}
-                                    </Chips.Removable>
+                                    </Chips.Toggle>
                                 ))}
                             </Chips>
                         </div>
