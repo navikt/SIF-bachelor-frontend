@@ -86,7 +86,7 @@ export const SearchResults = () => {
                 if(documentUrls.has(docId) !== (undefined || true)){
                     //console.log(documentUrls.has(docId))
                     //console.log("Couldnt find saved document:", docId); // Add this line to check if documents are being fetched
-                    const response = await fetch("http://localhost:8080/get-document?documentId=" + docId, {
+                    const response = await fetch("http://localhost:8080/hentDokumenter?dokumentInfoId=" + docId, {
                         headers: {
                             Authorization: `Bearer ${token}`
                         }

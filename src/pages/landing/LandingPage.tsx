@@ -53,7 +53,10 @@ export const LandingPage = () => {
     const token = sessionStorage.getItem("token");
     // Opprett JSON body med userId
     const requestBody = {
-      dokumentoversiktBruker: brukerId
+      brukerId: {
+        id: brukerId,
+        type: "FNR" 
+      }
     };
     // Definer headers for POST request
     const headers = new Headers();
