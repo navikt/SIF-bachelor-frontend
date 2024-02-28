@@ -13,6 +13,7 @@
     color: #005B82; 
     margin: 0;
     margin-left: 30px; 
+    transition: ease-in-out 0.2s;
   }
 
 .log-in-button {
@@ -34,5 +35,5 @@
 .logo:hover{
   cursor:pointer;
   transform: scale(110%);
-  transition: ease-in-out 0.2s;
+
 }

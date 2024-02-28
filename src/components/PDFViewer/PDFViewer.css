@@ -5,7 +5,7 @@
     min-height: 50%;
     height: 100%;
     max-height: calc(100vh - 75px);
-    overflow-y: scroll;
+    overflow-y: auto;
     display: flex;
     justify-content: center;
 }

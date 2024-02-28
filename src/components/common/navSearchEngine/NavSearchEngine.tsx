@@ -15,6 +15,8 @@ const NavSearchEngine = () => {
 
     // Manage state for opening the dropdown menu, which is initially false, aka dropdown menu not triggered.
     const [openState, setOpenState] = useState(false);
+
+    const [token, setToken] = useState(sessionStorage.getItem("token"))
   
     const FilterIconRef = useRef(null);
 
@@ -55,17 +57,20 @@ const NavSearchEngine = () => {
       };
 
     const handleSearch = () => {
-        const token = sessionStorage.getItem("token");
         // Opprett JSON body med userId
         const requestBody = {
-            dokumentoversiktBruker: brukerId
-        };
+            brukerId: {
+              id: brukerId,
+              type: "FNR" 
+            }
+          };
         // Definer headers for POST request
         const headers = new Headers();
         headers.append("Content-Type", "application/json");
         headers.append(`Authorization`, `Bearer ${token}`)
 
-            console.log("The button is being clicked!" + "the filters are: " + filterData)
+            console.log("The button is being clicked!" + "the filters are: ")
+            console.log(filterData)
             // Assuming /hentJournalposter endpoint expects a query parameter `brukerID`
             fetch("http://localhost:8080/hentJournalpostListe", {
             method: 'POST',
@@ -82,13 +87,11 @@ const NavSearchEngine = () => {
             return response.json(); // Parse response as JSON
         })
         .then(data => {
-            console.log(data);
-            const updatedData = {
-                ...data,
-                filterOptions: filterData,
-                userkey: brukerId
-            };
-            navigate("/SearchResults", {state: updatedData})
+            data.filterOptions = filterData
+            data.userkey = brukerId
+            data.uniqueActionId = Array.from({length: 16}, () => Math.floor(Math.random() * 16).toString(16)).join('')
+            console.log(data)
+            navigate("/SearchResults", {state: data})
             // Oppdater tilstand her om nødvendig, f.eks. setJournalposts(data)
         });
     };

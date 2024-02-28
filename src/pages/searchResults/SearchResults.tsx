@@ -61,7 +61,9 @@ export const SearchResults = () => {
 
     const location = useLocation()
     //console.log(location.state)
+    const [token, setToken] = useState(sessionStorage.getItem("token"))
     const [userkey, setUserkey] = useState<string>(location.state.userkey)
+    const [actionId, setActionId] = useState<string>(location.state.uniqueActionId)
     const [searchData, setSearchData] = useState<SearchResult[]>(location.state.data.dokumentoversiktBruker.journalposter as SearchResult[]) || []
     const [filterOptions, setFilterOptions] = useState<FilterOptions>(location.state.filterOptions);
     const [filterList, setFilterList] = useState<string[]>([])
@@ -70,24 +72,11 @@ export const SearchResults = () => {
 
     const [documentUrls, setDocumentUrls] = useState<Map<string, string>>(new Map());
     const [documents, setDocuments] = useState<IDocument[]>(searchData[0].dokumenter);
-    //[1, 2, 3, 4, 5, 6]
+  
     useEffect(() => {
 
-        if (location.state) {
-            setFilterOptions(location.state.filterOptions);
-            setSearchData(location.state.data.dokumentoversiktBruker.journalposter as SearchResult[]);
-        //    setDocuments(location.state.data.dokumentoversiktBruker.journalposter[0].dokumenter);
-            setUserkey(location.state.userkey);
-        }
-
-        //console.log(documents)
-        // Transform filterOptions into filterList
-        setFilterList(transformFilterOptionsToList(filterOptions));
-    
-        console.log("Det nye filteret er: " + filterList);
-
         const fetchDocuments = async () => {
-            const token = sessionStorage.getItem("token")
+            
             const fetchedUrls = new Map<string, string>()
 
             for (const document of documents) {
@@ -126,11 +115,21 @@ export const SearchResults = () => {
             fetchDocuments()
         }
     
-    }, [filterOptions, documents, location.state]);
+    }, [ documents ]);
 
-    const toggleRowSelection = (id: string) => {
-        
-    }
+    useEffect(()=>{
+        setSearchData(location.state.data.dokumentoversiktBruker.journalposter as SearchResult[])
+        setDocuments(location.state.data.dokumentoversiktBruker.journalposter[0].dokumenter)
+        setUserkey(location.state.userkey)
+        setFilterOptions(location.state.filterOptions)
+        console.log("LOGGER LOKAL FILTEROPTIONS")
+        console.log(filterOptions)
+        setFilterList(transformFilterOptionsToList(filterOptions))
+        console.log(filterList)
+        selectRow([location.state.data.dokumentoversiktBruker.journalposter[0].journalpostId])
+    }, [location.state, actionId])
+
+
 
     const handleRowClick = (id: string) => {
         selectRow(prevSelectedRows => {

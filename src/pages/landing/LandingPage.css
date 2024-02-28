@@ -13,24 +13,28 @@
 }
 
 .content {
-    text-align: center;
     max-width: 650px;
     margin: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center; 
 }
 
 .search-container {
     display: flex;
     align-items: center; /* Center the items vertically */
+    width: 100%;
 }
 .search-bar{
     margin-right: 10px;
 }
 .content h2 {
-    margin-top:200px;
+    margin: 0;
     text-align: center;
     font-size: 2.5rem; 
     color: #323A45; 
-    margin-bottom: 24px; 
+    margin-bottom: 24px;
+    
 }
 
 .img {
@@ -48,4 +52,24 @@
 
 .popover-container{
     max-width: 500px;
+}
+.content-headers{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-right: 70px;
+}
+
+.vju-logo {
+    font-size: 10rem;
+    width: fit-content;
+    font-weight: bold;
+    color: #005B82;
+    margin: 0;
+    margin-top:130px;
+    transition: ease-in-out 0.3s;
+}
+.vju-logo:hover{
+    transform: scale(120%);
+    cursor: pointer;
 }

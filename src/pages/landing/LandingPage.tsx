@@ -15,6 +15,8 @@ export const LandingPage = () => {
   // Manage state for rotating the filterIcon when clicking on it, initially false, aka not rotated
   const [isRotated, setIsRotated] = useState(false);
 
+  const [token, setToken] = useState(sessionStorage.getItem("token"))
+
   const FilterIconRef = useRef(null);
 
   const navigate = useNavigate()
@@ -50,7 +52,6 @@ export const LandingPage = () => {
   }
 
   const handleSearch = () => {
-    const token = sessionStorage.getItem("token");
     // Opprett JSON body med userId
     const requestBody = {
       brukerId: {
@@ -80,9 +81,9 @@ export const LandingPage = () => {
       return response.json(); // Parse response as JSON
     })
     .then(data => {
-      console.log(data);
       data.filterOptions = filterData
       data.userkey = brukerId
+      data.uniqueActionId = Array.from({length: 16}, () => Math.floor(Math.random() * 16).toString(16)).join('')
       navigate("/SearchResults", {state: data})
       // Oppdater tilstand her om nødvendig, f.eks. setJournalposts(data)
     })
@@ -104,7 +105,10 @@ export const LandingPage = () => {
   return (
     <div className="landing-container">
       <div className="content">
-        <h2>Søk etter bruker-ID</h2>
+        <div className='content-headers'>
+          <h1 className='vju-logo'>Vju</h1>
+          <h2 className='subtitle'>Søk etter bruker-ID</h2>
+        </div>
         <div className="search-container">
           <Search
             className="search-bar"
