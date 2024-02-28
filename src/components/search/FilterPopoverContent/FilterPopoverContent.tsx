@@ -90,18 +90,13 @@ const FilterPopoverContent = ( props : FilterPopoverContentProps) => {
     // Modify the onDateChange function to also close the date pickers
     const handleFirstDatePicker = (selectedDate?: Date) => {
         console.log("Date picked: " + selectedDate);
-        if(selectedDate && endDate){
-            setStartDate(selectedDate); 
+        if(selectedDate){
+            setStartDate(selectedDate || new Date()); 
             console.log("We have set the start date useState hook!")
-            if (selectedDate > endDate) {
+            if (endDate && selectedDate > endDate) {
                 console.log("SelectedDate is greater than the endDate so we update the state");
                 setEndDate(selectedDate);
             }
-        }else{
-            const currentDate = new Date();
-            const sixMonthsAgo = new Date(currentDate);
-            sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
-            setStartDate(sixMonthsAgo)
         }
     };
 
@@ -196,7 +191,7 @@ const FilterPopoverContent = ( props : FilterPopoverContentProps) => {
                 <div className="datepicker-container">
                     <DatePicker 
                         {...pickFromDateProp}>
-                        <DatePicker.Input className="heihei" {...inputFromDate} label="" hideLabel  />
+                        <DatePicker.Input className="heihei" {...inputFromDate} label="" value={startDate ? formatDate(startDate) : undefined}  hideLabel  />
                     </DatePicker>
                 </div>
                 <div className="icon-container">
@@ -205,7 +200,7 @@ const FilterPopoverContent = ( props : FilterPopoverContentProps) => {
                 <div className="datepicker-container">
                     <DatePicker
                         {...pickToDateProp}>
-                        <DatePicker.Input {...inputToDate} label="" hideLabel />
+                        <DatePicker.Input {...inputToDate} label="" value={endDate ? formatDate(endDate) : undefined} hideLabel />
                     </DatePicker>
                 </div>
             </div>
