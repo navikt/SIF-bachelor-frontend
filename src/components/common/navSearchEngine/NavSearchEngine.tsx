@@ -22,9 +22,6 @@ const NavSearchEngine = () => {
     // Error message
     const [errorMessage, setErrorMessage] = useState('');
   
-
-    const [token, setToken] = useState(sessionStorage.getItem("token"))
-  
     const FilterIconRef = useRef(null);
 
     const navigate = useNavigate()
@@ -80,8 +77,11 @@ const NavSearchEngine = () => {
         const token = sessionStorage.getItem("token");
         // Opprett JSON body med userId
         const requestBody = {
-            dokumentoversiktBruker: brukerId
-        };
+            brukerId: {
+              id: brukerId,
+              type: "FNR" 
+            }
+          };
         // Definer headers for POST request
         const headers = new Headers();
         headers.append("Content-Type", "application/json");

@@ -127,7 +127,7 @@ export const SearchResults = () => {
         setFilterList(transformFilterOptionsToList(filterOptions))
         console.log(filterList)
         selectRow([location.state.data.dokumentoversiktBruker.journalposter[0].journalpostId])
-    }, [location.state, actionId])
+    }, [location.state, filterOptions])
 
 
 
