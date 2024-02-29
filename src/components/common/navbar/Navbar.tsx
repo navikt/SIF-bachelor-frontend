@@ -16,11 +16,41 @@ const Navbar = () => {
   //For statussymbol - kan fjernes (Er her bare for å se at alt funker)
   const [statusColor, setStatusColor] = useState("gray");
 
+  useEffect(() => {
+    const interval = setInterval(() => {
+      console.log("The useEffect is triggered");
+      if (!isTokenValid()) {
+        // Handle token expiration
+        console.error('Token expired');
+        toggleLogin(); // Adjust as needed
+      }
+    }, 60000); // Check every minute
+  
+    // Need the cleanup function when the component unmounts or before it re-renders to prevent memory leak from older unused intervals
+    return () => clearInterval(interval);
+  }, []);
+
   const returnHome = () =>{
     navigate("/")
   }
+
+  const isTokenValid = (): boolean => {
+    const expirationTime = sessionStorage.getItem('token_expiration');
+    return expirationTime !== null && new Date().getTime() < Number(expirationTime);
+  };
+  
   /*  */
   const callProtectedEndpoint = async () => {
+
+    /* Up to us if we want this below, which makes sure that if we aren't logged in, it will automatically
+     log us in when clicking the Call Protected Endpoint button
+    if (!isTokenValid()) {
+      // Handle token expiration (e.g., refresh the token or log out)
+      console.error('The token has expired');
+      toggleLogin(); // This could be changed to a refresh token logic
+      return;
+    } */
+
     const token = sessionStorage.getItem("token");
 
     try{
@@ -66,12 +96,13 @@ const Navbar = () => {
         // If the response status is 200 - 299, then we go into the if statement
         if (response.ok) {
           const data = await response.json();
-          console.log(data.access_token);
+          const expirationTime = new Date().getTime() + data.expires_in * 1000;
+          console.log(data.access_token + "  " + expirationTime.toString());
           sessionStorage.setItem('token', data.access_token); // Store the token in sessionStorage
+          sessionStorage.setItem('token_expiration', expirationTime.toString()); // Convert expirationTime to string
           setIsLoggedIn(true);
           setButtonText("Logg ut");
         } else {
-          // Log the error based on response status
           console.error('Error fetching token with status:', response.status, response.statusText);
         }
       } catch (error) {
@@ -79,6 +110,7 @@ const Navbar = () => {
       }
     } else {
       sessionStorage.removeItem('token'); // Remove the token from sessionStorage
+      sessionStorage.removeItem('token_expiration');
       setIsLoggedIn(false);
       setButtonText("Logg inn");
     }

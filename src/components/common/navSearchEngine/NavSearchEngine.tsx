@@ -16,6 +16,13 @@ const NavSearchEngine = () => {
     // Manage state for opening the dropdown menu, which is initially false, aka dropdown menu not triggered.
     const [openState, setOpenState] = useState(false);
 
+    // For the input validation of the "brukerId"
+    const [isValid, setIsValid] = useState(true);
+
+    // Error message
+    const [errorMessage, setErrorMessage] = useState('');
+  
+
     const [token, setToken] = useState(sessionStorage.getItem("token"))
   
     const FilterIconRef = useRef(null);
@@ -43,7 +50,14 @@ const NavSearchEngine = () => {
 
     // Denne søke funksjonen oppdaterer userId state når vi skriver og endrer på inputen!
     const handleInputChange = (value: string) => {
-        setBrukerId(value);
+        const isValidInput = /^\d{3,11}$/.test(value);
+        setIsValid(isValidInput);
+        if (isValidInput) {
+            setBrukerId(value);
+            setErrorMessage('');
+        } else {
+            setErrorMessage('brukerId må være et 3 sifret tall mellom 3 og 11');
+        }
     };
 
     const handleSubmitFilter = (receivedFilterData: filteredData) => {
@@ -57,13 +71,17 @@ const NavSearchEngine = () => {
       };
 
     const handleSearch = () => {
+        
+        if (!isValid) {
+            setErrorMessage('Du må skrive inn et gyldig 3 til 11 sifret tall før du kan søke!');
+            return;
+        }
+
+        const token = sessionStorage.getItem("token");
         // Opprett JSON body med userId
         const requestBody = {
-            brukerId: {
-              id: brukerId,
-              type: "FNR" 
-            }
-          };
+            dokumentoversiktBruker: brukerId
+        };
         // Definer headers for POST request
         const headers = new Headers();
         headers.append("Content-Type", "application/json");
@@ -119,6 +137,7 @@ return(
                 onClose={toggleIconRotation}
             />
         </div>
+        {errorMessage && <div style={{ color: 'red', marginTop: '10px' }}>{errorMessage}</div>}
     </div>
 );
 
