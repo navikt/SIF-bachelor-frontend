@@ -10,8 +10,10 @@ interface SearchResult {
     journalpostId: string;
     tittel: string;
     journalposttype: string;
+    datoOpprettet: String;
     journalstatus: string;
     tema: string;
+    avsenderMottakerNavn: string;
     dokumenter: IDocument[];
 }
 
@@ -60,11 +62,11 @@ const transformFilterOptionsToList = (options: FilterOptions): any[] => {
 export const SearchResults = () => {
 
     const location = useLocation()
-    //console.log(location.state)
+    console.log(location.state)
     const [token, setToken] = useState(sessionStorage.getItem("token"))
     const [userkey, setUserkey] = useState<string>(location.state.userkey)
     const [actionId, setActionId] = useState<string>(location.state.uniqueActionId)
-    const [searchData, setSearchData] = useState<SearchResult[]>(location.state.data.dokumentoversiktBruker.journalposter as SearchResult[]) || []
+    const [searchData, setSearchData] = useState<SearchResult[]>(location.state.dokumentoversikt.journalposter as SearchResult[]) || []
     const [filterOptions, setFilterOptions] = useState<FilterOptions>(location.state.filterOptions);
     const [filterList, setFilterList] = useState<string[]>([])
 
@@ -118,15 +120,15 @@ export const SearchResults = () => {
     }, [ documents ]);
 
     useEffect(()=>{
-        setSearchData(location.state.data.dokumentoversiktBruker.journalposter as SearchResult[])
-        setDocuments(location.state.data.dokumentoversiktBruker.journalposter[0].dokumenter)
+        setSearchData(location.state.dokumentoversikt.journalposter as SearchResult[])
+        setDocuments(location.state.dokumentoversikt.journalposter[0].dokumenter)
         setUserkey(location.state.userkey)
         setFilterOptions(location.state.filterOptions)
         console.log("LOGGER LOKAL FILTEROPTIONS")
         console.log(filterOptions)
         setFilterList(transformFilterOptionsToList(filterOptions))
         console.log(filterList)
-        selectRow([location.state.data.dokumentoversiktBruker.journalposter[0].journalpostId])
+        selectRow([location.state.dokumentoversikt.journalposter[0].journalpostId])
     }, [location.state, filterOptions])
 
 
@@ -252,12 +254,13 @@ export const SearchResults = () => {
                                 <Table.HeaderCell scope="col">Journal Post ID</Table.HeaderCell>
                                 <Table.HeaderCell scope="col">Title</Table.HeaderCell>
                                 <Table.HeaderCell scope="col">Type</Table.HeaderCell>
+                                <Table.HeaderCell scope="col">Dato opprettet</Table.HeaderCell>
                                 <Table.HeaderCell scope="col">Status</Table.HeaderCell>
                                 <Table.HeaderCell scope="col">Tema</Table.HeaderCell>
                             </Table.Row>
                         </Table.Header>
                         <Table.Body>
-                            {searchData.map(({ journalpostId, tittel, journalposttype, journalstatus, tema }) => (
+                            {searchData.map(({ journalpostId, tittel, journalposttype, datoOpprettet, journalstatus, tema, avsenderMottakerNavn }) => (
                                 <Table.ExpandableRow 
                                     key={journalpostId}
                                     onClick={() => addRowDocuments(journalpostId)}
@@ -265,7 +268,8 @@ export const SearchResults = () => {
                                     className={`tableRow ${isRowClicked(journalpostId) ? "selectedRowOutline" : ""}`}
                                     content={
                                         <>
-                                        <h4 style={{margin: "0", marginBottom: "0.75rem"}}>Dokumenter</h4>
+                                            <h4 style={{margin: "0", marginBottom: "0.75rem"}}>Dokumenter</h4>
+                                            <p>Avsender: {avsenderMottakerNavn}</p>
                                             <DocumentViewer 
                                                 documentsToView={searchData.find(entry => entry.journalpostId === journalpostId)?.dokumenter || []}
                                                 addDocument={addDocument}
@@ -278,6 +282,7 @@ export const SearchResults = () => {
                                     <Table.DataCell>{journalpostId}</Table.DataCell>
                                     <Table.DataCell>{tittel}</Table.DataCell>
                                     <Table.DataCell>{journalposttype}</Table.DataCell>
+                                    <Table.DataCell>{datoOpprettet}</Table.DataCell>
                                     <Table.DataCell>
                                         <Tag variant={selectTagVariant(journalstatus)}>{journalstatus}</Tag>
                                         

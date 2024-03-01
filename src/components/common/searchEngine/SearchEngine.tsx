@@ -4,9 +4,9 @@ import { FilterIcon } from '@navikt/aksel-icons';
 import FilterPopover from '../../search/FilterPopover/FilterPopover';
 import {useNavigate } from "react-router-dom";
 
-import "./NavSearchEngine.css";
+import "./SearchEngine.css";
 import "../../../pages/landing/LandingPage.css"
-const NavSearchEngine = () => {
+const SearchEngine = () => {
 
     const [brukerId, setBrukerId] = useState('');
 
@@ -100,7 +100,7 @@ const NavSearchEngine = () => {
         })
         .then(response => {
             if (!response.ok) {
-            throw new Error('Network response was not ok');
+                throw new Error('Network response was not ok');
             }
             return response.json(); // Parse response as JSON
         })
@@ -143,4 +143,4 @@ return(
 
 }
 
-export default NavSearchEngine;
+export default SearchEngine;
