@@ -6,7 +6,7 @@ import { DocumentViewer } from "../../components/DocumentViewer/DocumentViewer"
 import { IDocument } from "../../components/types";
 import './SearchResults.css';
 
-interface SearchResult {
+interface Journalpost {
     journalpostId: string;
     tittel: string;
     journalposttype: string;
@@ -62,7 +62,7 @@ export const SearchResults = () => {
     const location = useLocation()
     //console.log(location.state)
     const [userkey, setUserkey] = useState<string>(location.state.userkey)
-    const [searchData, setSearchData] = useState<SearchResult[]>(location.state.data.dokumentoversiktBruker.journalposter as SearchResult[]) || []
+    const [searchData, setSearchData] = useState<Journalpost[]>(location.state.data.dokumentoversiktBruker.journalposter as Journalpost[]) || []
     const [filterOptions, setFilterOptions] = useState<FilterOptions>(location.state.filterOptions);
     const [filterList, setFilterList] = useState<string[]>([])
 
@@ -75,7 +75,7 @@ export const SearchResults = () => {
 
         if (location.state) {
             setFilterOptions(location.state.filterOptions);
-            setSearchData(location.state.data.dokumentoversiktBruker.journalposter as SearchResult[]);
+            setSearchData(location.state.data.dokumentoversiktBruker.journalposter as Journalpost[]);
         //    setDocuments(location.state.data.dokumentoversiktBruker.journalposter[0].dokumenter);
             setUserkey(location.state.userkey);
         }
