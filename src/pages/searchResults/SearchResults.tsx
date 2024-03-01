@@ -73,6 +73,12 @@ export const SearchResults = () => {
     //[1, 2, 3, 4, 5, 6]
     useEffect(() => {
 
+        // In order to render documents based on the searched up userID
+        if(userkey != location.state.userkey){
+            setDocuments(location.state.data.dokumentoversiktBruker.journalposter[0].dokumenter);
+        }
+
+        // In order to re-render the page whenever we do a new search via the navbar
         if (location.state) {
             setFilterOptions(location.state.filterOptions);
             setSearchData(location.state.data.dokumentoversiktBruker.journalposter as Journalpost[]);
@@ -83,7 +89,7 @@ export const SearchResults = () => {
         //console.log(documents)
         // Transform filterOptions into filterList
         setFilterList(transformFilterOptionsToList(filterOptions));
-    
+
         console.log("Det nye filteret er: " + filterList);
 
         const fetchDocuments = async () => {
