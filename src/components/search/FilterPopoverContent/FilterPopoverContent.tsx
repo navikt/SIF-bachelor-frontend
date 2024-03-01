@@ -226,11 +226,11 @@ const FilterPopoverContent = ( props : FilterPopoverContentProps) => {
                     className="checkboxParent"    
                 >
                     <div className="top-row">
-                        <Checkbox value="Ferdigstilt">Ferdigstilt</Checkbox>
-                        <Checkbox value="Journalført">Journalført</Checkbox>
+                        <Checkbox value="FERDIGSTILT">Ferdigstilt</Checkbox>
+                        <Checkbox value="JOURNALFOERT">Journalført</Checkbox>
                     </div>
                     <div className="bottom-row">
-                        <Checkbox value="Ekspedert">Ekspedert</Checkbox> 
+                        <Checkbox value="EKSPEDERT">Ekspedert</Checkbox> 
                     </div>
                 </CheckboxGroup>
                 <CheckboxGroup
@@ -239,11 +239,11 @@ const FilterPopoverContent = ( props : FilterPopoverContentProps) => {
                     className="checkboxParent"    
                 >
                     <div className="top-row">
-                        <Checkbox value="Inngående">Inngående</Checkbox>
-                        <Checkbox value="Notat">Notat</Checkbox>
+                        <Checkbox value="I">Inngående</Checkbox>
+                        <Checkbox value="N">Notat</Checkbox>
                     </div>
                     <div className="bottom-row">
-                        <Checkbox value="Utgående">Utgående</Checkbox> 
+                        <Checkbox value="U">Utgående</Checkbox> 
                     </div>
                 </CheckboxGroup>
                 <div className="saveButton">
