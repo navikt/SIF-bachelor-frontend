@@ -43,6 +43,8 @@ const FilterPopoverContent = ( props : FilterPopoverContentProps) => {
     const [selectedStatus, setSelectedStatus] = useState<string[]>([]);
     const [selectedType, setSelectedType] = useState<string[]>([]);
 
+    // New state for error message visibility
+    const [showError, setShowError] = useState("");
     
     // Change the state of the input once we type in it
     const handleInputChange = (value : string) => {
@@ -141,12 +143,41 @@ const FilterPopoverContent = ( props : FilterPopoverContentProps) => {
         setSelectedType(val);
     }
 
+    const nullStill = () => {
+        setSearchValue('');
+        setSuggestions([]);
+        setSelectedSuggestionIndex(0);
+        setStartDate(undefined);
+        setEndDate(undefined);
+        setFilter([]);
+        setSelectedStatus([]);
+        setSelectedType([]);
+        setShowError("");
+    }
+
+    const handleStatusChange = (value: string) => {
+        setSelectedStatus((currentSelectedStatus) =>
+          currentSelectedStatus.includes(value)
+            ? currentSelectedStatus.filter((status) => status !== value)
+            : [...currentSelectedStatus, value]
+        );
+      };
+      
+
     const submitFilter = () => {
         console.log("Form submitted");
         console.log("StartDate is: " + startDate + " and the endDate is: " + endDate);
         /*console.log("The chosen temaer are: " + filter);
         console.log("The chosen Status checkboxes are: " + selectedStatus);
         console.log("The chosen Type checkboxes are: " + selectedType);*/
+
+        // Check if either startDate or endDate is not selected
+        if (!startDate && endDate || !endDate && startDate) {
+            // Prevent form submission and show error message
+            console.log("Error: Please select both a start date and an end date.");
+            setShowError("Du må ha velge både startDato og endDato!"); // Show error message
+            return; // Exit the function to prevent further execution
+        }
 
         const filterData = {
             startDate,
@@ -159,6 +190,7 @@ const FilterPopoverContent = ( props : FilterPopoverContentProps) => {
         props.onClose();
         console.log("Lagret");
         console.log(filterData)
+        setShowError(""); // Reset error message
     }
 
     /* ...datepickerProps ensures that we can select a date from the calender whilst datePicker input ensures that our selected date
@@ -191,7 +223,7 @@ const FilterPopoverContent = ( props : FilterPopoverContentProps) => {
                 <div className="datepicker-container">
                     <DatePicker 
                         {...pickFromDateProp}>
-                        <DatePicker.Input className="heihei" {...inputFromDate} label="" value={startDate ? formatDate(startDate) : undefined}  hideLabel  />
+                        <DatePicker.Input className="heihei" {...inputFromDate} label="" value={startDate ? formatDate(startDate) : ""}  hideLabel  />
                     </DatePicker>
                 </div>
                 <div className="icon-container">
@@ -200,7 +232,7 @@ const FilterPopoverContent = ( props : FilterPopoverContentProps) => {
                 <div className="datepicker-container">
                     <DatePicker
                         {...pickToDateProp}>
-                        <DatePicker.Input {...inputToDate} label="" value={endDate ? formatDate(endDate) : undefined} hideLabel />
+                        <DatePicker.Input {...inputToDate} label="" value={endDate ? formatDate(endDate) : ""} hideLabel />
                     </DatePicker>
                 </div>
             </div>
@@ -223,33 +255,41 @@ const FilterPopoverContent = ( props : FilterPopoverContentProps) => {
                 <CheckboxGroup
                     legend="Status"
                     onChange={(val: any[]) => handleStatus(val)}
-                    className="checkboxParent"    
+                    className="checkboxParent"
+                    value={selectedStatus}    
                 >
                     <div className="top-row">
-                        <Checkbox value="FERDIGSTILT">Ferdigstilt</Checkbox>
-                        <Checkbox value="JOURNALFOERT">Journalført</Checkbox>
+                        <Checkbox value="FERDIGSTILT" checked={selectedStatus.includes("FERDIGSTILT")}>Ferdigstilt</Checkbox>
+                        <Checkbox value="JOURNALFOERT" checked={selectedStatus.includes("JOURNALFOERT")}>Journalført</Checkbox>
                     </div>
                     <div className="bottom-row">
-                        <Checkbox value="EKSPEDERT">Ekspedert</Checkbox> 
+                        <Checkbox value="EKSPEDERT" checked={selectedStatus.includes("EKSPEDERT")}>Ekspedert</Checkbox> 
                     </div>
                 </CheckboxGroup>
                 <CheckboxGroup
                     legend="Type"
                     onChange={(val: any[]) => handleType(val)}
-                    className="checkboxParent"    
+                    className="checkboxParent"
+                    value={selectedType}    
                 >
                     <div className="top-row">
-                        <Checkbox value="I">Inngående</Checkbox>
-                        <Checkbox value="N">Notat</Checkbox>
+                        <Checkbox value="I" checked={selectedType.includes("I")}>Inngående</Checkbox>
+                        <Checkbox value="N" checked={selectedType.includes("N")}>Notat</Checkbox>
                     </div>
                     <div className="bottom-row">
-                        <Checkbox value="U">Utgående</Checkbox> 
+                        <Checkbox value="U" checked={selectedType.includes("U")}>Utgående</Checkbox> 
                     </div>
                 </CheckboxGroup>
-                <div className="saveButton">
+                <div className="Buttons">
+                    <Button variant="secondary" onClick={nullStill}>Nullstill</Button>
                     <Button onClick={submitFilter}>Lagre</Button>
                 </div>
             </div>
+            {showError && (
+                    <div style={{ color: 'red', marginTop: '10px' }}>
+                        {showError}
+                    </div>
+                )}
         </div>
     );
 };
