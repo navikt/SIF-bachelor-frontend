@@ -15,8 +15,6 @@ export const LandingPage = () => {
   // Manage state for rotating the filterIcon when clicking on it, initially false, aka not rotated
   const [isRotated, setIsRotated] = useState(false);
 
-  const [token, setToken] = useState(sessionStorage.getItem("token"))
-
   // Error message
   const [errorMessage, setErrorMessage] = useState('');
 
@@ -53,10 +51,6 @@ export const LandingPage = () => {
   /* Managing state that we used to do locally in FilterPopoverContent.tsx,
      but we'll lift the state up to the LandingPage to use it to search */
 
-  const checkProps = () => {
-      console.log(filterData);
-  }
-
   const handleSearch = () => {
 
     if(!brukerId) {
@@ -69,6 +63,8 @@ export const LandingPage = () => {
       return;
   }
 
+    // Before this, the token was retrieved from a global useState, which caused the token to be undefined and the token would sometimes be null
+    const token = sessionStorage.getItem("token");
     // Opprett JSON body med userId
     const requestBody = {
       brukerId: {
@@ -98,7 +94,8 @@ export const LandingPage = () => {
     })
     .then(response => {
       if (!response.ok) {
-        throw new Error('Network response was not ok');
+        throw new Error('Network response was not ok')
+        console.log("The token is: " + token);
       }
       return response.json(); // Parse response as JSON
     })

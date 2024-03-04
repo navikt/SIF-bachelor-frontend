@@ -22,7 +22,7 @@ const Navbar = () => {
       if (!isTokenValid()) {
         // Handle token expiration
         console.error('Token expired');
-        toggleLogin(); // Adjust as needed
+       // toggleLogin(); // Comment out or remove this if we don't want to automatically log in again
       }
     }, 60000); // Check every minute
   
