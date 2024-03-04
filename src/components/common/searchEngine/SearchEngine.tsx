@@ -68,6 +68,11 @@ const SearchEngine = () => {
       };
 
     const handleSearch = () => {
+
+        if(!brukerId) {
+            setErrorMessage("Du må fylle inn et bruker-ID før du kan søke!");
+            return;
+        }
         
         if (!isValid) {
             setErrorMessage('Du må skrive inn et gyldig 3 til 11 sifret tall før du kan søke!');
