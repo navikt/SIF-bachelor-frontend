@@ -70,7 +70,7 @@ const SearchEngine = () => {
     const handleSearch = () => {
 
         if(!brukerId) {
-            setErrorMessage("Du må fylle inn et bruker-ID før du kan søke!");
+            setErrorMessage("Du må fylle inn en gyldig bruker-ID før du kan søke!");
             return;
         }
         
