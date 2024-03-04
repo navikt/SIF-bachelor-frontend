@@ -17,6 +17,10 @@ export const PDFViewer = ({ documentUrls, documents }: { documentUrls: Map<strin
     const [mergedPdfUrl, setMergedPdfUrl] = useState<string | undefined>(undefined);
 
     useEffect(() => {
+
+        const iframe = document.getElementById('iframe');
+
+
         const mergePdfs = async () => {
             const mergedPdf = await PDFDocument.create();
             for (const document of documents) {
@@ -48,8 +52,8 @@ export const PDFViewer = ({ documentUrls, documents }: { documentUrls: Map<strin
     return (
         <div className="pdf-viewer-container">
             {(mergedPdfUrl && documents.length > 0) ? (
-              /*<iframe src={mergedPdfUrl} title="pdf-viewer" style={{width: "100%"}}></iframe>*/ 
-              <Document
+              <iframe src={`${mergedPdfUrl}#toolbar=0.5`} id="iframe" title="pdf-viewer" style={{width: "100%"}}></iframe>
+              /*<Document
                     file={mergedPdfUrl}
                     onLoadSuccess={onDocumentLoadSuccess}
               >
@@ -63,7 +67,7 @@ export const PDFViewer = ({ documentUrls, documents }: { documentUrls: Map<strin
                             <p style={{ fontSize: 12 }} >Page {index + 1} of {numPages}</p>
                         </div>
                     ))}
-                </Document>
+                </Document>*/
             ) : (
               <p>
                     No documents chosen.

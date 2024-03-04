@@ -63,7 +63,7 @@ export const LandingPage = () => {
       journalposttyper: filterData.selectedType,
       journalstatuser: filterData.selectedStatus,
       tema: filterData.filter
-};
+    };
     // Definer headers for POST request
     const headers = new Headers();
     headers.append("Content-Type", "application/json");
