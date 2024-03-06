@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Document, Page, pdfjs } from "react-pdf"
+import { pdfjs } from "react-pdf"
 import "react-pdf/dist/esm/Page/TextLayer.css";
 import 'react-pdf/dist/Page/AnnotationLayer.css';
 import { IDocument } from "../types";
@@ -17,9 +17,6 @@ export const PDFViewer = ({ documentUrls, documents }: { documentUrls: Map<strin
     const [mergedPdfUrl, setMergedPdfUrl] = useState<string | undefined>(undefined);
 
     useEffect(() => {
-
-        const iframe = document.getElementById('iframe');
-
 
         const mergePdfs = async () => {
             const mergedPdf = await PDFDocument.create();

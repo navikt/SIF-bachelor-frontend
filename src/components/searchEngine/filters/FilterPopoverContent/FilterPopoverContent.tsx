@@ -172,7 +172,7 @@ const FilterPopoverContent = ( props : FilterPopoverContentProps) => {
         console.log("The chosen Type checkboxes are: " + selectedType);*/
 
         // Check if either startDate or endDate is not selected
-        if (!startDate && endDate || !endDate && startDate) {
+        if ((!startDate && endDate) || (!endDate && startDate)) {
             // Prevent form submission and show error message
             console.log("Error: Please select both a start date and an end date.");
             setShowError("Du må ha velge både startDato og endDato!"); // Show error message

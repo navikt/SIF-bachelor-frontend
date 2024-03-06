@@ -3,8 +3,8 @@ import './App.css';
 import '@navikt/ds-css';
 import LandingPage from './pages/landing/LandingPage';
 import SearchResults from './pages/searchResults/SearchResults';
-import Footer from './components/common/footer/Footer';
-import Navbar from './components/common/navbar/Navbar';
+import Footer from './components/footer/Footer';
+import Navbar from './components/navbar/Navbar';
 import { Route, Routes } from "react-router-dom";
 
 function App() {

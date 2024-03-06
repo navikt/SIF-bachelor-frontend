@@ -1,6 +1,6 @@
-import { Button, Search } from "@navikt/ds-react";
+import { Button } from "@navikt/ds-react";
 import { useState, useEffect } from "react";
-import { Link, useNavigate, useLocation} from "react-router-dom";
+import { useNavigate, useLocation} from "react-router-dom";
 
 import './Navbar.css';
 import SearchEngine from "../searchEngine/SearchEngine";
@@ -39,17 +39,7 @@ const Navbar = () => {
     return expirationTime !== null && new Date().getTime() < Number(expirationTime);
   };
   
-  /*  */
   const callProtectedEndpoint = async () => {
-
-    /* Up to us if we want this below, which makes sure that if we aren't logged in, it will automatically
-     log us in when clicking the Call Protected Endpoint button
-    if (!isTokenValid()) {
-      // Handle token expiration (e.g., refresh the token or log out)
-      console.error('The token has expired');
-      toggleLogin(); // This could be changed to a refresh token logic
-      return;
-    } */
 
     const token = sessionStorage.getItem("token");
 
@@ -125,7 +115,13 @@ const Navbar = () => {
       <Button onClick={callProtectedEndpoint}>
         Call protected endpoint
       </Button>
-      {location.pathname === "/SearchResults" && <SearchEngine />}
+      
+      {location.pathname === "/SearchResults" && 
+        (<div>
+          <SearchEngine />
+        </div>
+        )
+      }
       <Button
         className={`log-in-button ${isLoggedIn ? 'logged-in' : ''}`}
         onClick={toggleLogin}
