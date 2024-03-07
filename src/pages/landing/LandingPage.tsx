@@ -1,7 +1,7 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import './LandingPage.css';
 import { Search } from "@navikt/ds-react"; 
-import { useLocation, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import dokSearchIcon from "../../images/dokSearchIcon.svg";
 import { FilterIcon } from '@navikt/aksel-icons';
 import FilterPopover from '../../components/search/FilterPopover/FilterPopover';
@@ -17,6 +17,7 @@ export const LandingPage = () => {
 
   // Error message
   const [errorMessage, setErrorMessage] = useState('');
+  const [serverExceptionError, setExceptionError] = useState('');
 
   // For the input validation of the "brukerId"
   const [isValid, setIsValid] = useState(true);
@@ -24,6 +25,14 @@ export const LandingPage = () => {
   const FilterIconRef = useRef(null);
 
   const navigate = useNavigate()
+
+  useEffect(() => {
+    setErrorMessage(''); // Reset the error message on component mount
+  }, []); // The empty dependency array ensures this effect runs only once on mount
+
+  interface ErrorResponse {
+    errorMessage: string;
+  }
 
   /* Needed the type here because if not, we could get never[] arrays, which means that we wouldn't be able
      to add strings to these later which we don't want */
@@ -80,7 +89,7 @@ export const LandingPage = () => {
     // Definer headers for POST request
     const headers = new Headers();
     headers.append("Content-Type", "application/json");
-    headers.append(`Authorization`, `Bearer ${token}`)
+    headers.append(`Authorization`, `Bearer ${token}`);
 
       console.log("The button is being clicked!")
       // Assuming /hentJournalposter endpoint expects a query parameter `brukerID`
@@ -95,7 +104,6 @@ export const LandingPage = () => {
     .then(response => {
       if (!response.ok) {
         throw new Error('Network response was not ok')
-        console.log("The token is: " + token);
       }
       return response.json(); // Parse response as JSON
     })
@@ -106,15 +114,23 @@ export const LandingPage = () => {
       navigate("/SearchResults", {state: data})
       // Oppdater tilstand her om nødvendig, f.eks. setJournalposts(data)
     })
-    .catch(error => {
-      console.error('Error fetching data:', error);
-    });
-  };
+    .catch(response => {
+      // Handle error response
+          response.json().then((error: ErrorResponse) => {
+            console.error('Error fetching data:', error);
+            setExceptionError(error.errorMessage || 'An unexpected error occurred. Please try again later.');
+          }).catch((jsonError: Error) => {
+            // Handle any errors that occur during the parsing of the error response
+            console.error('Error parsing error response:', jsonError);
+            setExceptionError('An unexpected error occurred. Please try again later.');
+          });
+        }); 
+      };
 
-  const toggleIconRotation = () => {
-    setOpenState(!openState);
-    setIsRotated(!isRotated);
-  };
+      const toggleIconRotation = () => {
+        setOpenState(!openState);
+        setIsRotated(!isRotated);
+      };
 
   // Denne søke funksjonen oppdaterer userId state når vi skriver og endrer på inputen!
   const handleInputChange = (value: string) => {
@@ -127,6 +143,11 @@ export const LandingPage = () => {
         setErrorMessage('brukerId må være et 3 sifret tall mellom 3 og 11');
     }
   };
+
+  // Conditional rendering based on the error state
+  if (errorMessage) {
+    return <h1 style={{ color: 'red' }}>{errorMessage}</h1>;
+  }
 
   return (
     <div className="landing-container">
