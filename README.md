@@ -34,10 +34,8 @@ Siden vi ikke har direkte tilgang på data, mocker vi alt. For testing av fronte
 
 ## Bruk
 
-1. Start backend-tjenesten: [NAV-IT-SIF-bachelor-backend](https://github.com/Bad-chelor-ITPE3200/NAV-IT-SIF-bachelor-backend).
-2. Start frontend-applikasjonen ved å kjøre `npm start` i terminalen.
-3. Åpne nettleseren og gå til `http://localhost:3000` for å bruke Vju-grensesnittet.
+1. Klon backend-tjenesten: [NAV-IT-SIF-bachelor-backend](https://github.com/Bad-chelor-ITPE3200/NAV-IT-SIF-bachelor-backend).
+2. Start **VjuLocalApplication** under test-mappen.
+3. Start frontend-applikasjonen ved å kjøre `npm start` i terminalen.
+4. Åpne nettleseren og gå til `http://localhost:3000` for å bruke Vju-grensesnittet.
 
-## Bidrag
-
-Vi ønsker bidrag fra fellesskapet for å forbedre dette prosjektet. Hvis du vil bidra, vennligst opprett en "pull request" og beskriv endringene du har gjort.
