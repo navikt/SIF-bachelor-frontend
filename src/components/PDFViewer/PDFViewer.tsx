@@ -15,6 +15,7 @@ export const PDFViewer = ({ documentUrls, documents }: { documentUrls: Map<strin
 
     const [numPages, setNumPages] = useState<number | null >(null);
     const [mergedPdfUrl, setMergedPdfUrl] = useState<string | undefined>(undefined);
+    const [ExceptionError, setExceptionError] = useState("");
 
     useEffect(() => {
 
@@ -22,22 +23,33 @@ export const PDFViewer = ({ documentUrls, documents }: { documentUrls: Map<strin
 
 
         const mergePdfs = async () => {
-            const mergedPdf = await PDFDocument.create();
-            for (const document of documents) {
-                const url = documentUrls.get(document.dokumentInfoId);
-                if (!url) {
-                    return <p>URL not found for document with ID ${document.dokumentInfoId}</p>;
+            try{
+                const mergedPdf = await PDFDocument.create();
+                for (const document of documents) {
+                    const url = documentUrls.get(document.dokumentInfoId);
+                    if (!url) {
+                        setExceptionError("URL not found for document with ID: " + document.dokumentInfoId);
+                        return;
+                    }
+                    const pdfBytes = await fetch(url).then(response => {
+                        if (!response.ok) {
+                            throw new Error(`Failed to fetch document with ID ${document.dokumentInfoId}: ${response.statusText}`);
+                        }
+                        return response.arrayBuffer();
+                    });
+                    const pdf = await PDFDocument.load(pdfBytes);
+                    const copiedPages = await mergedPdf.copyPages(pdf, pdf.getPageIndices());
+                    copiedPages.forEach((page) => {
+                        mergedPdf.addPage(page);
+                    });
                 }
-                const pdfBytes = await fetch(url).then(response => response.arrayBuffer());
-                const pdf = await PDFDocument.load(pdfBytes);
-                const copiedPages = await mergedPdf.copyPages(pdf, pdf.getPageIndices());
-                copiedPages.forEach((page) => {
-                    mergedPdf.addPage(page);
-                });
+                const mergedPdfBytes = await mergedPdf.save();
+                const mergedPdfUrl = URL.createObjectURL(new Blob([mergedPdfBytes], { type: "application/pdf" }));
+                setMergedPdfUrl(mergedPdfUrl);
+            } catch (error) {
+                console.error("There was an error merging the PDFs", error);
+                setExceptionError((error as Error).message || "An unexpected error occurred while merging documents.");
             }
-            const mergedPdfBytes = await mergedPdf.save();
-            const mergedPdfUrl = URL.createObjectURL(new Blob([mergedPdfBytes], { type: "application/pdf" }));
-            setMergedPdfUrl(mergedPdfUrl);
         };
 
         if (documentUrls && documents.length > 0) {
@@ -49,6 +61,10 @@ export const PDFViewer = ({ documentUrls, documents }: { documentUrls: Map<strin
         setNumPages(numPages)
     }
     
+    if(ExceptionError){
+        return <h1>{ExceptionError}</h1>
+    }
+
     return (
         <div className="pdf-viewer-container">
             {(mergedPdfUrl && documents.length > 0) ? (

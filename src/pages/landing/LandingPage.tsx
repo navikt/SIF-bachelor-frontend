@@ -61,7 +61,7 @@ export const LandingPage = () => {
      but we'll lift the state up to the LandingPage to use it to search */
 
   const handleSearch = () => {
-
+    
     if(!brukerId) {
       setErrorMessage("Du må fylle inn en gyldig bruker-ID før du kan søke!");
       return;
@@ -74,6 +74,11 @@ export const LandingPage = () => {
 
     // Before this, the token was retrieved from a global useState, which caused the token to be undefined and the token would sometimes be null
     const token = sessionStorage.getItem("token");
+    
+    if(!token) {
+      setErrorMessage("Du må logge inn for å søke!");
+      return;
+    }
     // Opprett JSON body med userId
     const requestBody = {
       brukerId: {
@@ -108,14 +113,20 @@ export const LandingPage = () => {
       return response.json(); // Parse response as JSON
     })
     .then(data => {
-      data.filterOptions = filterData
-      data.userkey = brukerId
-      data.uniqueActionId = Array.from({length: 16}, () => Math.floor(Math.random() * 16).toString(16)).join('')
-      navigate("/SearchResults", {state: data})
-      // Oppdater tilstand her om nødvendig, f.eks. setJournalposts(data)
+      if(data.errorMessage){
+        setExceptionError(data.errorMessage);
+      }
+      else{
+        console.log("Vi kom oss forbi exceptionError!");
+        data.filterOptions = filterData
+        data.userkey = brukerId
+        data.uniqueActionId = Array.from({length: 16}, () => Math.floor(Math.random() * 16).toString(16)).join('')
+        navigate("/SearchResults", {state: data})
+        // Oppdater tilstand her om nødvendig, f.eks. setJournalposts(data)
+      }
     })
     .catch(response => {
-      // Handle error response
+      // Handle error response and er parse it to the ErrorResponse interface
           response.json().then((error: ErrorResponse) => {
             console.error('Error fetching data:', error);
             setExceptionError(error.errorMessage || 'An unexpected error occurred. Please try again later.');
@@ -145,8 +156,8 @@ export const LandingPage = () => {
   };
 
   // Conditional rendering based on the error state
-  if (errorMessage) {
-    return <h1 style={{ color: 'red' }}>{errorMessage}</h1>;
+  if (serverExceptionError) {
+    return <h1 style={{ color: 'red' }}>{serverExceptionError}</h1>;
   }
 
   return (
