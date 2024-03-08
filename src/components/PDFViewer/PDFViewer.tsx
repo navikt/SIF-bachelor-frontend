@@ -5,6 +5,7 @@ import 'react-pdf/dist/Page/AnnotationLayer.css';
 import { IDocument } from "../types";
 import { PDFDocument } from "pdf-lib";
 import "./PDFViewer.css"
+import { ErrorResponse } from "../types";
 
 pdfjs.GlobalWorkerOptions.workerSrc = new URL(
     'pdfjs-dist/build/pdf.worker.min.js',
@@ -28,9 +29,10 @@ export const PDFViewer = ({ documentUrls, documents }: { documentUrls: Map<strin
                         setExceptionError("URL not found for document with ID: " + document.dokumentInfoId);
                         return;
                     }
-                    const pdfBytes = await fetch(url).then(response => {
+                    const pdfBytes = await fetch(url).then(async response => {
                         if (!response.ok) {
-                            throw new Error(`Failed to fetch document with ID ${document.dokumentInfoId}: ${response.statusText}`);
+                            const errorResponse = await response.json(); 
+                            throw new Error(errorResponse.errorMessage || `Failed to fetch document with ID ${document.dokumentInfoId}: ${response.statusText}`);
                         }
                         return response.arrayBuffer();
                     });
@@ -44,8 +46,16 @@ export const PDFViewer = ({ documentUrls, documents }: { documentUrls: Map<strin
                 const mergedPdfUrl = URL.createObjectURL(new Blob([mergedPdfBytes], { type: "application/pdf" }));
                 setMergedPdfUrl(mergedPdfUrl);
             } catch (error) {
-                console.error("There was an error merging the PDFs", error);
-                setExceptionError((error as Error).message || "An unexpected error occurred while merging documents.");
+                if (error instanceof Response) {
+                    // The error is an HTTP response from the backend
+                    const errorData: ErrorResponse = await error.json();
+                    console.error("There was an error merging the PDFs", errorData.errorMessage);
+                    setExceptionError(errorData.errorMessage || "An unexpected error occurred while merging documents.");
+                } else {
+                    // The error is a JavaScript error
+                    console.error("There was an error merging the PDFs", error);
+                    setExceptionError((error as ErrorResponse).errorMessage || "An unexpected error occurred while merging documents.");
+                }
             }
         };
 
