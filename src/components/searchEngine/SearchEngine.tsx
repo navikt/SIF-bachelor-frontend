@@ -1,12 +1,14 @@
 import {Search } from "@navikt/ds-react";
-import { useState, useEffect, useRef } from "react";
+import { useState, useRef } from "react";
 import { FilterIcon } from '@navikt/aksel-icons';
-import FilterPopover from '../../search/FilterPopover/FilterPopover';
+import FilterPopover from './filters/FilterPopover/FilterPopover';
 import {useNavigate } from "react-router-dom";
+import { filteredData } from "../types";
 
 import "./SearchEngine.css";
-import "../../../pages/landing/LandingPage.css"
-const SearchEngine = () => {
+import "../../pages/landing/LandingPage.css"
+
+export const SearchEngine = () => {
 
     const [brukerId, setBrukerId] = useState('');
 
@@ -35,15 +37,7 @@ const SearchEngine = () => {
         selectedType: [],
     });
 
-    /* Needed the type here because if not, we could get never[] arrays, which means that we wouldn't be able
-     to add strings to these later which we don't want */
-    type filteredData = {
-        startDate?: Date,
-        endDate?: Date,
-        filter: string[],
-        selectedStatus: string[],
-        selectedType: string[],
-    }
+    
 
     // Denne søke funksjonen oppdaterer userId state når vi skriver og endrer på inputen!
     const handleInputChange = (value: string) => {
@@ -85,15 +79,17 @@ const SearchEngine = () => {
             brukerId: {
               id: brukerId,
               type: "FNR" 
-            }
+            },
+            fraDato: filterData.startDate,
+            tilDato: filterData.endDate,
+            journalposttyper: filterData.selectedType,
+            journalstatuser: filterData.selectedStatus,
+            tema: filterData.filter,
           };
         // Definer headers for POST request
         const headers = new Headers();
         headers.append("Content-Type", "application/json");
         headers.append(`Authorization`, `Bearer ${token}`)
-
-            console.log("The button is being clicked!" + "the filters are: ")
-            console.log(filterData)
             // Assuming /hentJournalposter endpoint expects a query parameter `brukerID`
             fetch("http://localhost:8080/hentJournalpostListe", {
             method: 'POST',
@@ -120,7 +116,6 @@ const SearchEngine = () => {
     };
 
 return(
-    <div>
         <div className="search-container">
             <Search 
                 label="" 
@@ -141,9 +136,8 @@ return(
                 onFilterSubmit={handleSubmitFilter}
                 onClose={toggleIconRotation}
             />
+            {errorMessage && <div style={{ color: 'red', marginTop: '10px' }}>{errorMessage}</div>}
         </div>
-        {errorMessage && <div style={{ color: 'red', marginTop: '10px' }}>{errorMessage}</div>}
-    </div>
 );
 
 }

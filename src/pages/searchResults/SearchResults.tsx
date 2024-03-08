@@ -1,39 +1,18 @@
-import React, { useState, useEffect } from "react"
-import { useLocation, useNavigate } from "react-router-dom";
-import { Table, Button, Tag, Chips } from "@navikt/ds-react"
+import { useState, useEffect } from "react"
+import { useLocation } from "react-router-dom";
+import { Table, Tag, Chips } from "@navikt/ds-react"
 import { PDFViewer } from "../../components/PDFViewer/PDFViewer"
 import { DocumentViewer } from "../../components/DocumentViewer/DocumentViewer"
-import { IDocument } from "../../components/types";
+import { IDocument, Journalpost, FilterOptions } from "../../components/types";
 import './SearchResults.css';
-
-interface SearchResult {
-    journalpostId: string;
-    tittel: string;
-    journalposttype: string;
-    datoOpprettet: String;
-    journalstatus: string;
-    tema: string;
-    avsenderMottakerNavn: string;
-    dokumenter: IDocument[];
-}
-
-interface FilterOptions {
-    startDate?: Date;
-    endDate?: Date;
-    filter: string[];
-    selectedStatus: string[]
-    selectedType: string[]
-}
-
-
 
 /* formatDate to get DD.MM.YYYY */
 const formatDate = (date: Date) => {
-    const day = date.getDate().toString().padStart(2, '0');
+      const day = date.getDate().toString().padStart(2, '0');
     const month = (date.getMonth() + 1).toString().padStart(2, '0');
-    const year = date.getFullYear().toString();
-    return `${day}.${month}.${year}`;
-};
+     const year = date.getFullYear().toString();
+    return `${day}.${month}.${year}`
+}  ;  
 
 const transformFilterOptionsToList = (options: FilterOptions): any[] => {
     const list: any[] = [];
@@ -49,13 +28,16 @@ const transformFilterOptionsToList = (options: FilterOptions): any[] => {
         list.push(item);
     });
 
-    options.selectedType.forEach((item, index) => {
+    options.selectedType.forEach((item, index) => { 
         list.push(item);
     });
 
     return list;
 };
-
+interface SortState {
+    orderBy: string;
+    direction: "ascending" | "descending";
+}
 
   // Manage state for the filterData object that we receive in the dropdown to use in handleSearch
   
@@ -63,24 +45,62 @@ export const SearchResults = () => {
 
     const location = useLocation()
     console.log(location.state)
-    const [token, setToken] = useState(sessionStorage.getItem("token"))
     const [userkey, setUserkey] = useState<string>(location.state.userkey)
-    const [actionId, setActionId] = useState<string>(location.state.uniqueActionId)
-    const [searchData, setSearchData] = useState<SearchResult[]>(location.state.dokumentoversikt.journalposter as SearchResult[]) || []
+    const [journalpostList, setJournalpostList] = useState<Journalpost[]>(location.state.dokumentoversikt.journalposter as Journalpost[]) || []
     const [filterOptions, setFilterOptions] = useState<FilterOptions>(location.state.filterOptions);
     const [filterList, setFilterList] = useState<string[]>([])
 
-    const [selectedRows, selectRow] = useState<string[]>([searchData[0].journalpostId])
+    const [selectedRows, selectRow] = useState<string[]>([journalpostList[0].journalpostId])
 
     const [documentUrls, setDocumentUrls] = useState<Map<string, string>>(new Map());
-    const [documents, setDocuments] = useState<IDocument[]>(searchData[0].dokumenter);
-  
+    const [documents, setDocuments] = useState<IDocument[]>(journalpostList[0].dokumenter);
+
+    const [sort, setSort] = useState<SortState | undefined>(undefined);
+
+    const handleSort = (sortKey: string | undefined) => {
+        if (sortKey) {
+            setSort((prevSort) =>
+            prevSort && sortKey === prevSort.orderBy && prevSort.direction === "descending"
+                ? undefined
+                : {
+                    orderBy: sortKey,
+                    direction:
+                    prevSort && sortKey === prevSort.orderBy && prevSort.direction === "ascending"
+                        ? "descending"
+                        : "ascending",
+                }
+            );
+        } else {
+            // Handle case when sortKey is undefined (clear sorting)
+            setSort(undefined);
+        }
+    };
+
+    const comparator = (a: Journalpost, b: Journalpost, orderBy: keyof Journalpost) => {
+        if (b[orderBy] < a[orderBy] || b[orderBy] === undefined) {
+            return -1;
+        }
+        if (b[orderBy] > a[orderBy]) {
+            return 1;
+        }
+        return 0;
+    };
+
+    const sortedData = journalpostList.slice().sort((a, b) => {
+        if (sort) {
+            return sort.direction === "ascending"
+                ? comparator(b, a, sort.orderBy as keyof Journalpost)
+                : comparator(a, b, sort.orderBy as keyof Journalpost);
+        }
+        return 1;
+    });
+
     useEffect(() => {
 
         const fetchDocuments = async () => {
             
             const fetchedUrls = new Map<string, string>()
-
+            const token = sessionStorage.getItem("token")
             for (const document of documents) {
                 const docId: string = document.dokumentInfoId;
 
@@ -120,7 +140,7 @@ export const SearchResults = () => {
     }, [ documents ]);
 
     useEffect(()=>{
-        setSearchData(location.state.dokumentoversikt.journalposter as SearchResult[])
+        setJournalpostList(location.state.dokumentoversikt.journalposter as Journalpost[])
         setDocuments(location.state.dokumentoversikt.journalposter[0].dokumenter)
         setUserkey(location.state.userkey)
         setFilterOptions(location.state.filterOptions)
@@ -150,7 +170,7 @@ export const SearchResults = () => {
 
 
     const addRowDocuments = (journalId: string) => {
-        const journal = searchData.find(journal => journal.journalpostId === journalId);
+        const journal = journalpostList.find(journal => journal.journalpostId === journalId);
 
         if (journal) {
             if (isRowClicked(journalId)) {
@@ -214,19 +234,18 @@ export const SearchResults = () => {
                 return "neutral"
         }
     }
-    const logDoc = () => {
-        console.log(documents)
-    }
     if(!sessionStorage.getItem("token")){
         return <p style={{color: "red"}}>401 Forbidden!</p>
     }
+
+
 
     return (
         <>
             <div className="searchResultsWrapper">
                 <div className="searchResultsLeft">
                     <div className="searchResultsShelf">
-                        <h2>{searchData.length} treff for "{userkey}"</h2>
+                        <h2>{journalpostList.length} treff for "{userkey}"</h2>
                         {/*<Button variant="secondary" onClick={logDoc}>Hent {selectedRows.length} dokumenter</Button>*/}
                     </div>
                     {filterList.length>0 &&(
@@ -247,22 +266,23 @@ export const SearchResults = () => {
                     )}
                     
                     
-                    <Table zebraStripes size="large">
+                    <Table zebraStripes size="large" sort={sort} onSortChange={(sortKey) => handleSort(sortKey)}>
                         <Table.Header>
                             <Table.Row>
                                 <Table.HeaderCell>Select</Table.HeaderCell>
-                                <Table.HeaderCell scope="col">Journal Post ID</Table.HeaderCell>
+                                <Table.ColumnHeader sortKey="journalpostId" sortable>ID</Table.ColumnHeader>
                                 <Table.HeaderCell scope="col">Title</Table.HeaderCell>
                                 <Table.HeaderCell scope="col">Type</Table.HeaderCell>
-                                <Table.HeaderCell scope="col">Dato opprettet</Table.HeaderCell>
+                                <Table.ColumnHeader sortKey="datoOpprettet" sortable>Dato opprettet</Table.ColumnHeader>
+                                {/*<Table.HeaderCell scope="col">Dato opprettet</Table.HeaderCell>*/}
                                 <Table.HeaderCell scope="col">Status</Table.HeaderCell>
                                 <Table.HeaderCell scope="col">Tema</Table.HeaderCell>
                             </Table.Row>
                         </Table.Header>
                         <Table.Body>
-                            {searchData.map(({ journalpostId, tittel, journalposttype, datoOpprettet, journalstatus, tema, avsenderMottakerNavn }) => (
+                            {sortedData.map(({ journalpostId, tittel, journalposttype, datoOpprettet, journalstatus, tema, avsenderMottakerNavn }, i) => (
                                 <Table.ExpandableRow 
-                                    key={journalpostId}
+                                    key={i + journalpostId}
                                     onClick={() => addRowDocuments(journalpostId)}
                                     selected={selectedRows.includes(journalpostId)}
                                     className={`tableRow ${isRowClicked(journalpostId) ? "selectedRowOutline" : ""}`}
@@ -271,7 +291,7 @@ export const SearchResults = () => {
                                             <h4 style={{margin: "0", marginBottom: "0.75rem"}}>Dokumenter</h4>
                                             <p>Avsender: {avsenderMottakerNavn}</p>
                                             <DocumentViewer 
-                                                documentsToView={searchData.find(entry => entry.journalpostId === journalpostId)?.dokumenter || []}
+                                                documentsToView={journalpostList.find(entry => entry.journalpostId === journalpostId)?.dokumenter || []}
                                                 addDocument={addDocument}
                                                 documents={documents}
                                             />
@@ -282,7 +302,7 @@ export const SearchResults = () => {
                                     <Table.DataCell>{journalpostId}</Table.DataCell>
                                     <Table.DataCell>{tittel}</Table.DataCell>
                                     <Table.DataCell>{journalposttype}</Table.DataCell>
-                                    <Table.DataCell>{datoOpprettet}</Table.DataCell>
+                                    <Table.DataCell>{formatDate(new Date(datoOpprettet))}</Table.DataCell>
                                     <Table.DataCell>
                                         <Tag variant={selectTagVariant(journalstatus)}>{journalstatus}</Tag>
                                         
