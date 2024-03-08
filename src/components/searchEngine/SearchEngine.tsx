@@ -1,9 +1,9 @@
 import {Search } from "@navikt/ds-react";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { FilterIcon } from '@navikt/aksel-icons';
 import FilterPopover from './filters/FilterPopover/FilterPopover';
 import {useNavigate } from "react-router-dom";
-import { filteredData } from "../types";
+import { filteredData, ErrorResponse } from "../types";
 
 import "./SearchEngine.css";
 import "../../pages/landing/LandingPage.css"
@@ -21,12 +21,17 @@ export const SearchEngine = () => {
     // For the input validation of the "brukerId"
     const [isValid, setIsValid] = useState(true);
 
-    // Error message
+      // Error message
     const [errorMessage, setErrorMessage] = useState('');
+    const [serverExceptionError, setExceptionError] = useState('');
   
     const FilterIconRef = useRef(null);
 
-    const navigate = useNavigate()
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        setErrorMessage(''); // Reset the error message on component mount
+      }, []); // The empty dependency array ensures this effect runs only once on mount
 
     // Manage state for the filterData object that we receive in the dropdown to use in handleSearch
     const [filterData, setFilterData] = useState<filteredData>({
@@ -74,6 +79,12 @@ export const SearchEngine = () => {
         }
 
         const token = sessionStorage.getItem("token");
+
+        if(!token) {
+            setErrorMessage("Du må logge inn for å søke!");
+            return;
+        }
+        
         // Opprett JSON body med userId
         const requestBody = {
             brukerId: {
@@ -106,14 +117,35 @@ export const SearchEngine = () => {
             return response.json(); // Parse response as JSON
         })
         .then(data => {
-            data.filterOptions = filterData
-            data.userkey = brukerId
-            data.uniqueActionId = Array.from({length: 16}, () => Math.floor(Math.random() * 16).toString(16)).join('')
-            console.log(data)
-            navigate("/SearchResults", {state: data})
-            // Oppdater tilstand her om nødvendig, f.eks. setJournalposts(data)
-        });
-    };
+            if(data.errorMessage){
+                setExceptionError(data.errorMessage);
+              }
+            else{
+                data.filterOptions = filterData
+                data.userkey = brukerId
+                data.uniqueActionId = Array.from({length: 16}, () => Math.floor(Math.random() * 16).toString(16)).join('')
+                console.log(data)
+                navigate("/SearchResults", {state: data})
+                // Oppdater tilstand her om nødvendig, f.eks. setJournalposts(data)
+            }
+        })
+        .catch(response => {
+            // Handle error response and er parse it to the ErrorResponse interface
+                response.json().then((error: ErrorResponse) => {
+                  console.error('Error fetching data:', error);
+                  setExceptionError(error.errorMessage || 'An unexpected error occurred. Please try again later.');
+                }).catch((jsonError: Error) => {
+                  // Handle any errors that occur during the parsing of the error response
+                  console.error('Error parsing error response:', jsonError);
+                  setExceptionError('An unexpected error occurred. Please try again later.');
+                });
+              }); 
+            };
+
+    // Conditional rendering based on the error state
+    if (serverExceptionError) {
+    return <h1 style={{ color: 'red' }}>{serverExceptionError}</h1>;
+    }
 
 return(
         <div className="search-container">
