@@ -87,9 +87,6 @@ export const SearchEngine = () => {
             tema: filterData.filter,
           };
         // Definer headers for POST request
-        const headers = new Headers();
-        headers.append("Content-Type", "application/json");
-        headers.append(`Authorization`, `Bearer ${token}`)
             // Assuming /hentJournalposter endpoint expects a query parameter `brukerID`
             fetch("http://localhost:8080/hentJournalpostListe", {
             method: 'POST',
@@ -108,7 +105,6 @@ export const SearchEngine = () => {
         .then(data => {
             data.filterOptions = filterData
             data.userkey = brukerId
-            data.uniqueActionId = Array.from({length: 16}, () => Math.floor(Math.random() * 16).toString(16)).join('')
             console.log(data)
             navigate("/SearchResults", {state: data})
             // Oppdater tilstand her om nødvendig, f.eks. setJournalposts(data)

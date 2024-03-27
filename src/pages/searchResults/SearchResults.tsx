@@ -107,7 +107,7 @@ export const SearchResults = () => {
                 if(documentUrls.has(docId) !== (undefined || true)){
                     //console.log(documentUrls.has(docId))
                     //console.log("Couldnt find saved document:", docId); // Add this line to check if documents are being fetched
-                    const response = await fetch("http://localhost:8080/hentDokumenter?dokumentInfoId=" + docId, {
+                    const response = await fetch("http://localhost:8080/hentDokumenter?dokumentInfoId=" + docId + "&journalpostId=" + document.originalJournalpostId, {
                         headers: {
                             Authorization: `Bearer ${token}`
                         }
@@ -266,7 +266,7 @@ export const SearchResults = () => {
                     )}
                     
                     
-                    <Table zebraStripes size="large" sort={sort} onSortChange={(sortKey) => handleSort(sortKey)}>
+                    <Table zebraStripes sort={sort} onSortChange={(sortKey) => handleSort(sortKey)}>
                         <Table.Header>
                             <Table.Row>
                                 <Table.HeaderCell>Select</Table.HeaderCell>
