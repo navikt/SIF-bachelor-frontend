@@ -33,3 +33,7 @@ export interface FilterOptions {
     selectedStatus: string[]
     selectedType: string[]
 }
+
+export interface ErrorResponse {
+    errorMessage: string;
+}

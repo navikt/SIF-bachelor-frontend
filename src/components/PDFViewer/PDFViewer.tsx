@@ -5,6 +5,7 @@ import 'react-pdf/dist/Page/AnnotationLayer.css';
 import { IDocument } from "../types";
 import { PDFDocument } from "pdf-lib";
 import "./PDFViewer.css"
+import { ErrorResponse } from "../types";
 
 pdfjs.GlobalWorkerOptions.workerSrc = new URL(
     'pdfjs-dist/build/pdf.worker.min.js',
@@ -15,26 +16,47 @@ export const PDFViewer = ({ documentUrls, documents }: { documentUrls: Map<strin
 
     const [numPages, setNumPages] = useState<number | null >(null);
     const [mergedPdfUrl, setMergedPdfUrl] = useState<string | undefined>(undefined);
+    const [ExceptionError, setExceptionError] = useState("");
 
     useEffect(() => {
 
         const mergePdfs = async () => {
-            const mergedPdf = await PDFDocument.create();
-            for (const document of documents) {
-                const url = documentUrls.get(document.dokumentInfoId);
-                if (!url) {
-                    return <p>URL not found for document with ID ${document.dokumentInfoId}</p>;
+            try{
+                const mergedPdf = await PDFDocument.create();
+                for (const document of documents) {
+                    const url = documentUrls.get(document.dokumentInfoId);
+                    if (!url) {
+                        setExceptionError("URL not found for document with ID: " + document.dokumentInfoId);
+                        return;
+                    }
+                    const pdfBytes = await fetch(url).then(async response => {
+                        if (!response.ok) {
+                            const errorResponse = await response.json(); 
+                            throw new Error(errorResponse.errorMessage || `Failed to fetch document with ID ${document.dokumentInfoId}: ${response.statusText}`);
+                        }
+                        return response.arrayBuffer();
+                    });
+                    const pdf = await PDFDocument.load(pdfBytes);
+                    const copiedPages = await mergedPdf.copyPages(pdf, pdf.getPageIndices());
+                    copiedPages.forEach((page) => {
+                        mergedPdf.addPage(page);
+                    });
                 }
-                const pdfBytes = await fetch(url).then(response => response.arrayBuffer());
-                const pdf = await PDFDocument.load(pdfBytes);
-                const copiedPages = await mergedPdf.copyPages(pdf, pdf.getPageIndices());
-                copiedPages.forEach((page) => {
-                    mergedPdf.addPage(page);
-                });
+                const mergedPdfBytes = await mergedPdf.save();
+                const mergedPdfUrl = URL.createObjectURL(new Blob([mergedPdfBytes], { type: "application/pdf" }));
+                setMergedPdfUrl(mergedPdfUrl);
+            } catch (error) {
+                if (error instanceof Response) {
+                    // The error is an HTTP response from the backend
+                    const errorData: ErrorResponse = await error.json();
+                    console.error("There was an error merging the PDFs", errorData.errorMessage);
+                    setExceptionError(errorData.errorMessage || "An unexpected error occurred while merging documents.");
+                } else {
+                    // The error is a JavaScript error
+                    console.error("There was an error merging the PDFs", error);
+                    setExceptionError((error as ErrorResponse).errorMessage || "An unexpected error occurred while merging documents.");
+                }
             }
-            const mergedPdfBytes = await mergedPdf.save();
-            const mergedPdfUrl = URL.createObjectURL(new Blob([mergedPdfBytes], { type: "application/pdf" }));
-            setMergedPdfUrl(mergedPdfUrl);
         };
 
         if (documentUrls && documents.length > 0) {
@@ -46,6 +68,10 @@ export const PDFViewer = ({ documentUrls, documents }: { documentUrls: Map<strin
         setNumPages(numPages)
     }
     
+    if(ExceptionError){
+        return <h1>{ExceptionError}</h1>
+    }
+
     return (
         <div className="pdf-viewer-container">
             {(mergedPdfUrl && documents.length > 0) ? (
