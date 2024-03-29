@@ -98,9 +98,6 @@ export const SearchEngine = () => {
             tema: filterData.filter,
           };
         // Definer headers for POST request
-        const headers = new Headers();
-        headers.append("Content-Type", "application/json");
-        headers.append(`Authorization`, `Bearer ${token}`)
             // Assuming /hentJournalposter endpoint expects a query parameter `brukerID`
             fetch("http://localhost:8080/hentJournalpostListe", {
             method: 'POST',
