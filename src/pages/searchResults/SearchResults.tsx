@@ -50,10 +50,10 @@ export const SearchResults = () => {
     const [filterOptions, setFilterOptions] = useState<FilterOptions>(location.state.filterOptions);
     const [filterList, setFilterList] = useState<string[]>([])
 
-    const [selectedRows, selectRow] = useState<string[]>([journalpostList[0].journalpostId])
+    const [selectedRows, selectRow] = useState<string[]>([]);
 
     const [documentUrls, setDocumentUrls] = useState<Map<string, string>>(new Map());
-    const [documents, setDocuments] = useState<IDocument[]>(journalpostList[0].dokumenter);
+    const [documents, setDocuments] = useState<IDocument[]>([]);
 
     const [sort, setSort] = useState<SortState | undefined>(undefined);
 
@@ -139,16 +139,17 @@ export const SearchResults = () => {
     
     }, [ documents ]);
 
+    /* Kjempe mye redundant kode her, kanskje fjerne noen av disse og instansiere noen av de i selve useState()? */
     useEffect(()=>{
         setJournalpostList(location.state.dokumentoversikt.journalposter as Journalpost[])
-        setDocuments(location.state.dokumentoversikt.journalposter[0].dokumenter)
+        setDocuments(location.state.dokumentoversikt.journalposter[journalpostList.length -1].dokumenter)
         setUserkey(location.state.userkey)
         setFilterOptions(location.state.filterOptions)
         console.log("LOGGER LOKAL FILTEROPTIONS")
         console.log(filterOptions)
         setFilterList(transformFilterOptionsToList(filterOptions))
         console.log(filterList)
-        selectRow([location.state.dokumentoversikt.journalposter[0].journalpostId])
+        selectRow([location.state.dokumentoversikt.journalposter[journalpostList.length -1].journalpostId])
     }, [location.state, filterOptions])
 
 
@@ -235,7 +236,7 @@ export const SearchResults = () => {
         }
     }
     if (!sessionStorage.getItem("token")) {
-        return <Alert variant="error" style={{width: "550px"}}>Du har ikke tilgang til resurssen, vennligst prøv igjen senere.</Alert>;
+        return <Alert variant="error" style={{width: "5px"}}>Du har ikke tilgang til resurssen, vennligst prøv igjen senere.</Alert>;
     }
 
 

@@ -58,6 +58,8 @@ export const SearchEngine = () => {
         if (isValidInput) {
             setBrukerId(value);
             setErrorMessage('');
+        } else if (value === '') {
+            setErrorMessage('');
         } else {
             setErrorMessage('BrukerId må være et tresifret tall mellom 3 og 11');
         }
@@ -174,7 +176,7 @@ return(
                 onClose={toggleIconRotation}
             />
         </div>
-        {errorMessage && <div className="alert-container"><Alert variant="warning">{errorMessage}</Alert></div>}
+        {errorMessage && brukerId && <div className={`alert-container ${isSearchResultsPage ?  'search-results-width' : ''}`}><Alert variant="warning">{errorMessage}</Alert></div>}
 </div>
 );
 

@@ -19,3 +19,7 @@
 .search-input-container.search-results-width {
   width: 300px;
 }
+
+.alert-container.search-results-width{
+  width: 450px;
+}
