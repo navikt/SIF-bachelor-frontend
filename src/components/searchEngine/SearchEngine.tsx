@@ -10,6 +10,8 @@ import "../../pages/landing/LandingPage.css"
 
 export const SearchEngine = () => {
 
+    const baseUrl = process.env.REACT_APP_BASE_URL
+
     const [brukerId, setBrukerId] = useState('');
 
     // Manage state for rotating the filterIcon when clicking on it, initially false, aka not rotated
@@ -99,7 +101,7 @@ export const SearchEngine = () => {
           };
         // Definer headers for POST request
             // Assuming /hentJournalposter endpoint expects a query parameter `brukerID`
-            fetch("http://localhost:8080/hentJournalpostListe", {
+            fetch(baseUrl + "/hentJournalpostListe", {
             method: 'POST',
             headers: {
             Authorization: `Bearer ${token}`,
