@@ -1,3 +1,21 @@
-.searchNav{
-    max-width: 300px;
-  }
+  .search-container {
+    display: flex;
+    flex-direction: column; /* Stack children vertically */
+    align-items: center; /* Center children horizontally */
+    gap: 10px; /* Add space between children */
+}
+
+.search-input-container {
+    width: 600px;
+    max-width:700px;
+    display: flex;
+    align-items: center; /* Align the items vertically */
+}
+.alert-container{
+  margin-top: 15px;
+}
+
+/* New style for when on the /SearchResults page */
+.search-input-container.search-results-width {
+  width: 300px;
+}

@@ -122,7 +122,7 @@ const Navbar = () => {
       </Button>
       
       {location.pathname === "/SearchResults" && 
-        (<div>
+        (<div style={{ width:"100px" }}>
           <SearchEngine />
         </div>
         )

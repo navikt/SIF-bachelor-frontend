@@ -2,7 +2,7 @@ import {Search, Alert } from "@navikt/ds-react";
 import { useState, useRef, useEffect } from "react";
 import { FilterIcon } from '@navikt/aksel-icons';
 import FilterPopover from './filters/FilterPopover/FilterPopover';
-import {useNavigate } from "react-router-dom";
+import {useNavigate, useLocation } from "react-router-dom";
 import { filteredData, ErrorResponse } from "../types";
 
 import "./SearchEngine.css";
@@ -31,6 +31,11 @@ export const SearchEngine = () => {
 
     const navigate = useNavigate();
 
+    const location = useLocation();
+
+    // Check if the current path is /SearchResults for resizable searchbar 
+    const isSearchResultsPage = location.pathname === "/SearchResults";
+
     useEffect(() => {
         setErrorMessage(''); // Reset the error message on component mount
       }, []); // The empty dependency array ensures this effect runs only once on mount
@@ -54,7 +59,7 @@ export const SearchEngine = () => {
             setBrukerId(value);
             setErrorMessage('');
         } else {
-            setErrorMessage('brukerId må være et 3 sifret tall mellom 3 og 11');
+            setErrorMessage('BrukerId må være et tresifret tall mellom 3 og 11');
         }
     };
 
@@ -147,7 +152,8 @@ export const SearchEngine = () => {
     }
 
 return(
-        <div className="search-container">
+    <div className="search-container">
+        <div className={`search-input-container ${isSearchResultsPage ? 'search-results-width' : ''}`}>
             <Search 
                 label="" 
                 className="search-bar"
@@ -167,8 +173,9 @@ return(
                 onFilterSubmit={handleSubmitFilter}
                 onClose={toggleIconRotation}
             />
-            {errorMessage && <div style={{ color: 'red', marginTop: '10px' }}>{errorMessage}</div>}
         </div>
+        {errorMessage && <div className="alert-container"><Alert variant="warning">{errorMessage}</Alert></div>}
+</div>
 );
 
 }
