@@ -42,7 +42,7 @@ interface SortState {
   // Manage state for the filterData object that we receive in the dropdown to use in handleSearch
   
 export const SearchResults = () => {
-
+    const baseUrl = process.env.REACT_APP_BASE_URL
     const location = useLocation()
     console.log(location.state)
     const [userkey, setUserkey] = useState<string>(location.state.userkey)
@@ -107,7 +107,7 @@ export const SearchResults = () => {
                 if(documentUrls.has(docId) !== (undefined || true)){
                     //console.log(documentUrls.has(docId))
                     //console.log("Couldnt find saved document:", docId); // Add this line to check if documents are being fetched
-                    const response = await fetch("http://localhost:8080/hentDokumenter?dokumentInfoId=" + docId + "&journalpostId=" + document.originalJournalpostId, {
+                    const response = await fetch(baseUrl+"/hentDokumenter?dokumentInfoId=" + docId + "&journalpostId=1", { // ! VIKTIG ! HER MÅ document.originalJournalpostId BRUKES ISTEDET FOR 1
                         headers: {
                             Authorization: `Bearer ${token}`
                         }
@@ -130,7 +130,7 @@ export const SearchResults = () => {
                 return newUrls
             })
     
-            //console.log("Fetched documents:", fetchedUrls); // Add this line to check the fetched documents
+            console.log("Fetched documents:", fetchedUrls); // Add this line to check the fetched documents
         }
     
         if (documents.length > 0) {

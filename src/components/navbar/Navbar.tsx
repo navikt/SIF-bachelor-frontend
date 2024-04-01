@@ -5,7 +5,7 @@ import { useNavigate, useLocation} from "react-router-dom";
 import './Navbar.css';
 import SearchEngine from "../searchEngine/SearchEngine";
 const Navbar = () => {
-
+  const baseUrl = process.env.REACT_APP_BASE_URL
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -44,7 +44,7 @@ const Navbar = () => {
     const token = sessionStorage.getItem("token");
 
     try{
-      const response = await fetch('http://localhost:8080/test/protected', {
+      const response = await fetch(baseUrl + '/test/protected', {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -69,7 +69,12 @@ const Navbar = () => {
   const toggleLogin = async () => {
     if (!isLoggedIn) { 
       try {
-        const response = await fetch("http://localhost:8282/default/token", {
+        const url = process.env.REACT_APP_TOKEN_URL
+        if(!url){
+          console.log("!! ENVIROMENT VARIABLE URL IS NOT SET !!")
+          return;
+        }
+        const response = await fetch(url, {
           method: 'POST',
           headers: {
             // Means that the form data is encoded as URL encoded format, stndard convention
