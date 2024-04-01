@@ -1,4 +1,4 @@
-import {Search } from "@navikt/ds-react";
+import {Search, Alert } from "@navikt/ds-react";
 import { useState, useRef, useEffect } from "react";
 import { FilterIcon } from '@navikt/aksel-icons';
 import FilterPopover from './filters/FilterPopover/FilterPopover';
@@ -143,7 +143,7 @@ export const SearchEngine = () => {
 
     // Conditional rendering based on the error state
     if (serverExceptionError) {
-    return <h1 style={{ color: 'red' }}>{serverExceptionError}</h1>;
+    return <Alert variant="error" style={{ width:"750px" }}>{serverExceptionError}</Alert>;
     }
 
 return(

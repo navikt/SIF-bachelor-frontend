@@ -6,6 +6,7 @@ import { IDocument } from "../types";
 import { PDFDocument } from "pdf-lib";
 import "./PDFViewer.css"
 import { ErrorResponse } from "../types";
+import { Alert } from "@navikt/ds-react";
 
 pdfjs.GlobalWorkerOptions.workerSrc = new URL(
     'pdfjs-dist/build/pdf.worker.min.js',
@@ -69,7 +70,7 @@ export const PDFViewer = ({ documentUrls, documents }: { documentUrls: Map<strin
     }
     
     if(ExceptionError){
-        return <h1>{ExceptionError}</h1>
+        return <Alert variant="error">{ExceptionError}</Alert>
     }
 
     return (

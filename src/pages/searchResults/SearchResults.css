@@ -39,7 +39,7 @@
 }
 
 .documents-wrapper {
-    display: flex; /* Use flexbox layout */
-  flex-wrap: wrap; /* Allow items to wrap to the next line */
-  gap: 10px; /* Optional: adds some space between the icons */
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
   }

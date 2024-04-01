@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react"
 import { useLocation } from "react-router-dom";
-import { Table, Tag, Chips } from "@navikt/ds-react"
+import { Table, Tag, Chips, Alert } from "@navikt/ds-react"
 import { PDFViewer } from "../../components/PDFViewer/PDFViewer"
 import { DocumentViewer } from "../../components/DocumentViewer/DocumentViewer"
 import { IDocument, Journalpost, FilterOptions } from "../../components/types";
@@ -234,8 +234,8 @@ export const SearchResults = () => {
                 return "neutral"
         }
     }
-    if(!sessionStorage.getItem("token")){
-        return <p style={{color: "red"}}>401 Forbidden!</p>
+    if (!sessionStorage.getItem("token")) {
+        return <Alert variant="error" style={{width: "550px"}}>Du har ikke tilgang til resurssen, vennligst prøv igjen senere.</Alert>;
     }
 
 
