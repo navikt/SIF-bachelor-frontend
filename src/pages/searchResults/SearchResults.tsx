@@ -1,8 +1,10 @@
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react";
 import { useLocation } from "react-router-dom";
-import { Table, Tag, Chips, Alert } from "@navikt/ds-react"
-import { PDFViewer } from "../../components/PDFViewer/PDFViewer"
-import { DocumentViewer } from "../../components/DocumentViewer/DocumentViewer"
+import { Table, Tag, Chips, Alert, Button, Modal, TextField } from "@navikt/ds-react";
+import { PencilIcon } from "@navikt/aksel-icons";
+import { PDFViewer } from "../../components/PDFViewer/PDFViewer";
+import { DocumentViewer } from "../../components/DocumentViewer/DocumentViewer";
+import { DocumentEditor } from "../../components/DocumentEditor/DocumentEditor";
 import { IDocument, Journalpost, FilterOptions } from "../../components/types";
 import './SearchResults.css';
 
@@ -44,6 +46,7 @@ interface SortState {
 export const SearchResults = () => {
     const baseUrl = process.env.REACT_APP_BASE_URL
     const location = useLocation()
+    const ref = useRef<HTMLDialogElement>(null);
     console.log(location.state)
     const [userkey, setUserkey] = useState<string>(location.state.userkey)
     const [journalpostList, setJournalpostList] = useState<Journalpost[]>(location.state.dokumentoversikt.journalposter as Journalpost[]) || []
@@ -296,8 +299,16 @@ export const SearchResults = () => {
                                                 addDocument={addDocument}
                                                 documents={documents}
                                             />
+                                           <DocumentEditor
+                                                journalpostId={journalpostId}
+                                                tittel={tittel}
+                                                journalposttype={journalposttype}
+                                                datoOpprettet={formatDate(new Date(datoOpprettet))}
+                                                journalstatus={journalstatus}
+                                                tema={tema}
+                                            />
+
                                         </>
-                                        
                                     }
                                 >
                                     <Table.DataCell>{journalpostId}</Table.DataCell>
