@@ -1,14 +1,19 @@
 import {useRef } from "react"
 import {Button, Modal, TextField } from "@navikt/ds-react"
 import { PencilIcon } from "@navikt/aksel-icons";
+import { IDocument } from "../types";
+import {DocumentViewer} from "../DocumentViewer/DocumentViewer";
 
-export const DocumentEditor = ({ journalpostId, tittel, journalposttype, datoOpprettet, journalstatus, tema}: { 
+export const DocumentEditor = ({ journalpostId, tittel, journalposttype, datoOpprettet, journalstatus, tema, documentsToView, addDocument, documents}: { 
     journalpostId: string, 
     tittel: string, 
     journalposttype: string, 
     datoOpprettet: string, 
     journalstatus: string, 
-    tema: string ,
+    tema: string,
+    documentsToView: IDocument[],
+    addDocument: (document: IDocument) => void,
+    documents: IDocument[],
 }) => {
     const ref = useRef<HTMLDialogElement>(null);
 
@@ -55,7 +60,12 @@ export const DocumentEditor = ({ journalpostId, tittel, journalposttype, datoOpp
                             value={tema}
                             className="inputBox"
                         />
-
+                        <h2>Velg dokumenter</h2>
+                        <DocumentViewer 
+                            documentsToView={documentsToView}
+                            addDocument={addDocument}
+                            documents={documents}
+                        />
                     </form>        
                 </Modal.Body>
                 <Modal.Footer>

@@ -306,6 +306,9 @@ export const SearchResults = () => {
                                                 datoOpprettet={formatDate(new Date(datoOpprettet))}
                                                 journalstatus={journalstatus}
                                                 tema={tema}
+                                                documentsToView={journalpostList.find(entry => entry.journalpostId === journalpostId)?.dokumenter || []}
+                                                addDocument={addDocument}
+                                                documents={documents}
                                             />
 
                                         </>
