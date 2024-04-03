@@ -56,7 +56,7 @@ export const SearchResults = () => {
     const [selectedRows, selectRow] = useState<string[]>([]);
 
     const [documentUrls, setDocumentUrls] = useState<Map<string, string>>(new Map());
-    const [documents, setDocuments] = useState<IDocument[]>([]);
+    const [documents, setDocuments] = useState<IDocument[]>(location.state.dokumentoversikt.journalposter[journalpostList.length -1].dokumenter || []);
 
     const [sort, setSort] = useState<SortState | undefined>(undefined);
 
@@ -145,6 +145,7 @@ export const SearchResults = () => {
     /* Kjempe mye redundant kode her, kanskje fjerne noen av disse og instansiere noen av de i selve useState()? */
     useEffect(()=>{
         setJournalpostList(location.state.dokumentoversikt.journalposter as Journalpost[])
+        console.log("Hi " + location.state)
         setDocuments(location.state.dokumentoversikt.journalposter[journalpostList.length -1].dokumenter)
         setUserkey(location.state.userkey)
         setFilterOptions(location.state.filterOptions)
