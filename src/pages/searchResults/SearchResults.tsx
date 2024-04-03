@@ -56,9 +56,11 @@ export const SearchResults = () => {
     const [selectedRows, selectRow] = useState<string[]>([]);
 
     const [documentUrls, setDocumentUrls] = useState<Map<string, string>>(new Map());
-    const [documents, setDocuments] = useState<IDocument[]>(location.state.dokumentoversikt.journalposter[journalpostList.length -1].dokumenter || []);
+    const [documents, setDocuments] = useState<IDocument[]>([]);
 
     const [sort, setSort] = useState<SortState | undefined>(undefined);
+
+    const journalPostArrayLength = journalpostList.length - 1;
 
     const handleSort = (sortKey: string | undefined) => {
         if (sortKey) {
@@ -91,11 +93,11 @@ export const SearchResults = () => {
 
     const sortedData = journalpostList.slice().sort((a, b) => {
         if (sort) {
-            return sort.direction === "ascending"
+            return sort.direction === "descending"
                 ? comparator(b, a, sort.orderBy as keyof Journalpost)
                 : comparator(a, b, sort.orderBy as keyof Journalpost);
         }
-        return 1;
+        return 0; // Changed from 1 to 0
     });
 
     useEffect(() => {
@@ -146,14 +148,14 @@ export const SearchResults = () => {
     useEffect(()=>{
         setJournalpostList(location.state.dokumentoversikt.journalposter as Journalpost[])
         console.log("Hi " + location.state)
-        setDocuments(location.state.dokumentoversikt.journalposter[journalpostList.length -1].dokumenter)
+        setDocuments(location.state.dokumentoversikt.journalposter[0].dokumenter)
         setUserkey(location.state.userkey)
         setFilterOptions(location.state.filterOptions)
         console.log("LOGGER LOKAL FILTEROPTIONS")
         console.log(filterOptions)
         setFilterList(transformFilterOptionsToList(filterOptions))
         console.log(filterList)
-        selectRow([location.state.dokumentoversikt.journalposter[journalpostList.length -1].journalpostId])
+        selectRow([location.state.dokumentoversikt.journalposter[0].journalpostId])
     }, [location.state, filterOptions])
 
 
