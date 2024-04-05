@@ -4,7 +4,7 @@ import { PencilIcon } from "@navikt/aksel-icons";
 import { IDocument } from "../types";
 import {DocumentViewer} from "../DocumentViewer/DocumentViewer";
 
-export const DocumentEditor = ({ journalpostId, tittel, journalposttype, datoOpprettet, journalstatus, tema, documentsToView, addDocument, documents}: { 
+export const DocumentEditor = ({ journalpostId, tittel, journalposttype, datoOpprettet, journalstatus, tema, documentsToView, addGlobalDocument, documents, setIsModalOpen}: { 
     journalpostId: string, 
     tittel: string, 
     journalposttype: string, 
@@ -12,8 +12,10 @@ export const DocumentEditor = ({ journalpostId, tittel, journalposttype, datoOpp
     journalstatus: string, 
     tema: string,
     documentsToView: IDocument[],
-    addDocument: (document: IDocument) => void,
+    addGlobalDocument: (document: IDocument) => void,
     documents: IDocument[],
+    setIsModalOpen: (isModalOpen: boolean) => void,
+
 }) => {
     
     // Manage state for the input fields
@@ -58,7 +60,16 @@ export const DocumentEditor = ({ journalpostId, tittel, journalposttype, datoOpp
     return(
         <div>
             <Button 
-                onClick={() => ref.current?.showModal()} 
+                onClick={() => {
+                    /*
+                    console.log("Modalen var: " + isModal)
+                    setIsModalOpen(!isModal)
+                    console.log("Nå er modal: " + isModal)
+                    
+                    */
+                    ref.current?.showModal()
+                    }
+                }
                 iconPosition="right" icon={<PencilIcon aria-hidden />} 
                 style={{marginTop: "10px"}}>Splitt Docs
             </Button>
@@ -103,17 +114,25 @@ export const DocumentEditor = ({ journalpostId, tittel, journalposttype, datoOpp
                         <h2>Velg dokumenter</h2>
                         <DocumentViewer 
                             documentsToView={documentsToView}
-                            addDocument={addDocument}
+                            addGlobalDocument={addGlobalDocument}
                             documents={documents}
+                            isModal={true}
                         />
                     </form>        
                 </Modal.Body>
                 <Modal.Footer>
-                    <Button form="skjema">Opprett Nytt JournalPost</Button>
+                    <Button form="skjema">Opprett Nytt JournalPost</Button> {/* Her må vi setIsModalOpen(false) */}
                     <Button
                         type="button"
                         variant="secondary"
-                        onClick={() => ref.current?.close()}
+                        onClick={() =>{
+                            /*
+                            setIsModalOpen(!isModal)
+                            
+                            console.log("Nå er modal: " + isModal)*/
+                            ref.current?.close()
+                        }}
+                        
                     >Avbryt
                     </Button>
                 </Modal.Footer>

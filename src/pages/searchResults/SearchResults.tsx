@@ -53,6 +53,8 @@ export const SearchResults = () => {
     const [filterOptions, setFilterOptions] = useState<FilterOptions>(location.state.filterOptions);
     const [filterList, setFilterList] = useState<string[]>([])
 
+    const [isModalOpen, setIsModalOpen] = useState<boolean>(false)
+
     const [selectedRows, selectRow] = useState<string[]>([]);
 
     const [documentUrls, setDocumentUrls] = useState<Map<string, string>>(new Map());
@@ -296,8 +298,9 @@ export const SearchResults = () => {
                                             <p>Avsender: {avsenderMottakerNavn}</p>
                                             <DocumentViewer 
                                                 documentsToView={journalpostList.find(entry => entry.journalpostId === journalpostId)?.dokumenter || []}
-                                                addDocument={addDocument}
+                                                addGlobalDocument={addDocument}
                                                 documents={documents}
+                                                isModal={isModalOpen}
                                             />
                                            <DocumentEditor
                                                 journalpostId={journalpostId}
@@ -307,8 +310,9 @@ export const SearchResults = () => {
                                                 journalstatus={journalstatus}
                                                 tema={tema}
                                                 documentsToView={journalpostList.find(entry => entry.journalpostId === journalpostId)?.dokumenter || []}
-                                                addDocument={addDocument}
+                                                addGlobalDocument={addDocument}
                                                 documents={documents}
+                                                setIsModalOpen={setIsModalOpen}
                                             />
 
                                         </>
