@@ -62,6 +62,8 @@ export const SearchResults = () => {
 
     const [sort, setSort] = useState<SortState | undefined>(undefined);
 
+    const journalPostArrayLength = journalpostList.length - 1;
+
     const handleSort = (sortKey: string | undefined) => {
         if (sortKey) {
             setSort((prevSort) =>
@@ -93,11 +95,11 @@ export const SearchResults = () => {
 
     const sortedData = journalpostList.slice().sort((a, b) => {
         if (sort) {
-            return sort.direction === "ascending"
+            return sort.direction === "descending"
                 ? comparator(b, a, sort.orderBy as keyof Journalpost)
                 : comparator(a, b, sort.orderBy as keyof Journalpost);
         }
-        return 1;
+        return 0; // Changed from 1 to 0
     });
 
     useEffect(() => {
@@ -147,14 +149,15 @@ export const SearchResults = () => {
     /* Kjempe mye redundant kode her, kanskje fjerne noen av disse og instansiere noen av de i selve useState()? */
     useEffect(()=>{
         setJournalpostList(location.state.dokumentoversikt.journalposter as Journalpost[])
-        setDocuments(location.state.dokumentoversikt.journalposter[journalpostList.length -1].dokumenter)
+        console.log("Hi " + location.state)
+        setDocuments(location.state.dokumentoversikt.journalposter[0].dokumenter)
         setUserkey(location.state.userkey)
         setFilterOptions(location.state.filterOptions)
         console.log("LOGGER LOKAL FILTEROPTIONS")
         console.log(filterOptions)
         setFilterList(transformFilterOptionsToList(filterOptions))
         console.log(filterList)
-        selectRow([location.state.dokumentoversikt.journalposter[journalpostList.length -1].journalpostId])
+        selectRow([location.state.dokumentoversikt.journalposter[0].journalpostId])
     }, [location.state, filterOptions])
 
 
