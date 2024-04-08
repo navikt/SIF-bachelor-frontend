@@ -306,6 +306,7 @@ export const SearchResults = () => {
                                                 isModal={isModalOpen}
                                             />
                                            <DocumentEditor
+                                                brukerId={userkey}
                                                 journalpostId={journalpostId}
                                                 tittel={tittel}
                                                 journalposttype={journalposttype}

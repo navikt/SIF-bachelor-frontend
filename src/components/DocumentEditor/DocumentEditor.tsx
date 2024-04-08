@@ -1,10 +1,11 @@
-import {useRef, useState } from "react"
+import {useRef, useState, useEffect } from "react"
 import {Button, Modal, TextField, Select } from "@navikt/ds-react"
 import { PencilIcon } from "@navikt/aksel-icons";
 import { IDocument } from "../types";
 import {DocumentViewer} from "../DocumentViewer/DocumentViewer";
 
-export const DocumentEditor = ({ journalpostId, tittel, journalposttype, datoOpprettet, journalstatus, tema, documentsToView, addGlobalDocument, documents, setIsModalOpen}: { 
+export const DocumentEditor = ({ brukerId, journalpostId, tittel, journalposttype, datoOpprettet, journalstatus, tema, documentsToView, addGlobalDocument, documents, setIsModalOpen}: { 
+    brukerId: string,
     journalpostId: string, 
     tittel: string, 
     journalposttype: string, 
@@ -18,12 +19,55 @@ export const DocumentEditor = ({ journalpostId, tittel, journalposttype, datoOpp
 
 }) => {
     
-    // Manage state for the input fields
-    const [brukerId, setBrukerId] = useState('');
-    const [tittelen, setTittel] = useState(tittel);
-    const [journalposttypen, setType] = useState(journalposttype);
-    const [statusen, setStatus] = useState(journalstatus);
-    const [temaet, setTema] = useState(tema);
+    // oldMetadata which is originally in the journalpost
+  const [oldMetadata, setOldMetadata] = useState({
+    bruker: {
+        id: brukerId,
+        type: "FNR",
+    },
+    dokumenter: [
+        {
+            dokumentVarianter: [
+                {
+                    filtype: "PDFA",
+                    variantformat: "ARKIV",
+                    fysiskDokument: ""
+                }
+            ],
+            tittel: ""
+        }
+    ],
+    datoDokument: datoOpprettet,
+    tittel: tittel,
+    journalposttype: journalposttype,
+    journalstatus: journalstatus,
+    tema: tema,
+  });
+
+  // For the updated metadata in the journalpost
+  const [newMetadata, setNewMetadata] = useState({
+    bruker: {
+        id: brukerId,
+        type: "FNR",
+    },
+    dokumenter: [
+        {
+            dokumentVarianter: [
+                {
+                    filtype: "PDFA",
+                    variantformat: "ARKIV",
+                    fysiskDokument: ""
+                }
+            ],
+            tittel: ""
+        }
+    ],
+    datoDokument: datoOpprettet,
+    tittel: tittel,
+    journalposttype: journalposttype,
+    journalstatus: journalstatus,
+    tema: tema,
+  });
 
     // Error message
     const [errorMessage, setErrorMessage] = useState('');
@@ -35,11 +79,41 @@ export const DocumentEditor = ({ journalpostId, tittel, journalposttype, datoOpp
         const month = (date.getMonth() + 1).toString().padStart(2, '0');
         const year = date.getFullYear().toString();
         return `${day}.${month}.${year}`
-    }  ;  
+    };
+    
+    const displayType = (type: string) => {
+        if (type === "U") {
+            return "Utgående";
+        } else if (type === "I") {
+            return "Inngående";
+        } else if (type === "N") {
+            return "Notat";
+        }
+    }
 
-    const splitDocs = () => {
-        console.log("testing" + tittelen + journalposttypen + statusen + temaet);
+        // Update handlers for each metadata field
+    const handleTittelChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setNewMetadata((prevMetadata) => ({
+        ...prevMetadata,
+        tittel: event.target.value,
+        }));
+    };
 
+    const handleStatusChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+        setNewMetadata((prevMetadata) => ({
+        ...prevMetadata,
+        status: event.target.value,
+        }));
+    };
+
+    const handleTemaChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setNewMetadata((prevMetadata) => ({
+        ...prevMetadata,
+        tema: event.target.value,
+        }));
+    };
+
+    const splitDocs = async () => {
         const token = sessionStorage.getItem("token");
 
         if(!token) {
@@ -49,12 +123,10 @@ export const DocumentEditor = ({ journalpostId, tittel, journalposttype, datoOpp
         const currentDate = formatDate(new Date());
         // Opprett JSON body med userId
         const requestBody = {
-            brukerId: {
-              id: brukerId,
-              type: "FNR" 
-            },
-            
+            oldMetadata: oldMetadata,
+            newMetadata: newMetadata,       
           };
+        console.log(requestBody)
 
     }
     return(
@@ -79,36 +151,37 @@ export const DocumentEditor = ({ journalpostId, tittel, journalposttype, datoOpp
                     <form method="dialog" id="skjema" onSubmit={splitDocs}>
                         <TextField      
                             label="ID"      
-                            value={journalpostId}
+                            value={newMetadata.bruker.id}
                             className="inputBox"
                             readOnly
                         />
                         <TextField      
                             label="Tittel"      
-                            value={tittelen}
-                            onChange={(event) => setTittel(event.target.value)}
+                            value={newMetadata.tittel}
+                            onChange={handleTittelChange}
                             className="inputBox"
                         />
-                        <Select label="Type">
-                            <option value="I">Inngående</option>
-                            <option value="U">Utgående</option>
-                            <option value="N">Notat</option>
-                        </Select>
+                        <TextField      
+                            label="Type"      
+                            value={displayType(newMetadata.journalposttype)}
+                            className="inputBox"
+                            readOnly
+                        />
                         <TextField      
                             label="Dato"      
                             value={datoOpprettet}
                             className="inputBox"
                             readOnly
                         />
-                        <Select label="Status">
+                        <Select label="Status" onChange={handleStatusChange}>
                             <option value="JOURNALFOERT">Journalført</option>
                             <option value="FERDIGSTILT">Utgående</option>
                             <option value="NOTAT">Notat</option>
                         </Select>
                         <TextField      
                             label="Tema"      
-                            value={temaet}
-                            onChange={(event) => setTema(event.target.value)}
+                            value={newMetadata.tema}
+                            onChange={handleTemaChange}
                             className="inputBox"
                         />
                         <h2>Velg dokumenter</h2>
