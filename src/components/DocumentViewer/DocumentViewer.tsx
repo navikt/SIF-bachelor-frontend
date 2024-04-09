@@ -88,15 +88,13 @@ export const DocumentViewer = ({ documentsToView, addGlobalDocument, documents, 
                 const documentIdExists = prevDocumentId.includes(documentIdToAdd);
 
                 // If the document doesn't exist, add it to the documents state
-                if (!documentIdExists) {
-                    return [...prevDocumentId, documentIdToAdd];
-                } else {
-                    // If the document already exists, filter it out from the documents state
-                    return prevDocumentId.filter(documentId => documentId !== documentIdToAdd);
-                }
+                const newDocumentIds = documentIdExists
+                ? prevDocumentId.filter((documentId) => documentId !== documentIdToAdd)
+                : [...prevDocumentId, documentIdToAdd];
+
+                return newDocumentIds;
             });
         }
-        handleSelectedId(selectedDocumentIds);
     };
 
     useEffect(()=>{
@@ -106,9 +104,9 @@ export const DocumentViewer = ({ documentsToView, addGlobalDocument, documents, 
         }
     }, [documents])
 
-   /* useEffect(() => {
-        handleSelectedDocumentIds(selectedDocumentIds)
-    }, [selectedDocumentIds]) */
+    useEffect(() => {
+        handleSelectedId(selectedDocumentIds);
+    }, [selectedDocumentIds, handleSelectedId]);
 
     return (
     <div className="documents-wrapper">
