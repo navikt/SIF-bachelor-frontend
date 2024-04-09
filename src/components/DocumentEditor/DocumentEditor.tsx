@@ -19,64 +19,55 @@ export const DocumentEditor = ({ brukerId, journalpostId, tittel, journalposttyp
 
 }) => {
     
-    // State to keep track of selected document IDs
-    const [selectedDocumentIds, setSelectedDocumentIds] = useState<string[]>([]);
-
-    // Callback to be called from DocumentViewer when the selection changes
-    const handleSelectedDocumentsChange = (selectedDocs: string[]) => {
-        setSelectedDocumentIds(selectedDocs);
-        console.log("Hei hei" + selectedDocs);
-    };
-
     // oldMetadata which is originally in the journalpost
-    const [oldMetadata, setOldMetadata] = useState({
-        bruker: {
-            id: brukerId,
-            type: "FNR",
-        },
-        dokumenter: [
-            {
-                dokumentVarianter: [
-                    {
-                        filtype: "PDFA",
-                        variantformat: "ARKIV",
-                        fysiskDokument: ""
-                    }
-                ],
-                tittel: ""
-            }
-        ],
-        datoDokument: datoOpprettet,
-        tittel: tittel,
-        journalposttype: journalposttype,
-        journalstatus: journalstatus,
-        tema: tema,
-    });
+  const [oldMetadata, setOldMetadata] = useState({
+    bruker: {
+        id: brukerId,
+        type: "FNR",
+    },
+    dokumenter: [
+        {
+            dokumentVarianter: [
+                {
+                    filtype: "PDFA",
+                    variantformat: "ARKIV",
+                    fysiskDokument: ""
+                }
+            ],
+            tittel: ""
+        }
+    ],
+    datoDokument: datoOpprettet,
+    tittel: tittel,
+    journalposttype: journalposttype,
+    journalstatus: journalstatus,
+    tema: tema,
+  });
 
-    // For the updated metadata in the journalpost
-    const [newMetadata, setNewMetadata] = useState({
-        bruker: {
-            id: brukerId,
-            type: "FNR",
-        },
-        dokumenter: [
-            {
-                dokumentVarianter: [
-                    {
-                        filtype: "PDFA",
-                        variantformat: "ARKIV",
-                        fysiskDokument: ""
-                    }
-                ],
-                tittel: ""
-            }
-        ],
-        datoDokument: datoOpprettet,
-        tittel: tittel,
-        journalposttype: journalposttype,
-        journalstatus: journalstatus,
-        tema: tema,
-    });
+  // For the updated metadata in the journalpost
+  const [newMetadata, setNewMetadata] = useState({
+    bruker: {
+        id: brukerId,
+        type: "FNR",
+    },
+    dokumenter: [
+        {
+            dokumentVarianter: [
+                {
+                    filtype: "PDFA",
+                    variantformat: "ARKIV",
+                    fysiskDokument: ""
+                }
+            ],
+            tittel: ""
+        }
+    ],
+    datoDokument: datoOpprettet,
+    tittel: tittel,
+    journalposttype: journalposttype,
+    journalstatus: journalstatus,
+    tema: tema,
+  });
 
     // Error message
     const [errorMessage, setErrorMessage] = useState('');
@@ -90,10 +81,6 @@ export const DocumentEditor = ({ brukerId, journalpostId, tittel, journalposttyp
         return `${day}.${month}.${year}`
     };
     
-    useEffect(() => {
-        console.log('Selected Document IDs:', selectedDocumentIds);
-    }, [selectedDocumentIds]);
-
     const displayType = (type: string) => {
         if (type === "U") {
             return "Utgående";
@@ -127,7 +114,6 @@ export const DocumentEditor = ({ brukerId, journalpostId, tittel, journalposttyp
     };
 
     const splitDocs = async () => {
-        console.log("Dokument ID-ene som er valgt er: " + selectedDocumentIds);
         const token = sessionStorage.getItem("token");
 
         if(!token) {
@@ -141,9 +127,8 @@ export const DocumentEditor = ({ brukerId, journalpostId, tittel, journalposttyp
             newMetadata: newMetadata,       
           };
         console.log(requestBody)
-        console.log("Modalen er nå lukket")
+
     }
-    
     return(
         <div>
             <Button 
@@ -205,7 +190,6 @@ export const DocumentEditor = ({ brukerId, journalpostId, tittel, journalposttyp
                             addGlobalDocument={addGlobalDocument}
                             documents={documents}
                             isModal={true}
-                            handleSelectedId={handleSelectedDocumentsChange}
                         />
                     </form>        
                 </Modal.Body>

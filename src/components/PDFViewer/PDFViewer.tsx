@@ -38,16 +38,12 @@ export const PDFViewer = ({ documentUrls, documents }: { documentUrls: Map<strin
                         return response.arrayBuffer();
                     });
                     const pdf = await PDFDocument.load(pdfBytes);
-                    console.log(pdf);
                     const copiedPages = await mergedPdf.copyPages(pdf, pdf.getPageIndices());
                     copiedPages.forEach((page) => {
                         mergedPdf.addPage(page);
                     });
                 }
                 const mergedPdfBytes = await mergedPdf.save();
-                const binaryString = mergedPdfBytes.reduce((acc, byte) => acc + String.fromCharCode(byte), '');
-                const base64String = btoa(binaryString);
-                console.log(base64String); // This is the base64 string of the merged PDF 
                 const mergedPdfUrl = URL.createObjectURL(new Blob([mergedPdfBytes], { type: "application/pdf" }));
                 setMergedPdfUrl(mergedPdfUrl);
             } catch (error) {
