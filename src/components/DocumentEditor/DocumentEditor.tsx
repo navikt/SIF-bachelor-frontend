@@ -142,6 +142,7 @@ export const DocumentEditor = ({ brukerId, journalpostId, tittel, journalposttyp
           };
         console.log(requestBody)
         console.log("Modalen er nå lukket")
+        ref.current?.close()
     }
     
     return(
@@ -163,7 +164,7 @@ export const DocumentEditor = ({ brukerId, journalpostId, tittel, journalposttyp
 
             <Modal ref={ref} header={{ heading: "Splitt Opp Dokumenter" }} width={600}>
                 <Modal.Body>
-                    <form method="dialog" id="skjema" onSubmit={splitDocs}>
+                    <div>
                         <TextField      
                             label="ID"      
                             value={newMetadata.bruker.id}
@@ -207,10 +208,10 @@ export const DocumentEditor = ({ brukerId, journalpostId, tittel, journalposttyp
                             isModal={true}
                             handleSelectedId={handleSelectedDocumentsChange}
                         />
-                    </form>        
+                    </div>        
                 </Modal.Body>
                 <Modal.Footer>
-                    <Button form="skjema">Opprett Nytt JournalPost</Button> {/* Her må vi setIsModalOpen(false) */}
+                    <Button onClick={splitDocs}>Opprett Nytt JournalPost</Button> {/* Her må vi setIsModalOpen(false) */}
                     <Button
                         type="button"
                         variant="secondary"
