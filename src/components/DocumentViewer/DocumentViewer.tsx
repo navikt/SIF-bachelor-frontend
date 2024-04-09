@@ -10,13 +10,18 @@ interface DocumentItemProps {
     selectStateDocument: (documentToAdd: IDocument) => void
     isModal: boolean;
     isStateSelected: boolean;
+    selectedId: (documentToAdd: string) => void
 }
 
-const DocumentItem = ({ document, addGlobalDocument, isSelected, selectStateDocument, isModal, isStateSelected}: DocumentItemProps) => {
+const DocumentItem = ({ document, addGlobalDocument, isSelected, selectStateDocument, isModal, isStateSelected, selectedId}: DocumentItemProps) => {
 
     const select = () => {
+        const { dokumentInfoId } = document; // Destructure to extract dokumentInfoId
+        console.log(dokumentInfoId); // Now you can use dokumentInfoId directl
         if(isModal){
             selectStateDocument(document)
+            selectedId(dokumentInfoId)
+            console.log(document)
         }else{
             addGlobalDocument(document);
         }
@@ -46,11 +51,13 @@ interface DocumentViewerProps {
     addGlobalDocument: (document: IDocument) => void;
     documents: IDocument[];
     isModal: boolean;
+    handleSelectedId: (selectedDocs: string[]) => void;
 }
 
-export const DocumentViewer = ({ documentsToView, addGlobalDocument, documents, isModal: isModal }: DocumentViewerProps) => {
+export const DocumentViewer = ({ documentsToView, addGlobalDocument, documents, isModal: isModal, handleSelectedId }: DocumentViewerProps) => {
     const [selectedDocuments, setSelectedDocuments] = useState<string[]>([])
     const [stateDocuments, setStateDocuments] = useState<IDocument[]>([])
+    const [selectedDocumentIds, setSelectedDocumentIds] = useState<string[]>([]);
    
     const addDocument = (documentToAdd: IDocument) => {
         // Find the document to add based on its ID
@@ -71,12 +78,37 @@ export const DocumentViewer = ({ documentsToView, addGlobalDocument, documents, 
         console.log(stateDocuments)
     };
 
+    const addDocumentId = (documentIdToAdd: string) => {
+        // Find the document to add based on its ID
+        console.log("documents before:")
+        console.log(documents)
+        if (documentIdToAdd) {
+            setSelectedDocumentIds(prevDocumentId => {
+                // Check if the document already exists in the documents state
+                const documentIdExists = prevDocumentId.includes(documentIdToAdd);
+
+                // If the document doesn't exist, add it to the documents state
+                if (!documentIdExists) {
+                    return [...prevDocumentId, documentIdToAdd];
+                } else {
+                    // If the document already exists, filter it out from the documents state
+                    return prevDocumentId.filter(documentId => documentId !== documentIdToAdd);
+                }
+            });
+        }
+        handleSelectedId(selectedDocumentIds);
+    };
+
     useEffect(()=>{
         const selecteIds = documents.map(document => document.dokumentInfoId)
         if(!isModal){
             setSelectedDocuments(selecteIds)
         }
     }, [documents])
+
+   /* useEffect(() => {
+        handleSelectedDocumentIds(selectedDocumentIds)
+    }, [selectedDocumentIds]) */
 
     return (
     <div className="documents-wrapper">
@@ -87,6 +119,7 @@ export const DocumentViewer = ({ documentsToView, addGlobalDocument, documents, 
                 addGlobalDocument={addGlobalDocument} 
                 isSelected={selectedDocuments.includes(document.dokumentInfoId)}
                 isStateSelected={stateDocuments.includes(document)}
+                selectedId={addDocumentId}
                 selectStateDocument={addDocument}
                 isModal={isModal}
             />
