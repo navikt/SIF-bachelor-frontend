@@ -19,55 +19,59 @@ export const DocumentEditor = ({ brukerId, journalpostId, tittel, journalposttyp
 
 }) => {
     
-    // oldMetadata which is originally in the journalpost
-  const [oldMetadata, setOldMetadata] = useState({
-    bruker: {
-        id: brukerId,
-        type: "FNR",
-    },
-    dokumenter: [
-        {
-            dokumentVarianter: [
-                {
-                    filtype: "PDFA",
-                    variantformat: "ARKIV",
-                    fysiskDokument: ""
-                }
-            ],
-            tittel: ""
-        }
-    ],
-    datoDokument: datoOpprettet,
-    tittel: tittel,
-    journalposttype: journalposttype,
-    journalstatus: journalstatus,
-    tema: tema,
-  });
+    // State to keep track of selected document IDs
+    const [selectedDocumentIds, setSelectedDocumentIds] = useState<string[]>([]);
 
-  // For the updated metadata in the journalpost
-  const [newMetadata, setNewMetadata] = useState({
-    bruker: {
-        id: brukerId,
-        type: "FNR",
-    },
-    dokumenter: [
-        {
-            dokumentVarianter: [
-                {
-                    filtype: "PDFA",
-                    variantformat: "ARKIV",
-                    fysiskDokument: ""
-                }
-            ],
-            tittel: ""
-        }
-    ],
-    datoDokument: datoOpprettet,
-    tittel: tittel,
-    journalposttype: journalposttype,
-    journalstatus: journalstatus,
-    tema: tema,
-  });
+    // State to keep track of selected document IDs
+    const [unselectedDocumentIds, setUnselectedDocumentIds] = useState<string[]>([]);
+
+    // Callback to be called from DocumentViewer when the selection changes
+    const handleUnselectedDocumentsChange = (unselectedDocs: string[]) => {
+        setUnselectedDocumentIds(unselectedDocs);
+    };
+
+    // Callback to be called from DocumentViewer when the selection changes
+    const handleSelectedDocumentsChange = (selectedDocs: string[]) => {
+        setSelectedDocumentIds(selectedDocs);
+    };
+
+    // oldMetadata which is originally in the journalpost
+    const [oldMetadata, setOldMetadata] = useState<{
+        brukerId: string,
+        dokumentID: string[],
+        datoDokument: string,
+        tittel: string,
+        journalposttype: string,
+        journalstatus: string,
+        tema: string,
+    }>({
+        brukerId: brukerId,
+        dokumentID: [],
+        datoDokument: datoOpprettet,
+        tittel: tittel,
+        journalposttype: journalposttype,
+        journalstatus: journalstatus,
+        tema: tema,
+    });
+
+    // For the updated metadata in the journalpost
+    const [newMetadata, setNewMetadata] = useState<{
+        brukerId: string,
+        dokumentID: string[],
+        datoDokument: string,
+        tittel: string,
+        journalposttype: string,
+        journalstatus: string,
+        tema: string,
+    }>({
+        brukerId: brukerId,
+        dokumentID: [],
+        datoDokument: datoOpprettet,
+        tittel: tittel,
+        journalposttype: journalposttype,
+        journalstatus: journalstatus,
+        tema: tema,
+    });
 
     // Error message
     const [errorMessage, setErrorMessage] = useState('');
@@ -80,7 +84,14 @@ export const DocumentEditor = ({ brukerId, journalpostId, tittel, journalposttyp
         const year = date.getFullYear().toString();
         return `${day}.${month}.${year}`
     };
-    
+
+    useEffect(() => {
+        // As soon as selectedDocumentIds updates, update newMetadata
+        setNewMetadata({...newMetadata, dokumentID: selectedDocumentIds})
+        // As soon as unselectedDocumentIds updates, update oldMetadata
+        setOldMetadata({...oldMetadata, dokumentID: unselectedDocumentIds});
+    }, [selectedDocumentIds, unselectedDocumentIds]);
+
     const displayType = (type: string) => {
         if (type === "U") {
             return "Utgående";
@@ -114,12 +125,15 @@ export const DocumentEditor = ({ brukerId, journalpostId, tittel, journalposttyp
     };
 
     const splitDocs = async () => {
+        console.log("Dokument ID-ene som er valgt er: " + selectedDocumentIds);
+        console.log("Dokument-Idene som IKKE er valgt er: " + unselectedDocumentIds)
         const token = sessionStorage.getItem("token");
 
         if(!token) {
             setErrorMessage("Du må logge inn for å søke!");
             return;
         }
+
         const currentDate = formatDate(new Date());
         // Opprett JSON body med userId
         const requestBody = {
@@ -127,7 +141,9 @@ export const DocumentEditor = ({ brukerId, journalpostId, tittel, journalposttyp
             newMetadata: newMetadata,       
           };
         console.log(requestBody)
-
+        console.log(selectedDocumentIds)
+        console.log("Modalen er nå lukket")
+        ref.current?.close()
     }
     return(
         <div>
@@ -148,10 +164,10 @@ export const DocumentEditor = ({ brukerId, journalpostId, tittel, journalposttyp
 
             <Modal ref={ref} header={{ heading: "Splitt Opp Dokumenter" }} width={600}>
                 <Modal.Body>
-                    <form method="dialog" id="skjema" onSubmit={splitDocs}>
+                    <div>
                         <TextField      
                             label="ID"      
-                            value={newMetadata.bruker.id}
+                            value={newMetadata.brukerId}
                             className="inputBox"
                             readOnly
                         />
@@ -190,11 +206,13 @@ export const DocumentEditor = ({ brukerId, journalpostId, tittel, journalposttyp
                             addGlobalDocument={addGlobalDocument}
                             documents={documents}
                             isModal={true}
+                            handleSelectedId={handleSelectedDocumentsChange}
+                            handleUnselectedId={handleUnselectedDocumentsChange}
                         />
-                    </form>        
+                    </div>        
                 </Modal.Body>
                 <Modal.Footer>
-                    <Button form="skjema">Opprett Nytt JournalPost</Button> {/* Her må vi setIsModalOpen(false) */}
+                    <Button onClick={splitDocs}>Opprett Nytt JournalPost</Button> {/* Her må vi setIsModalOpen(false) */}
                     <Button
                         type="button"
                         variant="secondary"

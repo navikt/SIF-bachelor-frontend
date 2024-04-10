@@ -304,6 +304,8 @@ export const SearchResults = () => {
                                                 addGlobalDocument={addDocument}
                                                 documents={documents}
                                                 isModal={isModalOpen}
+                                                handleSelectedId={() => {}}
+                                                handleUnselectedId={() => {}}
                                             />
                                            <DocumentEditor
                                                 brukerId={userkey}
