@@ -25,7 +25,6 @@ export const DocumentEditor = ({ brukerId, journalpostId, tittel, journalposttyp
     // Callback to be called from DocumentViewer when the selection changes
     const handleSelectedDocumentsChange = (selectedDocs: string[]) => {
         setSelectedDocumentIds(selectedDocs);
-        console.log("Hei hei" + selectedDocs);
     };
 
     // oldMetadata which is originally in the journalpost
@@ -141,6 +140,7 @@ export const DocumentEditor = ({ brukerId, journalpostId, tittel, journalposttyp
             newMetadata: newMetadata,       
           };
         console.log(requestBody)
+        console.log(selectedDocumentIds)
         console.log("Modalen er nå lukket")
         ref.current?.close()
     }
