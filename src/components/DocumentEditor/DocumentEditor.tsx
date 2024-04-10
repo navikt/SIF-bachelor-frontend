@@ -36,23 +36,17 @@ export const DocumentEditor = ({ brukerId, journalpostId, tittel, journalposttyp
     };
 
     // oldMetadata which is originally in the journalpost
-    const [oldMetadata, setOldMetadata] = useState({
-        bruker: {
-            id: brukerId,
-            type: "FNR",
-        },
-        dokumenter: [
-            {
-                dokumentVarianter: [
-                    {
-                        filtype: "PDFA",
-                        variantformat: "ARKIV",
-                        fysiskDokument: ""
-                    }
-                ],
-                tittel: ""
-            }
-        ],
+    const [oldMetadata, setOldMetadata] = useState<{
+        brukerId: string,
+        dokumentID: string[],
+        datoDokument: string,
+        tittel: string,
+        journalposttype: string,
+        journalstatus: string,
+        tema: string,
+    }>({
+        brukerId: brukerId,
+        dokumentID: [],
         datoDokument: datoOpprettet,
         tittel: tittel,
         journalposttype: journalposttype,
@@ -61,23 +55,17 @@ export const DocumentEditor = ({ brukerId, journalpostId, tittel, journalposttyp
     });
 
     // For the updated metadata in the journalpost
-    const [newMetadata, setNewMetadata] = useState({
-        bruker: {
-            id: brukerId,
-            type: "FNR",
-        },
-        dokumenter: [
-            {
-                dokumentVarianter: [
-                    {
-                        filtype: "PDFA",
-                        variantformat: "ARKIV",
-                        fysiskDokument: ""
-                    }
-                ],
-                tittel: ""
-            }
-        ],
+    const [newMetadata, setNewMetadata] = useState<{
+        brukerId: string,
+        dokumentID: string[],
+        datoDokument: string,
+        tittel: string,
+        journalposttype: string,
+        journalstatus: string,
+        tema: string,
+    }>({
+        brukerId: brukerId,
+        dokumentID: [],
         datoDokument: datoOpprettet,
         tittel: tittel,
         journalposttype: journalposttype,
@@ -96,10 +84,13 @@ export const DocumentEditor = ({ brukerId, journalpostId, tittel, journalposttyp
         const year = date.getFullYear().toString();
         return `${day}.${month}.${year}`
     };
-    
+
     useEffect(() => {
-        console.log('Selected Document IDs:', selectedDocumentIds);
-    }, [selectedDocumentIds]);
+        // As soon as selectedDocumentIds updates, update newMetadata
+        setNewMetadata({...newMetadata, dokumentID: selectedDocumentIds})
+        // As soon as unselectedDocumentIds updates, update oldMetadata
+        setOldMetadata({...oldMetadata, dokumentID: unselectedDocumentIds});
+    }, [selectedDocumentIds, unselectedDocumentIds]);
 
     const displayType = (type: string) => {
         if (type === "U") {
@@ -142,6 +133,7 @@ export const DocumentEditor = ({ brukerId, journalpostId, tittel, journalposttyp
             setErrorMessage("Du må logge inn for å søke!");
             return;
         }
+
         const currentDate = formatDate(new Date());
         // Opprett JSON body med userId
         const requestBody = {
@@ -176,7 +168,7 @@ export const DocumentEditor = ({ brukerId, journalpostId, tittel, journalposttyp
                     <div>
                         <TextField      
                             label="ID"      
-                            value={newMetadata.bruker.id}
+                            value={newMetadata.brukerId}
                             className="inputBox"
                             readOnly
                         />
