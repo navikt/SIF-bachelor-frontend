@@ -10,13 +10,18 @@ interface DocumentItemProps {
     selectStateDocument: (documentToAdd: IDocument) => void
     isModal: boolean;
     isStateSelected: boolean;
+    selectedId: (documentToAdd: string) => void
 }
 
-const DocumentItem = ({ document, addGlobalDocument, isSelected, selectStateDocument, isModal, isStateSelected}: DocumentItemProps) => {
+const DocumentItem = ({ document, addGlobalDocument, isSelected, selectStateDocument, isModal, isStateSelected, selectedId}: DocumentItemProps) => {
 
     const select = () => {
+        const { dokumentInfoId } = document; // Destructure to extract dokumentInfoId
+        console.log(dokumentInfoId); // Now you can use dokumentInfoId directl
         if(isModal){
             selectStateDocument(document)
+            selectedId(dokumentInfoId)
+            console.log(document)
         }else{
             addGlobalDocument(document);
         }
@@ -124,6 +129,7 @@ export const DocumentViewer = ({ documentsToView, addGlobalDocument, documents, 
                 addGlobalDocument={addGlobalDocument} 
                 isSelected={selectedDocuments.includes(document.dokumentInfoId)}
                 isStateSelected={stateDocuments.includes(document)}
+                selectedId={addDocumentId}
                 selectStateDocument={addDocument}
                 isModal={isModal}
             />
