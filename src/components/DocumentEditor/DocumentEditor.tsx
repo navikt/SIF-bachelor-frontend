@@ -22,6 +22,14 @@ export const DocumentEditor = ({ brukerId, journalpostId, tittel, journalposttyp
     // State to keep track of selected document IDs
     const [selectedDocumentIds, setSelectedDocumentIds] = useState<string[]>([]);
 
+    // State to keep track of selected document IDs
+    const [unselectedDocumentIds, setUnselectedDocumentIds] = useState<string[]>([]);
+
+    // Callback to be called from DocumentViewer when the selection changes
+    const handleUnselectedDocumentsChange = (unselectedDocs: string[]) => {
+        setUnselectedDocumentIds(unselectedDocs);
+    };
+
     // Callback to be called from DocumentViewer when the selection changes
     const handleSelectedDocumentsChange = (selectedDocs: string[]) => {
         setSelectedDocumentIds(selectedDocs);
@@ -127,6 +135,7 @@ export const DocumentEditor = ({ brukerId, journalpostId, tittel, journalposttyp
 
     const splitDocs = async () => {
         console.log("Dokument ID-ene som er valgt er: " + selectedDocumentIds);
+        console.log("Dokument-Idene som IKKE er valgt er: " + unselectedDocumentIds)
         const token = sessionStorage.getItem("token");
 
         if(!token) {
@@ -207,6 +216,7 @@ export const DocumentEditor = ({ brukerId, journalpostId, tittel, journalposttyp
                             documents={documents}
                             isModal={true}
                             handleSelectedId={handleSelectedDocumentsChange}
+                            handleUnselectedId={handleUnselectedDocumentsChange}
                         />
                     </div>        
                 </Modal.Body>

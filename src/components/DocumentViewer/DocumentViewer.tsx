@@ -52,12 +52,16 @@ interface DocumentViewerProps {
     documents: IDocument[];
     isModal: boolean;
     handleSelectedId: (selectedDocs: string[]) => void;
+    handleUnselectedId: (unselectedDocs: string[]) => void;
 }
 
-export const DocumentViewer = ({ documentsToView, addGlobalDocument, documents, isModal: isModal, handleSelectedId }: DocumentViewerProps) => {
+export const DocumentViewer = ({ documentsToView, addGlobalDocument, documents, isModal: isModal, handleSelectedId, handleUnselectedId }: DocumentViewerProps) => {
     const [selectedDocuments, setSelectedDocuments] = useState<string[]>([])
     const [stateDocuments, setStateDocuments] = useState<IDocument[]>([])
     const [selectedDocumentIds, setSelectedDocumentIds] = useState<string[]>([]);
+    const [unselectedDocumentIds, setUnselectedDocumentIds] = useState<string[]>(
+        documentsToView.map(document => document.dokumentInfoId)
+    ); // Initialize with all IDs as unselected
    
     const addDocument = (documentToAdd: IDocument) => {
         // Find the document to add based on its ID
@@ -92,6 +96,13 @@ export const DocumentViewer = ({ documentsToView, addGlobalDocument, documents, 
                 ? prevDocumentId.filter((documentId) => documentId !== documentIdToAdd)
                 : [...prevDocumentId, documentIdToAdd];
 
+                // Update unselected IDs as well
+                setUnselectedDocumentIds(prevUnselectedIds => {
+                    return documentIdExists
+                        ? [...prevUnselectedIds, documentIdToAdd]
+                        : prevUnselectedIds.filter((id) => id !== documentIdToAdd);
+                });
+
                 return newDocumentIds;
             });
         }
@@ -106,7 +117,8 @@ export const DocumentViewer = ({ documentsToView, addGlobalDocument, documents, 
 
     useEffect(() => {
         handleSelectedId(selectedDocumentIds);
-    }, [selectedDocumentIds, handleSelectedId]);
+        handleUnselectedId(unselectedDocumentIds);
+    }, [selectedDocumentIds, handleSelectedId, unselectedDocumentIds, handleUnselectedId]);
 
     return (
     <div className="documents-wrapper">

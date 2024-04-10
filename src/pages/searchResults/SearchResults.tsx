@@ -305,6 +305,7 @@ export const SearchResults = () => {
                                                 documents={documents}
                                                 isModal={isModalOpen}
                                                 handleSelectedId={() => {}}
+                                                handleUnselectedId={() => {}}
                                             />
                                            <DocumentEditor
                                                 brukerId={userkey}
