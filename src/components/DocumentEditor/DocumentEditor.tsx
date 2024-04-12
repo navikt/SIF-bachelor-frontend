@@ -37,16 +37,42 @@ export const DocumentEditor = ({ brukerId, journalpostId, tittel, journalposttyp
 
     // oldMetadata which is originally in the journalpost
     const [oldMetadata, setOldMetadata] = useState<{
-        brukerId: string,
-        dokumentID: string[],
+        bruker: {
+            brukerId: string,
+            idType: string,
+        },
+        dokumenter: {
+            brevkode: string;
+            dokumentvarianter: [{
+                filtype: string;
+                fysiskDokument: string;
+                variantformat: string;
+            }];
+            tittel: string;
+        }[],
         datoDokument: string,
         tittel: string,
         journalposttype: string,
         journalstatus: string,
         tema: string,
     }>({
-        brukerId: brukerId,
-        dokumentID: [],
+        bruker: {
+            brukerId: brukerId,
+            idType: "FNR",
+        },
+        dokumenter: [
+            {
+                brevkode: "NAV 04-01.03",
+                dokumentvarianter: [
+                    {
+                        filtype: "PDFA",
+                        fysiskDokument: "Dokument",
+                        variantformat: "ARKIV"
+                    }
+                ],
+                tittel: "placeholder",
+            }
+        ],
         datoDokument: datoOpprettet,
         tittel: tittel,
         journalposttype: journalposttype,
@@ -56,16 +82,40 @@ export const DocumentEditor = ({ brukerId, journalpostId, tittel, journalposttyp
 
     // For the updated metadata in the journalpost
     const [newMetadata, setNewMetadata] = useState<{
-        brukerId: string,
-        dokumentID: string[],
+        bruker: {
+            brukerId: string,
+            idType: string,
+        },
+        dokumenter: {
+            brevkode: string;
+            dokumentvarianter: [{
+                filtype: string;
+                fysiskDokument: string;
+                variantformat: string;
+            }];
+            tittel: string;
+        }[],
         datoDokument: string,
         tittel: string,
         journalposttype: string,
         journalstatus: string,
         tema: string,
     }>({
-        brukerId: brukerId,
-        dokumentID: [],
+        bruker: {
+            brukerId: brukerId,
+            idType: "FNR",
+        },
+        dokumenter: [{
+            brevkode: "NAV 04-01.03",
+            dokumentvarianter: [
+                {
+                    filtype: "PDFA",
+                    fysiskDokument: "Dokument",
+                    variantformat: "ARKIV"
+                }
+            ],
+            tittel: "placeholder",
+        }],
         datoDokument: datoOpprettet,
         tittel: tittel,
         journalposttype: journalposttype,
@@ -86,10 +136,41 @@ export const DocumentEditor = ({ brukerId, journalpostId, tittel, journalposttyp
     };
 
     useEffect(() => {
+        // Map each selectedDocumentId to a new entry in dokumentvarianter
+        setNewMetadata(prev => ({
+            ...prev,
+            dokumenter: selectedDocumentIds.map(id => ({
+                brevkode: "placeholder",
+                dokumentvarianter: [
+                    {
+                        filtype: "PDFA",
+                        fysiskDokument: id,
+                        variantformat: "ARKIV"
+                    }
+                ],
+                tittel: "placeholder",
+            }))
+        }));
+
+        setOldMetadata(prev => ({
+            ...prev,
+            dokumenter: unselectedDocumentIds.map(id => ({
+                brevkode: "placeholder",
+                dokumentvarianter: [
+                    {
+                        filtype: "PDFA",
+                        fysiskDokument: id,
+                        variantformat: "ARKIV"
+                    }
+                ],
+                tittel: "placeholder",
+            }))
+        }));
+
         // As soon as selectedDocumentIds updates, update newMetadata
-        setNewMetadata({...newMetadata, dokumentID: selectedDocumentIds})
+        // setNewMetadata({...newMetadata, dokumentVarianter: newDokumentvarianter})
         // As soon as unselectedDocumentIds updates, update oldMetadata
-        setOldMetadata({...oldMetadata, dokumentID: unselectedDocumentIds});
+        // setOldMetadata({...oldMetadata, dokumentID: unselectedDocumentIds});
     }, [selectedDocumentIds, unselectedDocumentIds]);
 
     const displayType = (type: string) => {
@@ -167,7 +248,7 @@ export const DocumentEditor = ({ brukerId, journalpostId, tittel, journalposttyp
                     <div>
                         <TextField      
                             label="ID"      
-                            value={newMetadata.brukerId}
+                            value={newMetadata.bruker.brukerId}
                             className="inputBox"
                             readOnly
                         />
