@@ -6,8 +6,7 @@
     height: 100%;
     max-height: calc(100vh - 75px);
     overflow-y: auto;
-    display: flex;
-    justify-content: center;
+    max-width: 100%;
 }
 .pdf-viewer-container>p{
     margin: 0;
@@ -21,4 +20,12 @@
 }
 .pdf-title>p{
     margin: 0;
+}
+
+.pdf-content{
+    width: 100%;
+    max-width: 100%;
+    max-height: 100%;
+    z-index: 1;
+    overflow: auto;
 }

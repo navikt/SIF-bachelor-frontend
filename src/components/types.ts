@@ -37,3 +37,9 @@ export interface FilterOptions {
 export interface ErrorResponse {
     errorMessage: string;
 }
+
+export interface ToolbarInterface {
+    onRotate: (direction: string) => void;
+    onZoomIn: () => void;
+    onZoomOut: () => void;
+}

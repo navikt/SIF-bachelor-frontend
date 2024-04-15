@@ -7,6 +7,9 @@ import { PDFDocument } from "pdf-lib";
 import "./PDFViewer.css"
 import { ErrorResponse } from "../types";
 import { Alert } from "@navikt/ds-react";
+import { Page, Document, Outline } from 'react-pdf';
+import Toolbar from "../Pdf-Reader/Toolbar";
+
 
 pdfjs.GlobalWorkerOptions.workerSrc = new URL(
     'pdfjs-dist/build/pdf.worker.min.js',
@@ -18,6 +21,9 @@ export const PDFViewer = ({ documentUrls, documents }: { documentUrls: Map<strin
     const [numPages, setNumPages] = useState<number | null >(null);
     const [mergedPdfUrl, setMergedPdfUrl] = useState<string | undefined>(undefined);
     const [ExceptionError, setExceptionError] = useState("");
+    const [rotation, setRotation] = useState(0);
+    const [scale, setScale] = useState(1); // Start with no zoom
+
 
     useEffect(() => {
 
@@ -37,16 +43,22 @@ export const PDFViewer = ({ documentUrls, documents }: { documentUrls: Map<strin
                         }
                         return response.arrayBuffer();
                     });
+                    // Takes the raw binary data from pdfBytes and stores it into the PDFDocument object
                     const pdf = await PDFDocument.load(pdfBytes);
+                    // copiedPages will be an array object of the pages in the PDF with page 1 and page 2 being [0, 1]
+                    // and each object has a LOT of low level info about each page
+                    // So TLDR, copyPages maps each page to its own object in an array where each object has the page number and lots of low level metadata
                     const copiedPages = await mergedPdf.copyPages(pdf, pdf.getPageIndices());
+                    console.log(copiedPages)
+                    /* This will add all of the page objects of a document to mergedPdf, so that in the pdf reader on the
+                       right, it will display ALL the PDFs in a single journalpost one after the other. */
                     copiedPages.forEach((page) => {
                         mergedPdf.addPage(page);
                     });
                 }
+                /* After we have collected ALL of the PDFs and stored them together in the mergedPDF object, we can then
+                convert it back to the arrayBuffer with the .save() method and then  */
                 const mergedPdfBytes = await mergedPdf.save();
-            /*    const binaryString = mergedPdfBytes.reduce((acc, byte) => acc + String.fromCharCode(byte), '');
-                const base64String = btoa(binaryString);
-                console.log(base64String); */ // This is the base64 string of the merged PDF 
                 const mergedPdfUrl = URL.createObjectURL(new Blob([mergedPdfBytes], { type: "application/pdf" }));
                 setMergedPdfUrl(mergedPdfUrl);
             } catch (error) {
@@ -70,7 +82,21 @@ export const PDFViewer = ({ documentUrls, documents }: { documentUrls: Map<strin
 
     const onDocumentLoadSuccess = ({numPages}: {numPages: number}) => {
         setNumPages(numPages)
+        console.log(numPages)
     }
+
+    const handleRotate = (direction: string) => {
+        setRotation(prevRotation => (direction === 'clockwise' ? prevRotation + 90 : prevRotation - 90) % 360);
+    };
+
+    const handleZoomIn = () => {
+        setScale(scale => scale * 1.1); // Increase zoom by 10%
+    };
+
+    const handleZoomOut = () => {
+        setScale(scale => scale * 0.9); // Decrease zoom by 10%
+    };
+
     
     if(ExceptionError){
         return <Alert variant="error">{ExceptionError}</Alert>
@@ -78,23 +104,33 @@ export const PDFViewer = ({ documentUrls, documents }: { documentUrls: Map<strin
 
     return (
         <div className="pdf-viewer-container">
-            {(mergedPdfUrl && documents.length > 0) ? (
-              <iframe src={`${mergedPdfUrl}#toolbar=0.5`} id="iframe" title="pdf-viewer" style={{width: "100%"}}></iframe>
-              /*<Document
-                    file={mergedPdfUrl}
-                    onLoadSuccess={onDocumentLoadSuccess}
-              >
-                    {documents.map((document, index) => (
-                        <div key={document.dokumentInfoId} style={{width: "fit-content", height: "100%"}}>
-                          <div className="pdf-title" id={document.dokumentInfoId}>
-                            <p style={{ fontSize: 28, fontWeight: 'bold'}}>{document.tittel}</p>
-                            <p style={{ fontSize: 12, color: 'gray', marginRight:"1rem"}}>#{document.dokumentInfoId}</p>
-                          </div>
-                            <Page pageNumber={index + 1} />
-                            <p style={{ fontSize: 12 }} >Page {index + 1} of {numPages}</p>
+            
+            {(mergedPdfUrl && documents.length > 0) ? (          
+                    
+                <div className="pdf-content">
+                    <Toolbar 
+                        onRotate={handleRotate}
+                        onZoomIn={handleZoomIn}
+                        onZoomOut={handleZoomOut}
+                    />
+                    <Document file={mergedPdfUrl} onLoadSuccess={onDocumentLoadSuccess} className="testyo">
+                    {Array.from(
+                        new Array(numPages),
+                        (el, index) => (
+                        <div key={`page_${index + 1}`} className="pdf-page-container">
+                            <Page 
+                                pageNumber={index + 1}
+                                rotate={rotation}
+                                scale={scale}
+                            />
+                            <p>
+                                Page {index + 1} of {numPages}
+                            </p>
                         </div>
-                    ))}
-                </Document>*/
+                        ),
+                )}
+                    </Document>
+                </div>
             ) : (
               <p>
                     No documents chosen.
