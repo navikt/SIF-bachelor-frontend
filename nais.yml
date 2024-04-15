@@ -10,16 +10,16 @@ metadata:
 spec:
   ingresses:
     - https://sif-vju.ansatt.dev.nav.no
-  image: {{image}}
+  image: "{{image}}"
   port: 3000
   azure:
     application:
       enabled: true
-      allowAllusers: true
+      allowAllUsers: true
     sidecar:
       enabled: true
       autoLogin: true
-    accessPolicy:
-      outbound:
-        rules:
-          - application: sif-vju-backend
+  accessPolicy:
+    outbound:
+      rules:
+        - application: sif-vju-backend
