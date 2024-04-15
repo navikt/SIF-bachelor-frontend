@@ -220,7 +220,7 @@ export const DocumentEditor = ({ brukerId, journalpostId, tittel, journalposttyp
             newMetadata: newMetadata,       
           };
 
-        fetch(baseUrl + "/rest/journalpostapi/v1/journalpost?forsoekFerdigstill=false", {
+        fetch(baseUrl + "/dokarkivAPI/createJournalpost", {
             method: 'POST',
             headers: {
             Authorization: `Bearer ${token}`,
