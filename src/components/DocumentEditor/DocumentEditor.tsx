@@ -19,6 +19,8 @@ export const DocumentEditor = ({ brukerId, journalpostId, tittel, journalposttyp
 
 }) => {
     
+    const baseUrl = process.env.REACT_APP_BASE_URL
+
     // State to keep track of selected document IDs
     const [selectedDocumentIds, setSelectedDocumentIds] = useState<string[]>([]);
 
@@ -53,7 +55,6 @@ export const DocumentEditor = ({ brukerId, journalpostId, tittel, journalposttyp
         datoDokument: string,
         tittel: string,
         journalposttype: string,
-        journalstatus: string,
         tema: string,
     }>({
         bruker: {
@@ -76,7 +77,6 @@ export const DocumentEditor = ({ brukerId, journalpostId, tittel, journalposttyp
         datoDokument: datoOpprettet,
         tittel: tittel,
         journalposttype: journalposttype,
-        journalstatus: journalstatus,
         tema: tema,
     });
 
@@ -98,7 +98,6 @@ export const DocumentEditor = ({ brukerId, journalpostId, tittel, journalposttyp
         datoDokument: string,
         tittel: string,
         journalposttype: string,
-        journalstatus: string,
         tema: string,
     }>({
         bruker: {
@@ -119,7 +118,6 @@ export const DocumentEditor = ({ brukerId, journalpostId, tittel, journalposttyp
         datoDokument: datoOpprettet,
         tittel: tittel,
         journalposttype: journalposttype,
-        journalstatus: journalstatus,
         tema: tema,
     });
 
@@ -221,6 +219,23 @@ export const DocumentEditor = ({ brukerId, journalpostId, tittel, journalposttyp
             oldMetadata: oldMetadata,
             newMetadata: newMetadata,       
           };
+
+        fetch(baseUrl + "/rest/journalpostapi/v1/journalpost?forsoekFerdigstill=false", {
+            method: 'POST',
+            headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+            },
+            body: JSON.stringify(requestBody), // Konverterer JavaScript objekt til en JSON string
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            console.log(response.json());
+            return response.json(); // Parse response as JSON
+        })
+
         console.log(requestBody)
         console.log(selectedDocumentIds)
         console.log("Modalen er nå lukket")
@@ -270,7 +285,7 @@ export const DocumentEditor = ({ brukerId, journalpostId, tittel, journalposttyp
                             className="inputBox"
                             readOnly
                         />
-                        <Select label="Status" onChange={handleStatusChange}>
+                        <Select label="Status" onChange={handleStatusChange} readOnly>
                             <option value="JOURNALFOERT">Journalført</option>
                             <option value="FERDIGSTILT">Utgående</option>
                             <option value="NOTAT">Notat</option>
