@@ -1,0 +1,25 @@
+apiVersion: nais.io/v1alpha1
+kind: Application
+
+metadata:
+  name: sif-vju-frontend
+  labels:
+    team: sif-bachelor
+  namespace: sif-bachelor
+
+spec:
+  ingresses:
+    - https://sif-vju.ansatt.dev.nav.no
+  image: {{image}}
+  port: 3000
+  azure:
+    application:
+      enabled: true
+      allowAllusers: true
+    sidecar:
+      enabled: true
+      autoLogin: true
+    accessPolicy:
+      outbound:
+        rules:
+          - application: sif-vju-backend
