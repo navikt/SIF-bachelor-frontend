@@ -23,7 +23,7 @@ export const PDFViewer = ({ documentUrls, documents }: { documentUrls: Map<strin
     const [mergedPdfUrl, setMergedPdfUrl] = useState<string | undefined>(undefined);
     const [ExceptionError, setExceptionError] = useState("");
     const [rotation, setRotation] = useState(0);
-    const [scale, setScale] = useState(1.215); // Start with no zoom
+    const [scale, setScale] = useState(1.217); // Start with no zoom
 
 
     useEffect(() => {
@@ -123,12 +123,11 @@ export const PDFViewer = ({ documentUrls, documents }: { documentUrls: Map<strin
                     {Array.from(
                         new Array(numPages),
                         (el, index) => (
-                        <div key={`page_${index + 1}`}>
+                        <div key={`page_${index + 1}`} className="pdf-document">
                             <Page 
                                 pageNumber={index + 1}
                                 rotate={rotation}
                                 scale={scale}
-                                className="pdf-document"
                             />
                             <p >
                                 Page {index + 1} of {numPages}
