@@ -18,11 +18,12 @@ pdfjs.GlobalWorkerOptions.workerSrc = new URL(
 
 export const PDFViewer = ({ documentUrls, documents }: { documentUrls: Map<string, string>; documents: IDocument[] }) => {
 
+    const [currentPage, setCurrentPage] = useState(1);
     const [numPages, setNumPages] = useState<number | null >(null);
     const [mergedPdfUrl, setMergedPdfUrl] = useState<string | undefined>(undefined);
     const [ExceptionError, setExceptionError] = useState("");
     const [rotation, setRotation] = useState(0);
-    const [scale, setScale] = useState(1); // Start with no zoom
+    const [scale, setScale] = useState(1.215); // Start with no zoom
 
 
     useEffect(() => {
@@ -90,11 +91,11 @@ export const PDFViewer = ({ documentUrls, documents }: { documentUrls: Map<strin
     };
 
     const handleZoomIn = () => {
-        setScale(scale => scale * 1.1); // Increase zoom by 10%
+        setScale(scale => scale + 0.25); // Increase zoom by 10%
     };
 
     const handleZoomOut = () => {
-        setScale(scale => scale * 0.9); // Decrease zoom by 10%
+        setScale(scale => scale - 0.25); // Decrease zoom by 10%
     };
 
     
@@ -112,18 +113,24 @@ export const PDFViewer = ({ documentUrls, documents }: { documentUrls: Map<strin
                         onRotate={handleRotate}
                         onZoomIn={handleZoomIn}
                         onZoomOut={handleZoomOut}
+                        currentPage={currentPage || 0}
+                        numPages={numPages || 0}
                     />
-                    <Document file={mergedPdfUrl} onLoadSuccess={onDocumentLoadSuccess} className="testyo">
+                    <Document 
+                        file={mergedPdfUrl} 
+                        onLoadSuccess={onDocumentLoadSuccess}
+                    >
                     {Array.from(
                         new Array(numPages),
                         (el, index) => (
-                        <div key={`page_${index + 1}`} className="pdf-page-container">
+                        <div key={`page_${index + 1}`}>
                             <Page 
                                 pageNumber={index + 1}
                                 rotate={rotation}
                                 scale={scale}
+                                className="pdf-document"
                             />
-                            <p>
+                            <p >
                                 Page {index + 1} of {numPages}
                             </p>
                         </div>

@@ -42,4 +42,6 @@ export interface ToolbarInterface {
     onRotate: (direction: string) => void;
     onZoomIn: () => void;
     onZoomOut: () => void;
+    currentPage: number;
+    numPages: number;
 }
