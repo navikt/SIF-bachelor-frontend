@@ -222,7 +222,7 @@ export const DocumentEditor = ({ brukerId, journalpostId, tittel, journalposttyp
             newMetadata: newMetadata,       
           };
 
-        fetch(baseUrl + "/dokarkivAPI/createJournalpost", {
+        fetch(baseUrl + "/createJournalpost", {
             method: 'POST',
             headers: {
             Authorization: `Bearer ${token}`,
