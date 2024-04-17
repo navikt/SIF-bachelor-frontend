@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { pdfjs } from "react-pdf"
 import "react-pdf/dist/esm/Page/TextLayer.css";
 import 'react-pdf/dist/Page/AnnotationLayer.css';
@@ -24,7 +24,7 @@ export const PDFViewer = ({ documentUrls, documents }: { documentUrls: Map<strin
     const [ExceptionError, setExceptionError] = useState("");
     const [rotation, setRotation] = useState(0);
     const [scale, setScale] = useState(1.217); // Start with no zoom
-
+    const pageRefs = useRef<(HTMLDivElement | null)[]>([]);
 
     useEffect(() => {
 
@@ -81,6 +81,50 @@ export const PDFViewer = ({ documentUrls, documents }: { documentUrls: Map<strin
         }
     }, [documents]);
 
+    // Initialize pageRefs array
+    useEffect(() => {
+        pageRefs.current = pageRefs.current.slice(0, numPages || 0);
+    }, [numPages]);
+
+    useEffect(() => {
+        const container = document.querySelector('.pdf-viewer-container');
+        if(container){
+            container.addEventListener('scroll', handleScroll);
+            console.log("container is: " + container)
+
+            return () => {
+                container.removeEventListener('scroll', handleScroll);
+            };
+        }
+    }, [currentPage]);
+
+    const handleScroll = () => {
+        const scrollY = window.pageYOffset;
+        let visiblePage: HTMLDivElement | null = null;
+        let visiblePageIndex = currentPage;
+
+        console.log(visiblePageIndex)
+        
+        for (let i = 0; i < pageRefs.current.length; i++) {
+            const ref = pageRefs.current[i];
+            console.log(ref);
+            if (ref) {
+                const pageTop = ref.offsetTop;
+                const pageBottom = pageTop + ref.clientHeight;
+                if (scrollY >= pageTop && scrollY < pageBottom) {
+                    visiblePage = ref;
+                    visiblePageIndex = i + 1;
+                    console.log("visiblePageIndex is: " + visiblePageIndex)
+                    break;
+                }
+            }
+        }
+        if (currentPage !== visiblePageIndex) {
+            setCurrentPage(visiblePageIndex);
+        }
+    };
+    
+
     const onDocumentLoadSuccess = ({numPages}: {numPages: number}) => {
         setNumPages(numPages)
         console.log(numPages)
@@ -123,7 +167,7 @@ export const PDFViewer = ({ documentUrls, documents }: { documentUrls: Map<strin
                     {Array.from(
                         new Array(numPages),
                         (el, index) => (
-                        <div key={`page_${index + 1}`} className="pdf-document">
+                        <div key={`page_${index + 1}`} ref={el => pageRefs.current[index] = el} className="pdf-document">
                             <Page 
                                 pageNumber={index + 1}
                                 rotate={rotation}
