@@ -26,6 +26,7 @@ export const SearchEngine = () => {
       // Error message
     const [errorMessage, setErrorMessage] = useState('');
     const [serverExceptionError, setExceptionError] = useState('');
+    const [errorCode, setErrorCode] = useState('');
   
     const FilterIconRef = useRef(null);
 
@@ -34,7 +35,7 @@ export const SearchEngine = () => {
     const location = useLocation();
 
     // Check if the current path is /SearchResults for resizable searchbar 
-    const isSearchResultsPage = location.pathname === "/SearchResults";
+    const isSearchResultsPage = location.pathname === "/SearchResults" || location.pathname === "/error";
 
     useEffect(() => {
         setErrorMessage(''); // Reset the error message on component mount
@@ -118,7 +119,9 @@ export const SearchEngine = () => {
         })
         .then(response => {
             if (!response.ok) {
-                throw new Error('Network response was not ok');
+                return response.json().then((body) => {
+                    throw { status: response.status, errorMessage: body.errorMessage };
+                });
             }
             return response.json(); // Parse response as JSON
         })
@@ -135,22 +138,27 @@ export const SearchEngine = () => {
                 // Oppdater tilstand her om nødvendig, f.eks. setJournalposts(data)
             }
         })
-        .catch(response => {
-            // Handle error response and er parse it to the ErrorResponse interface
-                response.json().then((error: ErrorResponse) => {
-                  console.error('Error fetching data:', error);
-                  setExceptionError(error.errorMessage || 'An unexpected error occurred. Please try again later.');
-                }).catch((jsonError: Error) => {
-                  // Handle any errors that occur during the parsing of the error response
-                  console.error('Error parsing error response:', jsonError);
-                  setExceptionError('An unexpected error occurred. Please try again later.');
-                });
-              }); 
+        .catch(error => {
+            // Check if the error has a status property
+            if (error.status) {
+                console.log("The error status is: " + error.status)
+                navigate('/error', { state: { errorCode: error.status, errorMessage: error.errorMessage
+                     || 'An unexpected error occurred.' } });
+            } else {
+                console.error('Error fetching data:', error);   
+                navigate('/error', { state: { errorCode: 'Unknown Error', errorMessage: 'An unexpected error occurred. Please try again later.' } });
+            }
+        });
             };
 
     // Conditional rendering based on the error state
     if (serverExceptionError) {
-    return <Alert variant="error" style={{ width:"750px" }}>{serverExceptionError}</Alert>;
+        return (
+            <div>
+                {errorCode && <Alert variant="error" style={{ width:"750px" }}>Error Code: {errorCode}</Alert>}
+                <Alert variant="error" style={{ width:"750px" }}>{serverExceptionError}</Alert>
+            </div>
+        );
     }
 
 return(
