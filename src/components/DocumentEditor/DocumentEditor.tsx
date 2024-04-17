@@ -213,9 +213,11 @@ export const DocumentEditor = ({ brukerId, journalpostId, tittel, journalposttyp
             return;
         }
 
+        console.log(journalpostId);
         const currentDate = formatDate(new Date());
         // Opprett JSON body med userId
         const requestBody = {
+            journalpostID : journalpostId,
             oldMetadata: oldMetadata,
             newMetadata: newMetadata,       
           };
