@@ -2,7 +2,7 @@ export interface IDocument {
     dokumentInfoId: string;
     tittel: string;
     originalJournalpostId: string;
-    
+    pageCount?: number;
 }
 
 /* Needed the type here because if not, we could get never[] arrays, which means that we wouldn't be able
