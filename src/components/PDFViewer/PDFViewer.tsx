@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { pdfjs } from "react-pdf"
 import "react-pdf/dist/esm/Page/TextLayer.css";
 import 'react-pdf/dist/Page/AnnotationLayer.css';
-import { IDocument } from "../types";
+import { IDocument, RotationInfo } from "../types";
 import { PDFDocument } from "pdf-lib";
 import "./PDFViewer.css"
 import { ErrorResponse } from "../types";
@@ -40,68 +40,90 @@ export const PDFViewer = ({ documentUrls, documents }: { documentUrls: Map<strin
         });
     };
 
+    
+    const parseRotationLib = () => {
+        for(const document of documents){
+            if(document.logiskeVedlegg.length){
+                const libString = document.logiskeVedlegg[0].tittel
+                // Parse the JSON string to a JavaScript object
+                if(libString){
+                    const rotationLib: RotationInfo[] = JSON.parse(libString);
+
+                    document.rotationLib=rotationLib
+                }
+            }else{
+                document.rotationLib=[]
+            }
+            
+        }
+        console.log(documents)
+    }
+
+    const mergePdfs = async () => {
+        try{
+            const mergedPdf = await PDFDocument.create();
+            for (const document of documents) {
+                const url = documentUrls.get(document.dokumentInfoId);
+                if (!url) {
+                    console.log("URL DOESNT EXIST")
+                    setExceptionError("URL not found for document with ID: " + document.dokumentInfoId);
+                    return;
+                }
+                console.log("tranforming " + document.dokumentInfoId + " to buffer")
+                const pdfBytes = await fetch(url).then(async response => {
+                    if (!response.ok) {
+                        console.log("ikke ok")
+                        const errorResponse = await response.json(); 
+                        throw new Error(errorResponse.errorMessage || `Failed to fetch document with ID ${document.dokumentInfoId}: ${response.statusText}`);
+                    }
+                    console.log("returnerer buffer")
+                    const buffer = await response.arrayBuffer()
+                    console.log(buffer)
+                    return buffer;
+                });
+                // Takes the raw binary data from pdfBytes and stores it into the PDFDocument object'
+                console.log("turning")
+                console.log(pdfBytes)
+                console.log("back into a pdf")
+                const pdf = await PDFDocument.load(pdfBytes);
+                console.log("pdf created successfully")
+                // copiedPages will be an array object of the pages in the PDF with page 1 and page 2 being [0, 1]
+                // and each object has a LOT of low level info about each page
+                // So TLDR, copyPages maps each page to its own object in an array where each object has the page number and lots of low level metadata
+                const copiedPages = await mergedPdf.copyPages(pdf, pdf.getPageIndices());
+                document.pageCount= copiedPages.length
+                console.log(copiedPages)
+                /* This will add all of the page objects of a document to mergedPdf, so that in the pdf reader on the
+                   right, it will display ALL the PDFs in a single journalpost one after the other. */
+                copiedPages.forEach((page, pageIndex) => {
+                    mergedPdf.addPage(page); // Add the copied page to the merged PDF
+                });
+            }
+            /* After we have collected ALL of the PDFs and stored them together in the mergedPDF object, we can then
+            convert it back to the arrayBuffer with the .save() method and then  */
+            const mergedPdfBytes = await mergedPdf.save();
+            const mergedPdfUrl = URL.createObjectURL(new Blob([mergedPdfBytes], { type: "application/pdf" }));
+            setMergedPdfUrl(mergedPdfUrl);
+        } catch (error) {
+            if (error instanceof Response) {
+                // The error is an HTTP response from the backend
+                const errorData: ErrorResponse = await error.json();
+                console.error("There was an error merging the PDFs: ", errorData.errorMessage);
+                setExceptionError(errorData.errorMessage || "An unexpected error occurred while merging documents.");
+            } else {
+                // The error is a JavaScript error
+                console.error("There was an error merging the PDFs: ", error);
+                setExceptionError((error as ErrorResponse).errorMessage || "An unexpected error occurred while merging documents.");
+            }
+        }
+    };
+    
     useEffect(() => {
 
-        const mergePdfs = async () => {
-            try{
-                const mergedPdf = await PDFDocument.create();
-                for (const document of documents) {
-                    const url = documentUrls.get(document.dokumentInfoId);
-                    if (!url) {
-                        console.log("URL DOESNT EXIST")
-                        setExceptionError("URL not found for document with ID: " + document.dokumentInfoId);
-                        return;
-                    }
-                    console.log("tranforming " + document.dokumentInfoId + " to buffer")
-                    const pdfBytes = await fetch(url).then(async response => {
-                        if (!response.ok) {
-                            console.log("ikke ok")
-                            const errorResponse = await response.json(); 
-                            throw new Error(errorResponse.errorMessage || `Failed to fetch document with ID ${document.dokumentInfoId}: ${response.statusText}`);
-                        }
-                        console.log("returnerer buffer")
-                        const buffer = await response.arrayBuffer()
-                        console.log(buffer)
-                        return buffer;
-                    });
-                    // Takes the raw binary data from pdfBytes and stores it into the PDFDocument object'
-                    console.log("turning")
-                    console.log(pdfBytes)
-                    console.log("back into a pdf")
-                    const pdf = await PDFDocument.load(pdfBytes);
-                    console.log("pdf created successfully")
-                    // copiedPages will be an array object of the pages in the PDF with page 1 and page 2 being [0, 1]
-                    // and each object has a LOT of low level info about each page
-                    // So TLDR, copyPages maps each page to its own object in an array where each object has the page number and lots of low level metadata
-                    const copiedPages = await mergedPdf.copyPages(pdf, pdf.getPageIndices());
-                    document.pageCount= copiedPages.length
-                    console.log(copiedPages)
-                    /* This will add all of the page objects of a document to mergedPdf, so that in the pdf reader on the
-                       right, it will display ALL the PDFs in a single journalpost one after the other. */
-                    copiedPages.forEach((page, pageIndex) => {
-                        mergedPdf.addPage(page); // Add the copied page to the merged PDF
-                    });
-                }
-                /* After we have collected ALL of the PDFs and stored them together in the mergedPDF object, we can then
-                convert it back to the arrayBuffer with the .save() method and then  */
-                const mergedPdfBytes = await mergedPdf.save();
-                const mergedPdfUrl = URL.createObjectURL(new Blob([mergedPdfBytes], { type: "application/pdf" }));
-                setMergedPdfUrl(mergedPdfUrl);
-            } catch (error) {
-                if (error instanceof Response) {
-                    // The error is an HTTP response from the backend
-                    const errorData: ErrorResponse = await error.json();
-                    console.error("There was an error merging the PDFs: ", errorData.errorMessage);
-                    setExceptionError(errorData.errorMessage || "An unexpected error occurred while merging documents.");
-                } else {
-                    // The error is a JavaScript error
-                    console.error("There was an error merging the PDFs: ", error);
-                    setExceptionError((error as ErrorResponse).errorMessage || "An unexpected error occurred while merging documents.");
-                }
-            }
-        };
+        
 
         if (documentUrls && documents.length > 0) {
+            parseRotationLib()
             mergePdfs();
         }
     }, [documents]);
