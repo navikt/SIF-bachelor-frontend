@@ -19,6 +19,8 @@ export const DocumentEditor = ({ brukerId, journalpostId, tittel, journalposttyp
 
 }) => {
     
+    const baseUrl = process.env.REACT_APP_BASE_URL
+
     // State to keep track of selected document IDs
     const [selectedDocumentIds, setSelectedDocumentIds] = useState<string[]>([]);
 
@@ -38,8 +40,8 @@ export const DocumentEditor = ({ brukerId, journalpostId, tittel, journalposttyp
     // oldMetadata which is originally in the journalpost
     const [oldMetadata, setOldMetadata] = useState<{
         bruker: {
-            brukerId: string,
-            idType: string,
+            id: string,
+            type: string,
         },
         dokumenter: {
             brevkode: string;
@@ -53,12 +55,11 @@ export const DocumentEditor = ({ brukerId, journalpostId, tittel, journalposttyp
         datoDokument: string,
         tittel: string,
         journalposttype: string,
-        journalstatus: string,
         tema: string,
     }>({
         bruker: {
-            brukerId: brukerId,
-            idType: "FNR",
+            id: brukerId,
+            type: "FNR",
         },
         dokumenter: [
             {
@@ -76,15 +77,14 @@ export const DocumentEditor = ({ brukerId, journalpostId, tittel, journalposttyp
         datoDokument: datoOpprettet,
         tittel: tittel,
         journalposttype: journalposttype,
-        journalstatus: journalstatus,
         tema: tema,
     });
 
     // For the updated metadata in the journalpost
     const [newMetadata, setNewMetadata] = useState<{
         bruker: {
-            brukerId: string,
-            idType: string,
+            id: string,
+            type: string,
         },
         dokumenter: {
             brevkode: string;
@@ -98,12 +98,11 @@ export const DocumentEditor = ({ brukerId, journalpostId, tittel, journalposttyp
         datoDokument: string,
         tittel: string,
         journalposttype: string,
-        journalstatus: string,
         tema: string,
     }>({
         bruker: {
-            brukerId: brukerId,
-            idType: "FNR",
+            id: brukerId,
+            type: "FNR",
         },
         dokumenter: [{
             brevkode: "NAV 04-01.03",
@@ -119,7 +118,6 @@ export const DocumentEditor = ({ brukerId, journalpostId, tittel, journalposttyp
         datoDokument: datoOpprettet,
         tittel: tittel,
         journalposttype: journalposttype,
-        journalstatus: journalstatus,
         tema: tema,
     });
 
@@ -216,11 +214,36 @@ export const DocumentEditor = ({ brukerId, journalpostId, tittel, journalposttyp
         }
 
         const currentDate = formatDate(new Date());
+        //test for å sjekke kobling
+        const testData = {
+            message: "Test data to check connection"
+        };
         // Opprett JSON body med userId
         const requestBody = {
             oldMetadata: oldMetadata,
             newMetadata: newMetadata,       
           };
+
+        
+
+          
+
+        fetch(baseUrl + "/createJournalpost", {
+            method: 'POST',
+            headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+            },
+            body: JSON.stringify(requestBody), // Konverterer JavaScript objekt til en JSON string
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            console.log(response.json());
+            return response.json(); // Parse response as JSON
+        })
+
         console.log(requestBody)
         console.log(selectedDocumentIds)
         console.log("Modalen er nå lukket")
@@ -248,7 +271,7 @@ export const DocumentEditor = ({ brukerId, journalpostId, tittel, journalposttyp
                     <div>
                         <TextField      
                             label="ID"      
-                            value={newMetadata.bruker.brukerId}
+                            value={newMetadata.bruker.id}
                             className="inputBox"
                             readOnly
                         />
@@ -270,7 +293,7 @@ export const DocumentEditor = ({ brukerId, journalpostId, tittel, journalposttyp
                             className="inputBox"
                             readOnly
                         />
-                        <Select label="Status" onChange={handleStatusChange}>
+                        <Select label="Status" onChange={handleStatusChange} readOnly>
                             <option value="JOURNALFOERT">Journalført</option>
                             <option value="FERDIGSTILT">Utgående</option>
                             <option value="NOTAT">Notat</option>
