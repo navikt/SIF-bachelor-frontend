@@ -146,6 +146,7 @@ export const SearchResults = () => {
 
     /* Kjempe mye redundant kode her, kanskje fjerne noen av disse og instansiere noen av de i selve useState()? */
     useEffect(()=>{
+        console.log(journalpostList)
         setJournalpostList(location.state.dokumentoversikt.journalposter as Journalpost[])
         //console.log("Hi " + location.state)
         setDocuments(location.state.dokumentoversikt.journalposter[0].dokumenter)
@@ -227,7 +228,11 @@ export const SearchResults = () => {
         console.log(documents)
     };
 
-
+    const addNewJournalPosts = (newJournalPost: Journalpost, oldJournalPost: Journalpost) => {
+        // Here, handle the state update or any other operations with these objects
+        console.log(newJournalPost)
+        console.log(oldJournalPost)
+    };
 
     const selectTagVariant = (journalStatus: string) => {
         switch(journalStatus.toUpperCase()){
@@ -317,6 +322,7 @@ export const SearchResults = () => {
                                                 addGlobalDocument={addDocument}
                                                 documents={documents}
                                                 setIsModalOpen={setIsModalOpen}
+                                                appendNewJournalpost={addNewJournalPosts}
                                             />
 
                                         </>

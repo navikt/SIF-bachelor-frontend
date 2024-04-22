@@ -1,10 +1,10 @@
 import {useRef, useState, useEffect } from "react"
 import {Button, Modal, TextField, Select } from "@navikt/ds-react"
 import { PencilIcon } from "@navikt/aksel-icons";
-import { IDocument } from "../types";
+import { IDocument, Journalpost } from "../types";
 import {DocumentViewer} from "../DocumentViewer/DocumentViewer";
 
-export const DocumentEditor = ({ brukerId, journalpostId, tittel, journalposttype, datoOpprettet, journalstatus, tema, documentsToView, addGlobalDocument, documents, setIsModalOpen}: { 
+export const DocumentEditor = ({ brukerId, journalpostId, tittel, journalposttype, datoOpprettet, journalstatus, tema, documentsToView, addGlobalDocument, documents, setIsModalOpen, appendNewJournalpost}: { 
     brukerId: string,
     journalpostId: string, 
     tittel: string, 
@@ -16,7 +16,7 @@ export const DocumentEditor = ({ brukerId, journalpostId, tittel, journalposttyp
     addGlobalDocument: (document: IDocument) => void,
     documents: IDocument[],
     setIsModalOpen: (isModalOpen: boolean) => void,
-
+    appendNewJournalpost: (newJournalPost: any, oldJournalPost: any) => void
 }) => {
     
     const baseUrl = process.env.REACT_APP_BASE_URL
@@ -214,7 +214,7 @@ export const DocumentEditor = ({ brukerId, journalpostId, tittel, journalposttyp
         }
 
         console.log(journalpostId);
-        const currentDate = formatDate(new Date());
+
         // Opprett JSON body med userId
         const requestBody = {
             journalpostID : journalpostId,
@@ -234,9 +234,44 @@ export const DocumentEditor = ({ brukerId, journalpostId, tittel, journalposttyp
             if (!response.ok) {
                 throw new Error('Network response was not ok');
             }
-            console.log(response.json());
-            return response.json(); // Parse response as JSON
+            return response.json(); // Read the response body only once
+        })  
+        .then(data => {
+            console.log(data); // Work with the data here
+            const newJournalpostIds = data.map((journalpost: any) => journalpost.journalpostId);
+            console.log(newJournalpostIds);
+            
+
+            // Create new journal post objects
+        /*    const newJournalPost: Journalpost = {
+                journalpostId: newJournalpostIds[1], // This is the new ID from the response
+                tittel: newMetadata.tittel, // Assuming you want to use the title from newMetadata
+                journalposttype: newMetadata.journalposttype, // Assuming you want to use the journal post type from newMetadata
+                datoOpprettet: formatDate(new Date()), // Assuming you want to set the creation date to now
+                journalstatus: journalstatus, // You would need to define how to get this value
+                tema: newMetadata.tema, // Assuming you want to use the theme from newMetadata
+                avsenderMottakerNavn: "placeholder",
+                dokumenter: newMetadata.dokumenter,
+            };
+
+            const oldJournalPost = {
+                journalpostId: newJournalpostIds[0], // This is the new ID from the response
+                tittel: oldMetadata.tittel, // Assuming you want to use the title from newMetadata
+                journalposttype: oldMetadata.journalposttype, // Assuming you want to use the journal post type from newMetadata
+                datoOpprettet: formatDate(new Date()), // Assuming you want to set the creation date to now
+                journalstatus: journalstatus, // You would need to define how to get this value
+                tema: oldMetadata.tema, // Assuming you want to use the theme from newMetadata
+            }; 
+
+            console.log(oldMetadata.bruker.brukerId + " " + newJournalpostIds[0] + " " +  oldMetadata.tittel + " " +  oldMetadata.journalposttype + " " + formatDate(new Date()) + " " + journalstatus + " " + oldMetadata.tema)
+            console.log(newJournalPost)
+            console.log(oldJournalPost)
+            appendNewJournalpost(newJournalPost, oldJournalPost); */
+            
         })
+        .catch(error => {
+            console.error('There has been a problem with your fetch operation:', error);
+        });
 
         console.log(requestBody)
         console.log(selectedDocumentIds)
@@ -264,8 +299,8 @@ export const DocumentEditor = ({ brukerId, journalpostId, tittel, journalposttyp
                 <Modal.Body>
                     <div>
                         <TextField      
-                            label="ID"      
-                            value={newMetadata.bruker.brukerId}
+                            label="Journalpost ID"      
+                            value={journalpostId}
                             className="inputBox"
                             readOnly
                         />
