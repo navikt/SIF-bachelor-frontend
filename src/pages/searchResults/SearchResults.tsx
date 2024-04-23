@@ -232,6 +232,14 @@ export const SearchResults = () => {
         // Here, handle the state update or any other operations with these objects
         console.log(newJournalPost)
         console.log(oldJournalPost)
+        console.log("datoen til nye JP er: " + newJournalPost.datoOpprettet)
+        console.log("datoen til den gamle JP er: " + oldJournalPost.datoOpprettet)
+
+        setJournalpostList(prevJournalpostList => [
+            ...prevJournalpostList,
+            newJournalPost,
+            oldJournalPost
+        ]);
     };
 
     const selectTagVariant = (journalStatus: string) => {
@@ -307,8 +315,8 @@ export const SearchResults = () => {
                                                 addGlobalDocument={addDocument}
                                                 documents={documents}
                                                 isModal={isModalOpen}
-                                                handleSelectedId={() => {}}
-                                                handleUnselectedId={() => {}}
+                                                handleSelectedIdandTitle={() => {}}
+                                                handleUnselectedIdandTitle={() => {}}
                                             />
                                            <DocumentEditor
                                                 brukerId={userkey}
