@@ -1,5 +1,6 @@
 import { Button } from "@navikt/ds-react";
 import { useState } from "react";
+import { TasklistStartIcon, XMarkOctagonIcon } from "@navikt/aksel-icons";
 
 export const FeilRegistrer = ({ journalposttype, journalpostId}: {
     journalposttype: string,
@@ -40,6 +41,8 @@ export const FeilRegistrer = ({ journalposttype, journalpostId}: {
     return(
         <Button
             onClick={() => registrerFeil(journalpostId, journalposttype)}
+            iconPosition="right"
+            icon={journalposttype === "I" ? <TasklistStartIcon aria-hidden /> : <XMarkOctagonIcon aria-hidden />}
         >
         {journalposttype === "I" ? "Sett Status Utgår" : "Sett Status Avbrutt"}
         </Button>

@@ -321,26 +321,28 @@ export const SearchResults = () => {
                                                 handleSelectedIdandTitle={() => {}}
                                                 handleUnselectedIdandTitle={() => {}}
                                             />
-                                           <DocumentEditor
-                                                brukerId={userkey}
-                                                journalpostId={journalpostId}
-                                                tittel={tittel}
-                                                journalposttype={journalposttype}
-                                                datoOpprettet={formatDate(new Date(datoOpprettet))}
-                                                journalstatus={journalstatus}
-                                                tema={tema}
-                                                documentsToView={journalpostList.find(entry => entry.journalpostId === journalpostId)?.dokumenter || []}
-                                                addGlobalDocument={addDocument}
-                                                documents={documents}
-                                                setIsModalOpen={setIsModalOpen}
-                                                appendNewJournalpost={addNewJournalPosts}
-                                            />
-                                            {((journalposttype === "I" || journalposttype === "U") && journalstatus !== "FERDIGSTILT") && 
-                                                <FeilRegistrer
-                                                    journalposttype={journalposttype}
-                                                    journalpostId={journalpostId}
-                                                />
-                                            }
+                                            <div className="row-buttons">
+                                                <DocumentEditor
+                                                        brukerId={userkey}
+                                                        journalpostId={journalpostId}
+                                                        tittel={tittel}
+                                                        journalposttype={journalposttype}
+                                                        datoOpprettet={formatDate(new Date(datoOpprettet))}
+                                                        journalstatus={journalstatus}
+                                                        tema={tema}
+                                                        documentsToView={journalpostList.find(entry => entry.journalpostId === journalpostId)?.dokumenter || []}
+                                                        addGlobalDocument={addDocument}
+                                                        documents={documents}
+                                                        setIsModalOpen={setIsModalOpen}
+                                                        appendNewJournalpost={addNewJournalPosts}
+                                                    />
+                                                    {((journalposttype === "I" || journalposttype === "U") && journalstatus !== "FERDIGSTILT") && 
+                                                        <FeilRegistrer
+                                                            journalposttype={journalposttype}
+                                                            journalpostId={journalpostId}
+                                                        />
+                                                    }
+                                            </div>
                                         </>
                                     }
                                 >

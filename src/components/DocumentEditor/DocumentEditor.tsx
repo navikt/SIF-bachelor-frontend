@@ -286,18 +286,9 @@ export const DocumentEditor = ({ brukerId, journalpostId, tittel, journalposttyp
     return(
         <div>
             <Button 
-                onClick={() => {
-                    /*
-                    console.log("Modalen var: " + isModal)
-                    setIsModalOpen(!isModal)
-                    console.log("Nå er modal: " + isModal)
-                    
-                    */
-                    ref.current?.showModal()
-                    }
-                }
+                onClick={() => {ref.current?.showModal()}}
                 iconPosition="right" icon={<PencilIcon aria-hidden />} 
-                style={{marginTop: "10px"}}>Splitt Docs
+                >Splitt Docs
             </Button>
 
             <Modal ref={ref} header={{ heading: "Splitt Opp Dokumenter" }} width={600}>
