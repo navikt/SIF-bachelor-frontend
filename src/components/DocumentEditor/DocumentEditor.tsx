@@ -251,9 +251,7 @@ export const DocumentEditor = ({ brukerId, journalpostId, tittel, journalposttyp
                         dokumentInfoId: doc.id,
                         tittel: doc.title,
                         originalJournalpostId: journalpostId,
-                        logiskeVedlegg: [{
-                            tittel: "placeholder"
-                        }]
+                        logiskeVedlegg: []
                     }))
                 };
 
@@ -269,9 +267,7 @@ export const DocumentEditor = ({ brukerId, journalpostId, tittel, journalposttyp
                     dokumentInfoId: doc.id,
                     tittel: doc.title,
                     originalJournalpostId: journalpostId,
-                    logiskeVedlegg: [{
-                        tittel: "placeholder"
-                    }]
+                    logiskeVedlegg: []
                 }))
             }; 
 

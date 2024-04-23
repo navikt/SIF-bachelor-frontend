@@ -5,6 +5,7 @@ import { PencilIcon } from "@navikt/aksel-icons";
 import { PDFViewer } from "../../components/PDFViewer/PDFViewer";
 import { DocumentViewer } from "../../components/DocumentViewer/DocumentViewer";
 import { DocumentEditor } from "../../components/DocumentEditor/DocumentEditor";
+import { FeilRegistrer } from "../../components/FeilRegistrer/FeilRegistrer";
 import { IDocument, Journalpost, FilterOptions } from "../../components/types";
 import './SearchResults.css';
 
@@ -244,6 +245,8 @@ export const SearchResults = () => {
 
     const selectTagVariant = (journalStatus: string) => {
         switch(journalStatus.toUpperCase()){
+            case("UNDER_ARBEID"):
+                return "alt1"
             case("JOURNALFOERT"):
                 return "info"  
             case("FERDIGSTILT"):
@@ -332,7 +335,12 @@ export const SearchResults = () => {
                                                 setIsModalOpen={setIsModalOpen}
                                                 appendNewJournalpost={addNewJournalPosts}
                                             />
-
+                                            {((journalposttype === "I" || journalposttype === "U") && journalstatus !== "FERDIGSTILT") && 
+                                                <FeilRegistrer
+                                                    journalposttype={journalposttype}
+                                                    journalpostId={journalpostId}
+                                                />
+                                            }
                                         </>
                                     }
                                 >
