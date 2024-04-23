@@ -1,5 +1,5 @@
 .pdf-viewer-container{
-    background-color: white;
+    background-color: #f2f3f5;
     width: fit-content;
     min-width:100%;
     min-height: 50%;
@@ -7,6 +7,8 @@
     max-height: calc(100vh - 75px);
     overflow-y: auto;
     max-width: 100%;
+    position: relative;
+    border-radius: 10px;
 }
 .pdf-viewer-container>p{
     margin: 0;
@@ -16,16 +18,94 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    border-bottom: 1px solid gray;
+    border-bottom: 1px solid rgb(209, 84, 84);
 }
 .pdf-title>p{
     margin: 0;
 }
+.pdf-document{
+    
 
+}
+.pdf-document>p{
+    margin: 5px 20px;
+    width: fit-content;
+}
+.react-pdf__Page{
+    box-shadow: -1px 4px 63px -17px rgba(0,0,0,0.75);
+    -webkit-box-shadow: -1px 4px 63px -17px rgba(0,0,0,0.75);
+    -moz-box-shadow: -1px 4px 63px -17px rgba(0,0,0,0.75);
+    border-radius: 10px;
+    overflow: hidden;
+    width: fit-content;
+    transition: ease-in-out 0.1s;
+}
+.react-pdf__Document{
+    display: flex;
+    justify-content: start;
+    flex-direction: column;
+    align-items: center;
+    gap: 3rem;
+}
 .pdf-content{
     width: 100%;
     max-width: 100%;
     max-height: 100%;
-    z-index: 1;
     overflow: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.toolbar-btns{
+    font-size: 40px;
+    position: absolute;
+    z-index: 100;
+    border-radius: 10px;
+    background-color: white;
+    box-shadow: 0px 2px 14px -4px rgba(0,0,0,0.75);
+    -webkit-box-shadow: 0px 2px 14px -4px rgba(0,0,0,0.75);
+    -moz-box-shadow: 0px 2px 14px -4px rgba(0,0,0,0.75);
+    transition: ease-in-out 0.2s;
+    padding: 4px;
+}
+.toolbar-btns:hover{
+    cursor: pointer;
+    transform: scale(1.1);
+    
+}
+.rotate-right{
+    top: 1rem;
+    left: 1rem;
+
+}
+.rotate-left{
+    top: 4rem;
+    left: 1rem;
+}
+.zoom-in{
+    top: 7rem;
+    left: 1rem;
+}
+.zoom-out{
+    top: 10rem;
+    left: 1rem;
+}
+.page-index{
+    font-size: 1rem;
+    padding: 10px 20px;
+    bottom: 1rem;
+    left: 1rem;
+}
+.page-count{
+    transition: ease-in-out 0.1s;
+}
+.active-count{
+    margin-top: 3rem !important;
+}
+.active-doc{
+    transform: scale(1.1);
+}
+.active-wrapper{
+    margin: 3rem 0;
+
 }

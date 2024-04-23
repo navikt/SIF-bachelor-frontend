@@ -46,8 +46,6 @@ interface SortState {
 export const SearchResults = () => {
     const baseUrl = process.env.REACT_APP_BASE_URL
     const location = useLocation()
-    const ref = useRef<HTMLDialogElement>(null);
-    console.log(location.state)
     const [userkey, setUserkey] = useState<string>(location.state.userkey)
     const [journalpostList, setJournalpostList] = useState<Journalpost[]>(location.state.dokumentoversikt.journalposter as Journalpost[]) || []
     const [filterOptions, setFilterOptions] = useState<FilterOptions>(location.state.filterOptions);
@@ -148,15 +146,16 @@ export const SearchResults = () => {
 
     /* Kjempe mye redundant kode her, kanskje fjerne noen av disse og instansiere noen av de i selve useState()? */
     useEffect(()=>{
+        console.log(journalpostList)
         setJournalpostList(location.state.dokumentoversikt.journalposter as Journalpost[])
-        console.log("Hi " + location.state)
+        //console.log("Hi " + location.state)
         setDocuments(location.state.dokumentoversikt.journalposter[0].dokumenter)
         setUserkey(location.state.userkey)
         setFilterOptions(location.state.filterOptions)
-        console.log("LOGGER LOKAL FILTEROPTIONS")
-        console.log(filterOptions)
+        //console.log("LOGGER LOKAL FILTEROPTIONS")
+        //console.log(filterOptions)
         setFilterList(transformFilterOptionsToList(filterOptions))
-        console.log(filterList)
+        //console.log(filterList)
         selectRow([location.state.dokumentoversikt.journalposter[0].journalpostId])
     }, [location.state, filterOptions])
 
@@ -229,7 +228,19 @@ export const SearchResults = () => {
         console.log(documents)
     };
 
+    const addNewJournalPosts = (newJournalPost: Journalpost, oldJournalPost: Journalpost) => {
+        // Here, handle the state update or any other operations with these objects
+        console.log(newJournalPost)
+        console.log(oldJournalPost)
+        console.log("datoen til nye JP er: " + newJournalPost.datoOpprettet)
+        console.log("datoen til den gamle JP er: " + oldJournalPost.datoOpprettet)
 
+        setJournalpostList(prevJournalpostList => [
+            ...prevJournalpostList,
+            newJournalPost,
+            oldJournalPost
+        ]);
+    };
 
     const selectTagVariant = (journalStatus: string) => {
         switch(journalStatus.toUpperCase()){
@@ -304,8 +315,8 @@ export const SearchResults = () => {
                                                 addGlobalDocument={addDocument}
                                                 documents={documents}
                                                 isModal={isModalOpen}
-                                                handleSelectedId={() => {}}
-                                                handleUnselectedId={() => {}}
+                                                handleSelectedIdandTitle={() => {}}
+                                                handleUnselectedIdandTitle={() => {}}
                                             />
                                            <DocumentEditor
                                                 brukerId={userkey}
@@ -319,6 +330,7 @@ export const SearchResults = () => {
                                                 addGlobalDocument={addDocument}
                                                 documents={documents}
                                                 setIsModalOpen={setIsModalOpen}
+                                                appendNewJournalpost={addNewJournalPosts}
                                             />
 
                                         </>

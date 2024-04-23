@@ -1,10 +1,10 @@
 import {useRef, useState, useEffect } from "react"
 import {Button, Modal, TextField, Select } from "@navikt/ds-react"
 import { PencilIcon } from "@navikt/aksel-icons";
-import { IDocument } from "../types";
+import { IDocument, Journalpost } from "../types";
 import {DocumentViewer} from "../DocumentViewer/DocumentViewer";
 
-export const DocumentEditor = ({ brukerId, journalpostId, tittel, journalposttype, datoOpprettet, journalstatus, tema, documentsToView, addGlobalDocument, documents, setIsModalOpen}: { 
+export const DocumentEditor = ({ brukerId, journalpostId, tittel, journalposttype, datoOpprettet, journalstatus, tema, documentsToView, addGlobalDocument, documents, setIsModalOpen, appendNewJournalpost}: { 
     brukerId: string,
     journalpostId: string, 
     tittel: string, 
@@ -16,25 +16,25 @@ export const DocumentEditor = ({ brukerId, journalpostId, tittel, journalposttyp
     addGlobalDocument: (document: IDocument) => void,
     documents: IDocument[],
     setIsModalOpen: (isModalOpen: boolean) => void,
-
+    appendNewJournalpost: (newJournalPost: any, oldJournalPost: any) => void
 }) => {
     
     const baseUrl = process.env.REACT_APP_BASE_URL
 
     // State to keep track of selected document IDs
-    const [selectedDocumentIds, setSelectedDocumentIds] = useState<string[]>([]);
+    const [selectedDocuments, setSelectedDocuments] = useState<{id: string, title: string}[]>([]);
 
     // State to keep track of selected document IDs
-    const [unselectedDocumentIds, setUnselectedDocumentIds] = useState<string[]>([]);
+    const [unselectedDocuments, setUnselectedDocuments] = useState<{id: string, title: string}[]>([]);
 
     // Callback to be called from DocumentViewer when the selection changes
-    const handleUnselectedDocumentsChange = (unselectedDocs: string[]) => {
-        setUnselectedDocumentIds(unselectedDocs);
+    const handleUnselectedDocumentsChange = (unselectedDocs: {id: string, title: string}[]) => {
+        setUnselectedDocuments(unselectedDocs);
     };
 
     // Callback to be called from DocumentViewer when the selection changes
-    const handleSelectedDocumentsChange = (selectedDocs: string[]) => {
-        setSelectedDocumentIds(selectedDocs);
+    const handleSelectedDocumentsChange = (selectedDocs: {id: string, title: string}[]) => {
+        setSelectedDocuments(selectedDocs);
     };
 
     // oldMetadata which is originally in the journalpost
@@ -126,18 +126,11 @@ export const DocumentEditor = ({ brukerId, journalpostId, tittel, journalposttyp
 
     const ref = useRef<HTMLDialogElement>(null);
 
-    const formatDate = (date: Date) => {
-        const day = date.getDate().toString().padStart(2, '0');
-        const month = (date.getMonth() + 1).toString().padStart(2, '0');
-        const year = date.getFullYear().toString();
-        return `${day}.${month}.${year}`
-    };
-
     useEffect(() => {
         // Map each selectedDocumentId to a new entry in dokumentvarianter
         setNewMetadata(prev => ({
             ...prev,
-            dokumenter: selectedDocumentIds.map(id => ({
+            dokumenter: selectedDocuments.map(({id, title}) => ({
                 brevkode: "placeholder",
                 dokumentvarianter: [
                     {
@@ -146,13 +139,13 @@ export const DocumentEditor = ({ brukerId, journalpostId, tittel, journalposttyp
                         variantformat: "ARKIV"
                     }
                 ],
-                tittel: "placeholder",
+                tittel: title,
             }))
         }));
 
         setOldMetadata(prev => ({
             ...prev,
-            dokumenter: unselectedDocumentIds.map(id => ({
+            dokumenter: unselectedDocuments.map(({id, title}) => ({
                 brevkode: "placeholder",
                 dokumentvarianter: [
                     {
@@ -161,7 +154,7 @@ export const DocumentEditor = ({ brukerId, journalpostId, tittel, journalposttyp
                         variantformat: "ARKIV"
                     }
                 ],
-                tittel: "placeholder",
+                tittel: title,
             }))
         }));
 
@@ -169,7 +162,7 @@ export const DocumentEditor = ({ brukerId, journalpostId, tittel, journalposttyp
         // setNewMetadata({...newMetadata, dokumentVarianter: newDokumentvarianter})
         // As soon as unselectedDocumentIds updates, update oldMetadata
         // setOldMetadata({...oldMetadata, dokumentID: unselectedDocumentIds});
-    }, [selectedDocumentIds, unselectedDocumentIds]);
+    }, [selectedDocuments, unselectedDocuments]);
 
     const displayType = (type: string) => {
         if (type === "U") {
@@ -204,8 +197,8 @@ export const DocumentEditor = ({ brukerId, journalpostId, tittel, journalposttyp
     };
 
     const splitDocs = async () => {
-        console.log("Dokument ID-ene som er valgt er: " + selectedDocumentIds);
-        console.log("Dokument-Idene som IKKE er valgt er: " + unselectedDocumentIds)
+        console.log("Dokument ID-ene som er valgt er: " + selectedDocuments[0].id);
+        console.log("Dokument-Idene som IKKE er valgt er: " + unselectedDocuments[0].id)
         const token = sessionStorage.getItem("token");
 
         if(!token) {
@@ -213,20 +206,17 @@ export const DocumentEditor = ({ brukerId, journalpostId, tittel, journalposttyp
             return;
         }
 
-        const currentDate = formatDate(new Date());
-        //test for å sjekke kobling
-        const testData = {
-            message: "Test data to check connection"
-        };
+        console.log(journalpostId);
+
         // Opprett JSON body med userId
         const requestBody = {
+            journalpostID : journalpostId,
             oldMetadata: oldMetadata,
             newMetadata: newMetadata,       
           };
 
-        
-
-          
+          console.log(oldMetadata)
+          console.log(newMetadata)
 
         fetch(baseUrl + "/createJournalpost", {
             method: 'POST',
@@ -240,12 +230,60 @@ export const DocumentEditor = ({ brukerId, journalpostId, tittel, journalposttyp
             if (!response.ok) {
                 throw new Error('Network response was not ok');
             }
-            console.log(response.json());
-            return response.json(); // Parse response as JSON
+            return response.json(); // Read the response body only once
+        })  
+        .then(data => {
+            console.log(data); // Work with the data here
+            const newJournalpostIds = data.map((journalpost: any) => journalpost.journalpostId);
+            console.log(newJournalpostIds);
+            
+
+                // Create new journal post objects
+                const newJournalPost: Journalpost = {
+                    journalpostId: newJournalpostIds[1], // This is the new ID from the response
+                    tittel: newMetadata.tittel, // Assuming you want to use the title from newMetadata
+                    journalposttype: newMetadata.journalposttype, // Assuming you want to use the journal post type from newMetadata
+                    datoOpprettet: (new Date()).toString(), // Assuming you want to set the creation date to now
+                    journalstatus: journalstatus, // You would need to define how to get this value
+                    tema: newMetadata.tema, // Assuming you want to use the theme from newMetadata
+                    avsenderMottakerNavn: "placeholder",
+                    dokumenter: selectedDocuments.map(doc => ({
+                        dokumentInfoId: doc.id,
+                        tittel: doc.title,
+                        originalJournalpostId: journalpostId,
+                        logiskeVedlegg: [{
+                            tittel: "placeholder"
+                        }]
+                    }))
+                };
+
+            const oldJournalPost: Journalpost = {
+                journalpostId: newJournalpostIds[0], // This is the new ID from the response
+                tittel: oldMetadata.tittel, // Assuming you want to use the title from newMetadata
+                journalposttype: oldMetadata.journalposttype, // Assuming you want to use the journal post type from newMetadata
+                datoOpprettet: (new Date()).toString(), // Assuming you want to set the creation date to now
+                journalstatus: journalstatus, // You would need to define how to get this value
+                tema: oldMetadata.tema, // Assuming you want to use the theme from newMetadata
+                avsenderMottakerNavn: "placeholder",
+                dokumenter: unselectedDocuments.map(doc => ({
+                    dokumentInfoId: doc.id,
+                    tittel: doc.title,
+                    originalJournalpostId: journalpostId,
+                    logiskeVedlegg: [{
+                        tittel: "placeholder"
+                    }]
+                }))
+            }; 
+
+            appendNewJournalpost(newJournalPost, oldJournalPost); 
+            
         })
+        .catch(error => {
+            console.error('There has been a problem with your fetch operation:', error);
+        });
 
         console.log(requestBody)
-        console.log(selectedDocumentIds)
+    //    console.log(selectedDocumentIds)
         console.log("Modalen er nå lukket")
         ref.current?.close()
     }
@@ -270,8 +308,8 @@ export const DocumentEditor = ({ brukerId, journalpostId, tittel, journalposttyp
                 <Modal.Body>
                     <div>
                         <TextField      
-                            label="ID"      
-                            value={newMetadata.bruker.id}
+                            label="Journalpost ID"      
+                            value={journalpostId}
                             className="inputBox"
                             readOnly
                         />
@@ -310,8 +348,8 @@ export const DocumentEditor = ({ brukerId, journalpostId, tittel, journalposttyp
                             addGlobalDocument={addGlobalDocument}
                             documents={documents}
                             isModal={true}
-                            handleSelectedId={handleSelectedDocumentsChange}
-                            handleUnselectedId={handleUnselectedDocumentsChange}
+                            handleSelectedIdandTitle={handleSelectedDocumentsChange}
+                            handleUnselectedIdandTitle={handleUnselectedDocumentsChange}
                         />
                     </div>        
                 </Modal.Body>

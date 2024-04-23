@@ -2,9 +2,17 @@ export interface IDocument {
     dokumentInfoId: string;
     tittel: string;
     originalJournalpostId: string;
-    
+    logiskeVedlegg: LogiskVedlegg[];
+    pageCount?: number;
+    rotationLib?: RotationInfo[];
 }
-
+export interface RotationInfo{
+    page: number;
+    rotation: number;
+}
+export interface LogiskVedlegg{
+    tittel: string
+}
 /* Needed the type here because if not, we could get never[] arrays, which means that we wouldn't be able
      to add strings to these later which we don't want */
 export interface filteredData {
@@ -42,4 +50,6 @@ export interface ToolbarInterface {
     onRotate: (direction: string) => void;
     onZoomIn: () => void;
     onZoomOut: () => void;
+    currentPage: number;
+    numPages: number;
 }

@@ -10,17 +10,17 @@ interface DocumentItemProps {
     selectStateDocument: (documentToAdd: IDocument) => void
     isModal: boolean;
     isStateSelected: boolean;
-    selectedId: (documentToAdd: string) => void
+    selectedIdandTitle: (documentIdtoAdd: string, tittel: string) => void
 }
 
-const DocumentItem = ({ document, addGlobalDocument, isSelected, selectStateDocument, isModal, isStateSelected, selectedId}: DocumentItemProps) => {
+const DocumentItem = ({ document, addGlobalDocument, isSelected, selectStateDocument, isModal, isStateSelected, selectedIdandTitle}: DocumentItemProps) => {
 
     const select = () => {
-        const { dokumentInfoId } = document; // Destructure to extract dokumentInfoId
-        console.log(dokumentInfoId); // Now you can use dokumentInfoId directl
+        const { dokumentInfoId, tittel } = document; // Destructure to extract dokumentInfoId
+        console.log(dokumentInfoId + " " + tittel); // Now you can use dokumentInfoId directl
         if(isModal){
             selectStateDocument(document)
-            selectedId(dokumentInfoId)
+            selectedIdandTitle(dokumentInfoId, tittel)
             console.log(document)
         }else{
             addGlobalDocument(document);
@@ -51,16 +51,16 @@ interface DocumentViewerProps {
     addGlobalDocument: (document: IDocument) => void;
     documents: IDocument[];
     isModal: boolean;
-    handleSelectedId: (selectedDocs: string[]) => void;
-    handleUnselectedId: (unselectedDocs: string[]) => void;
+    handleSelectedIdandTitle: (selectedDocs: {id: string, title: string}[]) => void;
+    handleUnselectedIdandTitle: (unselectedDocs: {id: string, title: string}[]) => void;
 }
 
-export const DocumentViewer = ({ documentsToView, addGlobalDocument, documents, isModal: isModal, handleSelectedId, handleUnselectedId }: DocumentViewerProps) => {
+export const DocumentViewer = ({ documentsToView, addGlobalDocument, documents, isModal: isModal, handleSelectedIdandTitle, handleUnselectedIdandTitle }: DocumentViewerProps) => {
     const [selectedDocuments, setSelectedDocuments] = useState<string[]>([])
     const [stateDocuments, setStateDocuments] = useState<IDocument[]>([])
-    const [selectedDocumentIds, setSelectedDocumentIds] = useState<string[]>([]);
-    const [unselectedDocumentIds, setUnselectedDocumentIds] = useState<string[]>(
-        documentsToView.map(document => document.dokumentInfoId)
+    const [selectedDocumentIdTitlePairs, setSelectedDocumentIdTitlePairs] = useState<{id: string, title: string}[]>([]);
+    const [unselectedDocumentIdTitlePairs, setUnselectedDocumentIdTitlePairs] = useState<{id: string, title: string}[]>(
+        documentsToView.map(document => ({ id: document.dokumentInfoId, title: document.tittel }))
     ); // Initialize with all IDs as unselected
    
     const addDocument = (documentToAdd: IDocument) => {
@@ -82,28 +82,29 @@ export const DocumentViewer = ({ documentsToView, addGlobalDocument, documents, 
         console.log(stateDocuments)
     };
 
-    const addDocumentId = (documentIdToAdd: string) => {
+    const addDocumentIdandTitle = (documentIdToAdd: string, title: string) => {
         // Find the document to add based on its ID
         console.log("documents before:")
         console.log(documents)
-        if (documentIdToAdd) {
-            setSelectedDocumentIds(prevDocumentId => {
+
+        if (documentIdToAdd && title) {
+            setSelectedDocumentIdTitlePairs(prevDocument => {
                 // Check if the document already exists in the documents state
-                const documentIdExists = prevDocumentId.includes(documentIdToAdd);
+                const documentExists = prevDocument.some(doc => doc.id === documentIdToAdd && doc.title === title);
 
                 // If the document doesn't exist, add it to the documents state
-                const newDocumentIds = documentIdExists
-                ? prevDocumentId.filter((documentId) => documentId !== documentIdToAdd)
-                : [...prevDocumentId, documentIdToAdd];
+                const newDocuments = documentExists
+                ? prevDocument.filter((doc) => doc.id !== documentIdToAdd)
+                : [...prevDocument, { id: documentIdToAdd, title }];
 
                 // Update unselected IDs as well
-                setUnselectedDocumentIds(prevUnselectedIds => {
-                    return documentIdExists
-                        ? [...prevUnselectedIds, documentIdToAdd]
-                        : prevUnselectedIds.filter((id) => id !== documentIdToAdd);
+                setUnselectedDocumentIdTitlePairs(prevUnselectedIds => {
+                    return documentExists
+                        ? [...prevUnselectedIds, { id: documentIdToAdd, title }]
+                        : prevUnselectedIds.filter((doc) => doc.id !== documentIdToAdd);
                 });
 
-                return newDocumentIds;
+                return newDocuments;
             });
         }
     };
@@ -116,9 +117,9 @@ export const DocumentViewer = ({ documentsToView, addGlobalDocument, documents, 
     }, [documents])
 
     useEffect(() => {
-        handleSelectedId(selectedDocumentIds);
-        handleUnselectedId(unselectedDocumentIds);
-    }, [selectedDocumentIds, handleSelectedId, unselectedDocumentIds, handleUnselectedId]);
+        handleSelectedIdandTitle(selectedDocumentIdTitlePairs);
+        handleUnselectedIdandTitle(unselectedDocumentIdTitlePairs);
+    }, [selectedDocumentIdTitlePairs, handleSelectedIdandTitle, unselectedDocumentIdTitlePairs, handleUnselectedIdandTitle]);
 
     return (
     <div className="documents-wrapper">
@@ -129,7 +130,7 @@ export const DocumentViewer = ({ documentsToView, addGlobalDocument, documents, 
                 addGlobalDocument={addGlobalDocument} 
                 isSelected={selectedDocuments.includes(document.dokumentInfoId)}
                 isStateSelected={stateDocuments.includes(document)}
-                selectedId={addDocumentId}
+                selectedIdandTitle={addDocumentIdandTitle}
                 selectStateDocument={addDocument}
                 isModal={isModal}
             />
