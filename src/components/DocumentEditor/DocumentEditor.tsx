@@ -40,8 +40,8 @@ export const DocumentEditor = ({ brukerId, journalpostId, tittel, journalposttyp
     // oldMetadata which is originally in the journalpost
     const [oldMetadata, setOldMetadata] = useState<{
         bruker: {
-            brukerId: string,
-            idType: string,
+            id: string,
+            type: string,
         },
         dokumenter: {
             brevkode: string;
@@ -58,8 +58,8 @@ export const DocumentEditor = ({ brukerId, journalpostId, tittel, journalposttyp
         tema: string,
     }>({
         bruker: {
-            brukerId: brukerId,
-            idType: "FNR",
+            id: brukerId,
+            type: "FNR",
         },
         dokumenter: [
             {
@@ -83,8 +83,8 @@ export const DocumentEditor = ({ brukerId, journalpostId, tittel, journalposttyp
     // For the updated metadata in the journalpost
     const [newMetadata, setNewMetadata] = useState<{
         bruker: {
-            brukerId: string,
-            idType: string,
+            id: string,
+            type: string,
         },
         dokumenter: {
             brevkode: string;
@@ -101,8 +101,8 @@ export const DocumentEditor = ({ brukerId, journalpostId, tittel, journalposttyp
         tema: string,
     }>({
         bruker: {
-            brukerId: brukerId,
-            idType: "FNR",
+            id: brukerId,
+            type: "FNR",
         },
         dokumenter: [{
             brevkode: "NAV 04-01.03",
@@ -214,13 +214,21 @@ export const DocumentEditor = ({ brukerId, journalpostId, tittel, journalposttyp
         }
 
         const currentDate = formatDate(new Date());
+        //test for å sjekke kobling
+        const testData = {
+            message: "Test data to check connection"
+        };
         // Opprett JSON body med userId
         const requestBody = {
             oldMetadata: oldMetadata,
             newMetadata: newMetadata,       
           };
 
-        fetch(baseUrl + "/dokarkivAPI/createJournalpost", {
+        
+
+          
+
+        fetch(baseUrl + "/createJournalpost", {
             method: 'POST',
             headers: {
             Authorization: `Bearer ${token}`,
@@ -263,7 +271,7 @@ export const DocumentEditor = ({ brukerId, journalpostId, tittel, journalposttyp
                     <div>
                         <TextField      
                             label="ID"      
-                            value={newMetadata.bruker.brukerId}
+                            value={newMetadata.bruker.id}
                             className="inputBox"
                             readOnly
                         />
