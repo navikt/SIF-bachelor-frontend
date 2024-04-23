@@ -197,8 +197,6 @@ export const DocumentEditor = ({ brukerId, journalpostId, tittel, journalposttyp
     };
 
     const splitDocs = async () => {
-        console.log("Dokument ID-ene som er valgt er: " + selectedDocuments[0].id);
-        console.log("Dokument-Idene som IKKE er valgt er: " + unselectedDocuments[0].id)
         const token = sessionStorage.getItem("token");
 
         if(!token) {
