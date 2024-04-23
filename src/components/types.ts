@@ -3,7 +3,7 @@ export interface IDocument {
     tittel: string;
     originalJournalpostId: string;
     logiskeVedlegg: LogiskVedlegg[];
-    pageCount: number;
+    pageCount?: number;
     rotationLib?: RotationInfo[];
 }
 export interface RotationInfo{

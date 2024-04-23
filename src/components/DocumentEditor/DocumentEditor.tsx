@@ -250,7 +250,10 @@ export const DocumentEditor = ({ brukerId, journalpostId, tittel, journalposttyp
                     dokumenter: selectedDocuments.map(doc => ({
                         dokumentInfoId: doc.id,
                         tittel: doc.title,
-                        originalJournalpostId: journalpostId
+                        originalJournalpostId: journalpostId,
+                        logiskeVedlegg: [{
+                            tittel: "placeholder"
+                        }]
                     }))
                 };
 
@@ -265,7 +268,10 @@ export const DocumentEditor = ({ brukerId, journalpostId, tittel, journalposttyp
                 dokumenter: unselectedDocuments.map(doc => ({
                     dokumentInfoId: doc.id,
                     tittel: doc.title,
-                    originalJournalpostId: journalpostId
+                    originalJournalpostId: journalpostId,
+                    logiskeVedlegg: [{
+                        tittel: "placeholder"
+                    }]
                 }))
             }; 
 
