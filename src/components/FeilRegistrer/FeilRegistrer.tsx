@@ -23,7 +23,7 @@ export const FeilRegistrer = ({ journalposttype, journalpostId}: {
             return;
         }
 
-        fetch(`${baseUrl}/feilRegistrer?journalpostId=${journalpostId}&type=${journalposttype}`, {
+        fetch(`${baseUrl}/feilregistrer?journalpostId=${journalpostId}&type=${journalposttype}`, {
             method: "GET",
             headers: {
                 Authorization: `Bearer ${token}`
