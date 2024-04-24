@@ -277,7 +277,12 @@ export const SearchResults = () => {
         return <Alert variant="error" style={{width: "5px"}}>Du har ikke tilgang til resurssen, vennligst prøv igjen senere.</Alert>;
     }
 
-
+    const shouldShowFeilRegistrer = (journalposttype: string, journalstatus: string) => {
+        return (journalposttype === "I" || journalposttype === "U") && 
+               (journalstatus !== "FERDIGSTILT") && 
+               (journalstatus !== "AVBRUTT") && 
+               (journalstatus !== "UTGAAR");
+    }
 
     return (
         <>
@@ -352,7 +357,7 @@ export const SearchResults = () => {
                                                         setIsModalOpen={setIsModalOpen}
                                                         appendNewJournalpost={addNewJournalPosts}
                                                     />
-                                                    {((journalposttype === "I" || journalposttype === "U") && journalstatus !== "FERDIGSTILT") && 
+                                                    {shouldShowFeilRegistrer(journalposttype, journalstatus) && 
                                                         <FeilRegistrer
                                                             journalposttype={journalposttype}
                                                             journalpostId={journalpostId}
