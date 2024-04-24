@@ -229,6 +229,18 @@ export const SearchResults = () => {
         console.log(documents)
     };
 
+    const changeStatus = (newStatus: string, sameJournalpostId: string) => {
+        console.log(newStatus + " and " + sameJournalpostId)
+
+        setJournalpostList(prevJournalpostList => 
+            prevJournalpostList.map(journalpost =>
+                journalpost.journalpostId === sameJournalpostId
+                ? { ...journalpost, journalstatus: newStatus }
+                : journalpost
+            )
+        );
+    }
+
     const addNewJournalPosts = (newJournalPost: Journalpost, oldJournalPost: Journalpost) => {
         // Here, handle the state update or any other operations with these objects
         console.log(newJournalPost)
@@ -253,6 +265,10 @@ export const SearchResults = () => {
                 return "success"
             case("EKSPEDERT"):
                 return "warning"
+            case("UTGAAR"):
+                return "error"
+            case("AVBRUTT"):
+                return "error"
             default:
                 return "neutral"
         }
@@ -340,6 +356,7 @@ export const SearchResults = () => {
                                                         <FeilRegistrer
                                                             journalposttype={journalposttype}
                                                             journalpostId={journalpostId}
+                                                            onStatusChange={changeStatus}
                                                         />
                                                     }
                                             </div>

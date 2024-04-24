@@ -2,9 +2,10 @@ import { Button, Modal, BodyLong } from "@navikt/ds-react";
 import { useState } from "react";
 import { TasklistStartIcon, XMarkOctagonIcon } from "@navikt/aksel-icons";
 
-export const FeilRegistrer = ({ journalposttype, journalpostId}: {
+export const FeilRegistrer = ({ journalposttype, journalpostId, onStatusChange}: {
     journalposttype: string,
     journalpostId: string,
+    onStatusChange: (newStatus: string, journalpostId: string) => void,
 }) => {
 
     // Error message
@@ -36,7 +37,10 @@ export const FeilRegistrer = ({ journalposttype, journalpostId}: {
             return response.json(); // Read the response body only once
         })
         .then(data => {
-            console.log(data);
+            if(data === true){
+                const newJournalStatus = convertStatus(journalposttype);
+                onStatusChange(newJournalStatus, journalpostId);
+            }
         })
         .catch((error) => {
             console.error('There has been a problem with your fetch operation:', error);
@@ -46,9 +50,9 @@ export const FeilRegistrer = ({ journalposttype, journalpostId}: {
 
     const convertStatus = (journaltype: string) => {
         if(journaltype === "I") {
-            return "Utgår";
+            return "UTGAAR";
         } else {
-            return "Avbrutt";
+            return "AVBRUTT";
         }
     }
 
