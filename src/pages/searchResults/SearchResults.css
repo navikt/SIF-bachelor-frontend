@@ -42,4 +42,11 @@
     display: flex;
     flex-wrap: wrap;
     gap: 10px;
-  }
+}
+
+.row-buttons{
+    margin-top: 15px;
+    display: flex;
+    gap: 30px;
+    align-items: center;
+}

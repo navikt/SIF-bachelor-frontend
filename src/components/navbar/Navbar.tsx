@@ -121,7 +121,7 @@ const Navbar = () => {
         Call protected endpoint
       </Button>
       
-      {location.pathname === "/SearchResults" && 
+      {(location.pathname === "/SearchResults" || location.pathname === "/error") && 
         (<div style={{ width:"100px" }}>
           <SearchEngine />
         </div>
