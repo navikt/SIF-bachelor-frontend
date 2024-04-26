@@ -45,3 +45,17 @@
     margin: 0;
     font-size: 14px;
 }
+.btn-holder{
+    background-color: white;
+    display: flex;
+    justify-content: start;
+    width: 100%;
+    border: 1px solid white;
+}
+.toggle-doc-btn{
+    transition: ease-in-out 0.2s;
+}
+.toggle-doc-btn:hover{
+    cursor: pointer;
+    transform: scale(1.2);
+}

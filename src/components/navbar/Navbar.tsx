@@ -8,7 +8,7 @@ const Navbar = () => {
   const baseUrl = process.env.REACT_APP_BASE_URL
   const navigate = useNavigate();
   const location = useLocation();
-
+  
   // We have a useState hook to check if there is a token stored in sessionStorage and we set the isLoggedIn to true if found.
   const [isLoggedIn, setIsLoggedIn] = useState(sessionStorage.getItem('token') !== null);
   // Another boolean hook which sets itself to true if a token stored in sessionStorage is found and we set the button's content to "Logg ut" if true.
@@ -116,10 +116,6 @@ const Navbar = () => {
     <nav className="navbar">
       
       <h1 className="logo" onClick={()=>{returnHome()}}>Vju</h1>
-      <div className="status" style={{ backgroundColor: statusColor}}></div>
-      <Button onClick={callProtectedEndpoint}>
-        Call protected endpoint
-      </Button>
       
       {(location.pathname === "/SearchResults" || location.pathname === "/error") && 
         (<div style={{ width:"100px" }}>

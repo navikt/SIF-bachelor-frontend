@@ -1,67 +1,26 @@
 import { useEffect, useState } from "react";
-import { FilePdfIcon } from '@navikt/aksel-icons';
+import { Table } from "@navikt/ds-react";
+import { FilePdfIcon, EyeSlashIcon, EyeIcon } from '@navikt/aksel-icons';
 import { IDocument } from "../types";
 import "./DocumentViewer.css";
-
-interface DocumentItemProps {
-    document: IDocument;
-    addGlobalDocument: (document: IDocument) => void;
-    isSelected: boolean;
-    selectStateDocument: (documentToAdd: IDocument) => void
-    isModal: boolean;
-    isStateSelected: boolean;
-    selectedIdandTitle: (documentIdtoAdd: string, tittel: string) => void
-}
-
-const DocumentItem = ({ document, addGlobalDocument, isSelected, selectStateDocument, isModal, isStateSelected, selectedIdandTitle}: DocumentItemProps) => {
-
-    const select = () => {
-        const { dokumentInfoId, tittel } = document; // Destructure to extract dokumentInfoId
-        console.log(dokumentInfoId + " " + tittel); // Now you can use dokumentInfoId directl
-        if(isModal){
-            selectStateDocument(document)
-            selectedIdandTitle(dokumentInfoId, tittel)
-            console.log(document)
-        }else{
-            addGlobalDocument(document);
-        }
-        
-    };
-
-    return (
-    
-    <div
-        key={document.dokumentInfoId}
-        onClick={select}
-        className={`document-preview ${
-            isModal ? (isStateSelected ? "selected" : "") : isSelected ? "selected" : ""
-          }`}
-    >
-        <div className="document-id-wrapper">
-            <FilePdfIcon title="Heyyy" fontSize="1.5rem"></FilePdfIcon>
-            <p>#{document.dokumentInfoId}</p>
-        </div>
-       
-    </div>
-    );
-};
 
 interface DocumentViewerProps {
     documentsToView: IDocument[];
     addGlobalDocument: (document: IDocument) => void;
     documents: IDocument[];
     isModal: boolean;
-    handleSelectedIdandTitle: (selectedDocs: {id: string, title: string}[]) => void;
-    handleUnselectedIdandTitle: (unselectedDocs: {id: string, title: string}[]) => void;
+    handleSelectedIdandTitle: (selectedDocs: IDocument[]) => void;
+    handleUnselectedIdandTitle: (unselectedDocs: IDocument[]) => void;
+    handleIsVisible: (document: IDocument) => boolean;
 }
 
-export const DocumentViewer = ({ documentsToView, addGlobalDocument, documents, isModal: isModal, handleSelectedIdandTitle, handleUnselectedIdandTitle }: DocumentViewerProps) => {
-    const [selectedDocuments, setSelectedDocuments] = useState<string[]>([])
+export const DocumentViewer = ({ documentsToView, addGlobalDocument, documents, isModal: isModal, handleSelectedIdandTitle, handleUnselectedIdandTitle, handleIsVisible }: DocumentViewerProps) => {
+    const [selectedDocuments, setSelectedDocuments] = useState<IDocument[]>([])
     const [stateDocuments, setStateDocuments] = useState<IDocument[]>([])
-    const [selectedDocumentIdTitlePairs, setSelectedDocumentIdTitlePairs] = useState<{id: string, title: string}[]>([]);
-    const [unselectedDocumentIdTitlePairs, setUnselectedDocumentIdTitlePairs] = useState<{id: string, title: string}[]>(
-        documentsToView.map(document => ({ id: document.dokumentInfoId, title: document.tittel }))
-    ); // Initialize with all IDs as unselected
+    const [unselectedDocuments, setUnselectedDocuments] = useState<IDocument[]>(
+        documentsToView // Initialize with all documents as unselected
+    );
+    const [selectedRows, setSelectedRows] = useState<string[]>([]);
    
     const addDocument = (documentToAdd: IDocument) => {
         // Find the document to add based on its ID
@@ -82,62 +41,110 @@ export const DocumentViewer = ({ documentsToView, addGlobalDocument, documents, 
         console.log(stateDocuments)
     };
 
-    const addDocumentIdandTitle = (documentIdToAdd: string, title: string) => {
+    const select = (document: IDocument) => {
+        
+        if(isModal){
+            addDocument(document)
+            addDocumentIdandTitle(document)
+            handleRowClick(document.dokumentInfoId)
+        }
+        console.log(selectedRows)
+    };
+    const handleRowClick = (id: string) => {
+        setSelectedRows(prevSelectedRows => {
+            if (prevSelectedRows.includes(id)) {
+                // Row already selected, remove it
+                return prevSelectedRows.filter(rowId => rowId !== id);
+            } else {
+                // Row not selected, add it
+                return [...prevSelectedRows, id];
+            }
+        });
+    }
+
+    const addDocumentIdandTitle = (documentToToggle: IDocument) => {
         // Find the document to add based on its ID
-        console.log("documents before:")
-        console.log(documents)
+        console.log("Documents before toggle:");
+        console.log(documents);
 
-        if (documentIdToAdd && title) {
-            setSelectedDocumentIdTitlePairs(prevDocument => {
-                // Check if the document already exists in the documents state
-                const documentExists = prevDocument.some(doc => doc.id === documentIdToAdd && doc.title === title);
+        if (documentToToggle) {
+            setSelectedDocuments(prevSelected => {
+                const isDocumentSelected = prevSelected.some(doc => doc.dokumentInfoId === documentToToggle.dokumentInfoId);
 
-                // If the document doesn't exist, add it to the documents state
-                const newDocuments = documentExists
-                ? prevDocument.filter((doc) => doc.id !== documentIdToAdd)
-                : [...prevDocument, { id: documentIdToAdd, title }];
+                // Update the selected and unselected documents lists accordingly
+                const newSelectedDocuments = isDocumentSelected
+                    ? prevSelected.filter(doc => doc.dokumentInfoId !== documentToToggle.dokumentInfoId)
+                    : [...prevSelected, documentToToggle];
 
-                // Update unselected IDs as well
-                setUnselectedDocumentIdTitlePairs(prevUnselectedIds => {
-                    return documentExists
-                        ? [...prevUnselectedIds, { id: documentIdToAdd, title }]
-                        : prevUnselectedIds.filter((doc) => doc.id !== documentIdToAdd);
+                setUnselectedDocuments(prevUnselected => {
+                    return isDocumentSelected
+                        ? [...prevUnselected, documentToToggle]
+                        : prevUnselected.filter(doc => doc.dokumentInfoId !== documentToToggle.dokumentInfoId);
                 });
 
-                return newDocuments;
+                return newSelectedDocuments;
             });
         }
     };
 
-    useEffect(()=>{
-        const selecteIds = documents.map(document => document.dokumentInfoId)
+    useEffect(()=>{ 
         if(!isModal){
-            setSelectedDocuments(selecteIds)
+            setSelectedDocuments(documents)
         }
     }, [documents])
 
     useEffect(() => {
-        handleSelectedIdandTitle(selectedDocumentIdTitlePairs);
-        handleUnselectedIdandTitle(unselectedDocumentIdTitlePairs);
-    }, [selectedDocumentIdTitlePairs, handleSelectedIdandTitle, unselectedDocumentIdTitlePairs, handleUnselectedIdandTitle]);
+        handleSelectedIdandTitle(selectedDocuments);
+        handleUnselectedIdandTitle(unselectedDocuments);
+    }, [selectedDocuments, handleSelectedIdandTitle, unselectedDocuments, handleUnselectedIdandTitle]);
 
+    const toggleSelectedRow = (value: string) =>
+        setSelectedRows((list) =>
+          list.includes(value)
+            ? list.filter((id) => id !== value)
+            : [...list, value],
+    );
+    
+    const isRowClicked = (id: string) => selectedRows.includes(id)
+    
     return (
-    <div className="documents-wrapper">
-        {documentsToView.map((document) => (
-        <div className="document-data" key={document.dokumentInfoId}>
-            <DocumentItem 
-                document={document} 
-                addGlobalDocument={addGlobalDocument} 
-                isSelected={selectedDocuments.includes(document.dokumentInfoId)}
-                isStateSelected={stateDocuments.includes(document)}
-                selectedIdandTitle={addDocumentIdandTitle}
-                selectStateDocument={addDocument}
-                isModal={isModal}
-            />
-            <p>{document.tittel}.pdf</p>
-        </div>  
-       
-        ))} 
+        <div className="documents-wrapper">
+            <Table size="small" zebraStripes>
+                <Table.Header>
+                    <Table.Row>
+                        <Table.HeaderCell scope="col">ID</Table.HeaderCell>
+                        <Table.HeaderCell scope="col">Title</Table.HeaderCell>
+                        <Table.HeaderCell scope="col">Brevkode</Table.HeaderCell>
+                    </Table.Row>
+                </Table.Header>
+                <Table.Body>
+                    {documentsToView.map((document: IDocument, i) => (
+                        
+                        <Table.Row
+                        key={i + document.dokumentInfoId}
+                        onClick={() => select(document)}
+                        selected={selectedRows.includes(document.dokumentInfoId)}
+                        className={`${isModal ? "tableRow" : ""} ${isRowClicked(document.dokumentInfoId) ? "selectedRowOutline" : ""}`}
+                        >   
+                            <Table.DataCell>{document.dokumentInfoId}</Table.DataCell>
+                            <Table.DataCell>{document.tittel}</Table.DataCell>
+                            <Table.DataCell>{document.brevkode}</Table.DataCell>
+                            {!isModal && (
+                                <Table.DataCell className="btn-holder">
+                                    {handleIsVisible(document) ? (
+                                        <EyeIcon className="toggle-doc-btn" title="Hide document" fontSize="2rem" onClick={() => addGlobalDocument(document)}/>
+                                    ) : (
+                                        <EyeSlashIcon className="toggle-doc-btn" title="Show document" fontSize="2rem" onClick={() => addGlobalDocument(document)}/>
+                                    )}
+                                    
+                                </Table.DataCell>
+                            )}
+                            
+                        </Table.Row>
+                    ))}
+                </Table.Body>
+        </Table>
+        
     </div>
     );
 };

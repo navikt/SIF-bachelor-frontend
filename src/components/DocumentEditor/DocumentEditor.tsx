@@ -4,7 +4,7 @@ import { PencilIcon } from "@navikt/aksel-icons";
 import { IDocument, Journalpost } from "../types";
 import {DocumentViewer} from "../DocumentViewer/DocumentViewer";
 
-export const DocumentEditor = ({ brukerId, journalpostId, tittel, journalposttype, datoOpprettet, journalstatus, tema, documentsToView, addGlobalDocument, documents, setIsModalOpen, appendNewJournalpost}: { 
+export const DocumentEditor = ({ brukerId, journalpostId, tittel, journalposttype, datoOpprettet, journalstatus, tema, documentsToView, addGlobalDocument, documents, setIsModalOpen, appendNewJournalpost, handleIsVisible}: { 
     brukerId: string,
     journalpostId: string, 
     tittel: string, 
@@ -16,24 +16,25 @@ export const DocumentEditor = ({ brukerId, journalpostId, tittel, journalposttyp
     addGlobalDocument: (document: IDocument) => void,
     documents: IDocument[],
     setIsModalOpen: (isModalOpen: boolean) => void,
-    appendNewJournalpost: (newJournalPost: any, oldJournalPost: any) => void
+    appendNewJournalpost: (newJournalPost: any, oldJournalPost: any) => void,
+    handleIsVisible: (document: IDocument) => boolean;
 }) => {
     
     const baseUrl = process.env.REACT_APP_BASE_URL
 
     // State to keep track of selected document IDs
-    const [selectedDocuments, setSelectedDocuments] = useState<{id: string, title: string}[]>([]);
+    const [selectedDocuments, setSelectedDocuments] = useState<IDocument[]>([]);
 
     // State to keep track of selected document IDs
-    const [unselectedDocuments, setUnselectedDocuments] = useState<{id: string, title: string}[]>([]);
+    const [unselectedDocuments, setUnselectedDocuments] = useState<IDocument[]>([]);
 
     // Callback to be called from DocumentViewer when the selection changes
-    const handleUnselectedDocumentsChange = (unselectedDocs: {id: string, title: string}[]) => {
+    const handleUnselectedDocumentsChange = (unselectedDocs: IDocument[]) => {
         setUnselectedDocuments(unselectedDocs);
     };
 
     // Callback to be called from DocumentViewer when the selection changes
-    const handleSelectedDocumentsChange = (selectedDocs: {id: string, title: string}[]) => {
+    const handleSelectedDocumentsChange = (selectedDocs: IDocument[]) => {
         setSelectedDocuments(selectedDocs);
     };
 
@@ -130,31 +131,31 @@ export const DocumentEditor = ({ brukerId, journalpostId, tittel, journalposttyp
         // Map each selectedDocumentId to a new entry in dokumentvarianter
         setNewMetadata(prev => ({
             ...prev,
-            dokumenter: selectedDocuments.map(({id, title}) => ({
+            dokumenter: selectedDocuments.map((document: IDocument) => ({
                 brevkode: "placeholder",
                 dokumentvarianter: [
                     {
                         filtype: "PDFA",
-                        fysiskDokument: id,
+                        fysiskDokument: document.dokumentInfoId,
                         variantformat: "ARKIV"
                     }
                 ],
-                tittel: title,
+                tittel: document.tittel,
             }))
         }));
 
         setOldMetadata(prev => ({
             ...prev,
-            dokumenter: unselectedDocuments.map(({id, title}) => ({
+            dokumenter: unselectedDocuments.map((document: IDocument) => ({
                 brevkode: "placeholder",
                 dokumentvarianter: [
                     {
                         filtype: "PDFA",
-                        fysiskDokument: id,
+                        fysiskDokument: document.dokumentInfoId,
                         variantformat: "ARKIV"
                     }
                 ],
-                tittel: title,
+                tittel: document.tittel,
             }))
         }));
 
@@ -246,8 +247,9 @@ export const DocumentEditor = ({ brukerId, journalpostId, tittel, journalposttyp
                     tema: newMetadata.tema, // Assuming you want to use the theme from newMetadata
                     avsenderMottakerNavn: "placeholder",
                     dokumenter: selectedDocuments.map(doc => ({
-                        dokumentInfoId: doc.id,
-                        tittel: doc.title,
+                        dokumentInfoId: doc.dokumentInfoId,
+                        tittel: doc.tittel,
+                        brevkode: doc.brevkode,
                         originalJournalpostId: journalpostId,
                         logiskeVedlegg: []
                     }))
@@ -262,8 +264,9 @@ export const DocumentEditor = ({ brukerId, journalpostId, tittel, journalposttyp
                 tema: oldMetadata.tema, // Assuming you want to use the theme from newMetadata
                 avsenderMottakerNavn: "placeholder",
                 dokumenter: unselectedDocuments.map(doc => ({
-                    dokumentInfoId: doc.id,
-                    tittel: doc.title,
+                    dokumentInfoId: doc.dokumentInfoId,
+                    tittel: doc.tittel,
+                    brevkode: doc.brevkode,
                     originalJournalpostId: journalpostId,
                     logiskeVedlegg: []
                 }))
@@ -289,7 +292,7 @@ export const DocumentEditor = ({ brukerId, journalpostId, tittel, journalposttyp
                 >Splitt Docs
             </Button>
 
-            <Modal ref={ref} header={{ heading: "Splitt Opp Dokumenter" }} width={600}>
+            <Modal ref={ref} header={{ heading: "Splitt Opp Dokumenter" }} width={"40%"}>
                 <Modal.Body>
                     <div>
                         <TextField      
@@ -335,6 +338,7 @@ export const DocumentEditor = ({ brukerId, journalpostId, tittel, journalposttyp
                             isModal={true}
                             handleSelectedIdandTitle={handleSelectedDocumentsChange}
                             handleUnselectedIdandTitle={handleUnselectedDocumentsChange}
+                            handleIsVisible={handleIsVisible}
                         />
                     </div>        
                 </Modal.Body>

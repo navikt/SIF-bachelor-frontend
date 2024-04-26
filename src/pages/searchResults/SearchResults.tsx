@@ -147,8 +147,6 @@ export const SearchResults = () => {
 
     /* Kjempe mye redundant kode her, kanskje fjerne noen av disse og instansiere noen av de i selve useState()? */
     useEffect(()=>{
-        console.log(journalpostList)
-        setJournalpostList(location.state.dokumentoversikt.journalposter as Journalpost[])
         //console.log("Hi " + location.state)
         setDocuments(location.state.dokumentoversikt.journalposter[0].dokumenter)
         setUserkey(location.state.userkey)
@@ -206,6 +204,10 @@ export const SearchResults = () => {
 
         handleRowClick(journalId);
     };
+
+    const isVisible = (document: IDocument) => {
+        return documents.some(doc => doc.dokumentInfoId === document.dokumentInfoId);
+    }
 
     const addDocument = (documentToAdd: IDocument) => {
         // Find the document to add based on its ID
@@ -285,7 +287,6 @@ export const SearchResults = () => {
     }
 
     return (
-        <>
             <div className="searchResultsWrapper">
                 <div className="searchResultsLeft">
                     <div className="searchResultsShelf">
@@ -310,16 +311,15 @@ export const SearchResults = () => {
                     )}
                     
                     
-                    <Table zebraStripes sort={sort} onSortChange={(sortKey) => handleSort(sortKey)}>
+                    <Table sort={sort} onSortChange={(sortKey) => handleSort(sortKey)}>
                         <Table.Header>
                             <Table.Row>
-                                <Table.HeaderCell>Select</Table.HeaderCell>
+                                <Table.HeaderCell>Expand</Table.HeaderCell>
                                 <Table.ColumnHeader sortKey="journalpostId" sortable>ID</Table.ColumnHeader>
                                 <Table.HeaderCell scope="col">Title</Table.HeaderCell>
                                 <Table.HeaderCell scope="col">Type</Table.HeaderCell>
-                                <Table.ColumnHeader sortKey="datoOpprettet" sortable>Dato opprettet</Table.ColumnHeader>
-                                {/*<Table.HeaderCell scope="col">Dato opprettet</Table.HeaderCell>*/}
-                                <Table.HeaderCell scope="col">Status</Table.HeaderCell>
+                                <Table.ColumnHeader sortKey="datoOpprettet" sortable>Dato</Table.ColumnHeader>
+                                <Table.ColumnHeader sortKey="journalstatus" sortable>Status</Table.ColumnHeader>
                                 <Table.HeaderCell scope="col">Tema</Table.HeaderCell>
                             </Table.Row>
                         </Table.Header>
@@ -332,8 +332,7 @@ export const SearchResults = () => {
                                     className={`tableRow ${isRowClicked(journalpostId) ? "selectedRowOutline" : ""}`}
                                     content={
                                         <>
-                                            <h4 style={{margin: "0", marginBottom: "0.75rem"}}>Dokumenter</h4>
-                                            <p>Avsender: {avsenderMottakerNavn}</p>
+                                            <h4 style={{margin: "0", marginBottom: "0.75rem"}}>Dokumenter:</h4>
                                             <DocumentViewer 
                                                 documentsToView={journalpostList.find(entry => entry.journalpostId === journalpostId)?.dokumenter || []}
                                                 addGlobalDocument={addDocument}
@@ -341,6 +340,7 @@ export const SearchResults = () => {
                                                 isModal={isModalOpen}
                                                 handleSelectedIdandTitle={() => {}}
                                                 handleUnselectedIdandTitle={() => {}}
+                                                handleIsVisible={isVisible}
                                             />
                                             <div className="row-buttons">
                                                 <DocumentEditor
@@ -356,6 +356,7 @@ export const SearchResults = () => {
                                                         documents={documents}
                                                         setIsModalOpen={setIsModalOpen}
                                                         appendNewJournalpost={addNewJournalPosts}
+                                                        handleIsVisible={isVisible}
                                                     />
                                                     {shouldShowFeilRegistrer(journalposttype, journalstatus) && 
                                                         <FeilRegistrer
@@ -389,7 +390,6 @@ export const SearchResults = () => {
                     </div>
                 )}
             </div>
-        </>
     )
 }
 

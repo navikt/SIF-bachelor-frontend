@@ -9,7 +9,6 @@ import { ErrorResponse } from "../types";
 import { Alert } from "@navikt/ds-react";
 import { RotateLeftIcon, RotateRightIcon, ZoomPlusIcon, ZoomMinusIcon } from '@navikt/aksel-icons';
 import { Page, Document, Outline } from 'react-pdf';
-import Toolbar from "../Pdf-Reader/Toolbar";
 
 
 pdfjs.GlobalWorkerOptions.workerSrc = new URL(

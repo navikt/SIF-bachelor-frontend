@@ -2,6 +2,7 @@ export interface IDocument {
     dokumentInfoId: string;
     tittel: string;
     originalJournalpostId: string;
+    brevkode: string;
     logiskeVedlegg: LogiskVedlegg[];
     pageCount?: number;
     rotationLib?: RotationInfo[];
