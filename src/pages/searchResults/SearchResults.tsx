@@ -349,6 +349,7 @@ export const SearchResults = () => {
                                                         setIsModalOpen={setIsModalOpen}
                                                         appendNewJournalpost={addNewJournalPosts}
                                                         handleIsVisible={isVisible}
+                                                        onStatusChange={changeStatus}
                                                     />
                                                     {shouldShowFeilRegistrer(journalposttype, journalstatus) && 
                                                         <FeilRegistrer

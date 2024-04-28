@@ -4,7 +4,7 @@ import { PencilIcon } from "@navikt/aksel-icons";
 import { IDocument, Journalpost, Metadata } from "../types";
 import {DocumentViewer} from "../DocumentViewer/DocumentViewer";
 
-export const DocumentEditor = ({ brukerId, journalpostId, tittel, journalposttype, datoOpprettet, journalstatus, tema, documentsToView, addGlobalDocument, documents, setIsModalOpen, appendNewJournalpost, handleIsVisible}: { 
+export const DocumentEditor = ({ brukerId, journalpostId, tittel, journalposttype, datoOpprettet, journalstatus, tema, documentsToView, addGlobalDocument, documents, appendNewJournalpost, handleIsVisible, onStatusChange}: { 
     brukerId: string,
     journalpostId: string, 
     tittel: string, 
@@ -18,6 +18,7 @@ export const DocumentEditor = ({ brukerId, journalpostId, tittel, journalposttyp
     setIsModalOpen: (isModalOpen: boolean) => void,
     appendNewJournalpost: (newJournalPost: any, oldJournalPost: any) => void,
     handleIsVisible: (document: IDocument) => boolean;
+    onStatusChange: (newStatus: string, journalpostId: string) => void
 }) => {
     
     const baseUrl = process.env.REACT_APP_BASE_URL
@@ -161,6 +162,14 @@ export const DocumentEditor = ({ brukerId, journalpostId, tittel, journalposttyp
         }));
     };
 
+    const convertStatus = (journaltype: string) => {
+        if(journaltype === "I") {
+            return "UTGAAR";
+        } else {
+            return "AVBRUTT";
+        }
+    }
+
     const splitDocs = async () => {
         const token = sessionStorage.getItem("token");
 
@@ -235,8 +244,11 @@ export const DocumentEditor = ({ brukerId, journalpostId, tittel, journalposttyp
                     logiskeVedlegg: []
                 }))
             }; 
-
+            
             appendNewJournalpost(newJournalPost, oldJournalPost); 
+
+            const newJournalStatus = convertStatus(journalposttype);
+            onStatusChange(newJournalStatus, journalpostId);
             
         })
         .catch(error => {
