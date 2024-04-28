@@ -1,7 +1,7 @@
 import {useRef, useState, useEffect } from "react"
 import {Button, Modal, TextField, Select } from "@navikt/ds-react"
 import { PencilIcon } from "@navikt/aksel-icons";
-import { IDocument, Journalpost } from "../types";
+import { IDocument, Journalpost, Metadata } from "../types";
 import {DocumentViewer} from "../DocumentViewer/DocumentViewer";
 
 export const DocumentEditor = ({ brukerId, journalpostId, tittel, journalposttype, datoOpprettet, journalstatus, tema, documentsToView, addGlobalDocument, documents, setIsModalOpen, appendNewJournalpost, handleIsVisible}: { 
@@ -39,25 +39,7 @@ export const DocumentEditor = ({ brukerId, journalpostId, tittel, journalposttyp
     };
 
     // oldMetadata which is originally in the journalpost
-    const [oldMetadata, setOldMetadata] = useState<{
-        bruker: {
-            id: string,
-            type: string,
-        },
-        dokumenter: {
-            brevkode: string;
-            dokumentvarianter: [{
-                filtype: string;
-                fysiskDokument: string;
-                variantformat: string;
-            }];
-            tittel: string;
-        }[],
-        datoDokument: string,
-        tittel: string,
-        journalposttype: string,
-        tema: string,
-    }>({
+    const [oldMetadata, setOldMetadata] = useState<Metadata>({
         bruker: {
             id: brukerId,
             type: "FNR",
@@ -82,25 +64,7 @@ export const DocumentEditor = ({ brukerId, journalpostId, tittel, journalposttyp
     });
 
     // For the updated metadata in the journalpost
-    const [newMetadata, setNewMetadata] = useState<{
-        bruker: {
-            id: string,
-            type: string,
-        },
-        dokumenter: {
-            brevkode: string;
-            dokumentvarianter: [{
-                filtype: string;
-                fysiskDokument: string;
-                variantformat: string;
-            }];
-            tittel: string;
-        }[],
-        datoDokument: string,
-        tittel: string,
-        journalposttype: string,
-        tema: string,
-    }>({
+    const [newMetadata, setNewMetadata] = useState<Metadata>({
         bruker: {
             id: brukerId,
             type: "FNR",

@@ -96,3 +96,23 @@ export interface SortState {
     orderBy: string;
     direction: "ascending" | "descending";
 }
+
+export interface Metadata {
+    bruker: {
+        id: string;
+        type: string;
+    };
+    dokumenter: {
+        brevkode: string;
+        dokumentvarianter: [{
+            filtype: string;
+            fysiskDokument: string;
+            variantformat: string;
+        }];
+        tittel: string;
+    }[];
+    datoDokument: string;
+    tittel: string;
+    journalposttype: string;
+    tema: string;
+}

@@ -35,6 +35,9 @@ const FilterPopoverContent = ( props : FilterPopoverContentProps) => {
     // New state for error message visibility
     const [showError, setShowError] = useState("");
     
+    // State for the saving filter alert
+    const [showSuccessAlert, setShowSuccessAlert] = useState(false);
+
     // Change the state of the input once we type in it
     const handleInputChange = (value : string) => {
         setSearchValue(value);
@@ -144,21 +147,9 @@ const FilterPopoverContent = ( props : FilterPopoverContentProps) => {
         setShowError("");
     }
 
-    const handleStatusChange = (value: string) => {
-        setSelectedStatus((currentSelectedStatus) =>
-          currentSelectedStatus.includes(value)
-            ? currentSelectedStatus.filter((status) => status !== value)
-            : [...currentSelectedStatus, value]
-        );
-      };
-      
-
     const submitFilter = () => {
         console.log("Form submitted");
         console.log("StartDate is: " + startDate + " and the endDate is: " + endDate);
-        /*console.log("The chosen temaer are: " + filter);
-        console.log("The chosen Status checkboxes are: " + selectedStatus);
-        console.log("The chosen Type checkboxes are: " + selectedType);*/
 
         // Check if either startDate or endDate is not selected
         if ((!startDate && endDate) || (!endDate && startDate)) {
