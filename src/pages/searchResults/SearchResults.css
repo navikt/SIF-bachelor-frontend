@@ -1,7 +1,15 @@
 .searchResultsShelf{
     display: flex;
-    justify-content: space-between;
-    height: fit-content;
+    flex-direction: column;
+}
+
+.searchResultsShelf h1{
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+.searchResultsShelf h2{
+    margin-bottom: 10px;
 }
 .searchResultsLeft{
     width: calc(50% - 4rem);

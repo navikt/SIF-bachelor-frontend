@@ -282,8 +282,8 @@ export const SearchResults = () => {
             <div className="searchResultsWrapper">
                 <div className="searchResultsLeft">
                     <div className="searchResultsShelf">
+                        <h1>Navn: John / Jane Doe</h1>
                         <h2>{journalpostList.length} treff for "{userkey}"</h2>
-                        {/*<Button variant="secondary" onClick={logDoc}>Hent {selectedRows.length} dokumenter</Button>*/}
                     </div>
                     {filterList.length>0 &&(
                         <div className="filterList">
