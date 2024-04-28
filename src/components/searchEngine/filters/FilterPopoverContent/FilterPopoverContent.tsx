@@ -2,17 +2,7 @@ import "./FilterPopoverContent.css";
 import { Search, DatePicker, useDatepicker, Chips, Checkbox, CheckboxGroup, Button } from "@navikt/ds-react"; 
 import { ArrowRightLeftIcon } from '@navikt/aksel-icons';
 import { useState, useEffect } from 'react';
-
-type FilterPopoverContentProps = {
-    onClose: () => void;
-    onFilterSubmit: (filterData: {
-        startDate?: Date,
-        endDate?: Date,
-        filter: string[],
-        selectedStatus: string[],
-        selectedType: string[],
-    }) => void; 
-};
+import { FilterPopoverContentProps } from "../../../types";
 
 const FilterPopoverContent = ( props : FilterPopoverContentProps) => {
 
@@ -21,7 +11,6 @@ const FilterPopoverContent = ( props : FilterPopoverContentProps) => {
         "IAR", "IND", "KON", "KLL", "KTA", "KTR", "MED", "MOB", "OMS", "OPA", "OPP", "PEN", "PER", "REH",
         "REK", "RPO", "RVE", "SAA", "SAK", "SAP", "SER", "STO", "SUP", "SYK", "SYM", "TIL", "TRK", "TRY",
         "TSO", "TSR", "UFM", "UFO", "UKJ", "VEN", "YRA", "YRK"];
-
 
     // Local State management for the search input
     const [searchValue, setSearchValue] = useState('');

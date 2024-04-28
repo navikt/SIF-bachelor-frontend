@@ -1,9 +1,9 @@
 import { Button } from "@navikt/ds-react";
 import { useState, useEffect } from "react";
 import { useNavigate, useLocation} from "react-router-dom";
-
 import './Navbar.css';
 import SearchEngine from "../searchEngine/SearchEngine";
+
 const Navbar = () => {
   const baseUrl = process.env.REACT_APP_BASE_URL
   const navigate = useNavigate();

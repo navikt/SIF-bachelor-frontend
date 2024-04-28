@@ -3,16 +3,7 @@ import { Table } from "@navikt/ds-react";
 import { FilePdfIcon, EyeSlashIcon, EyeIcon } from '@navikt/aksel-icons';
 import { IDocument } from "../types";
 import "./DocumentViewer.css";
-
-interface DocumentViewerProps {
-    documentsToView: IDocument[];
-    addGlobalDocument: (document: IDocument) => void;
-    documents: IDocument[];
-    isModal: boolean;
-    handleSelectedIdandTitle: (selectedDocs: IDocument[]) => void;
-    handleUnselectedIdandTitle: (unselectedDocs: IDocument[]) => void;
-    handleIsVisible: (document: IDocument) => boolean;
-}
+import { DocumentViewerProps } from "../types";
 
 export const DocumentViewer = ({ documentsToView, addGlobalDocument, documents, isModal: isModal, handleSelectedIdandTitle, handleUnselectedIdandTitle, handleIsVisible }: DocumentViewerProps) => {
     const [selectedDocuments, setSelectedDocuments] = useState<IDocument[]>([])

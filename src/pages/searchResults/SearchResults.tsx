@@ -1,12 +1,11 @@
 import { useState, useEffect, useRef } from "react";
 import { useLocation } from "react-router-dom";
 import { Table, Tag, Chips, Alert, Button, Modal, TextField } from "@navikt/ds-react";
-import { PencilIcon } from "@navikt/aksel-icons";
 import { PDFViewer } from "../../components/PDFViewer/PDFViewer";
 import { DocumentViewer } from "../../components/DocumentViewer/DocumentViewer";
 import { DocumentEditor } from "../../components/DocumentEditor/DocumentEditor";
 import { FeilRegistrer } from "../../components/FeilRegistrer/FeilRegistrer";
-import { IDocument, Journalpost, FilterOptions } from "../../components/types";
+import { IDocument, Journalpost, FilterOptions, SortState } from "../../components/types";
 import './SearchResults.css';
 
 /* formatDate to get DD.MM.YYYY */
@@ -37,11 +36,6 @@ const transformFilterOptionsToList = (options: FilterOptions): any[] => {
 
     return list;
 };
-interface SortState {
-    orderBy: string;
-    direction: "ascending" | "descending";
-}
-
   // Manage state for the filterData object that we receive in the dropdown to use in handleSearch
   
 export const SearchResults = () => {
@@ -60,8 +54,6 @@ export const SearchResults = () => {
     const [documents, setDocuments] = useState<IDocument[]>([]);
 
     const [sort, setSort] = useState<SortState | undefined>(undefined);
-
-    const journalPostArrayLength = journalpostList.length - 1;
 
     const handleSort = (sortKey: string | undefined) => {
         if (sortKey) {

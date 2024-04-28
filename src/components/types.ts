@@ -1,3 +1,5 @@
+import React, { Dispatch, SetStateAction } from 'react';
+
 export interface IDocument {
     dokumentInfoId: string;
     tittel: string;
@@ -53,4 +55,44 @@ export interface ToolbarInterface {
     onZoomOut: () => void;
     currentPage: number;
     numPages: number;
+}
+
+export interface FilterPopoverContentProps {
+    onClose: () => void;
+    onFilterSubmit: (filterData: {
+        startDate?: Date,
+        endDate?: Date,
+        filter: string[],
+        selectedStatus: string[],
+        selectedType: string[],
+    }) => void; 
+};
+
+export interface DocumentViewerProps {
+    documentsToView: IDocument[];
+    addGlobalDocument: (document: IDocument) => void;
+    documents: IDocument[];
+    isModal: boolean;
+    handleSelectedIdandTitle: (selectedDocs: IDocument[]) => void;
+    handleUnselectedIdandTitle: (unselectedDocs: IDocument[]) => void;
+    handleIsVisible: (document: IDocument) => boolean;
+}
+
+export interface FilterPopoverProps {
+    anchorEl: React.RefObject<HTMLElement>;
+    openState: boolean;
+    setOpenState: Dispatch<SetStateAction<boolean>>;
+    onClose: () => void;
+    onFilterSubmit: (filterData: {
+      startDate?: Date,
+      endDate?: Date,
+      filter: string[],
+      selectedStatus: string[],
+      selectedType: string[],
+  }) => void;
+  };
+
+export interface SortState {
+    orderBy: string;
+    direction: "ascending" | "descending";
 }
