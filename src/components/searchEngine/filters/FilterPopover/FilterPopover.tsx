@@ -5,8 +5,9 @@ import { FilterPopoverProps } from "../../../types";
 
 /* When we are passing props from the LandingPage down to this component, we need to have them explicitly defined here
    and they have to match the name exactly and the type. This could be a variable, list, object, element reference or stateAction */
-
+   
 const FilterPopover = (props : FilterPopoverProps) => {
+
   return (
     <Popover
       className="popover-container"
@@ -16,7 +17,11 @@ const FilterPopover = (props : FilterPopoverProps) => {
       placement='bottom-end'
     >
       <Popover.Content>
-        <FilterPopoverContent onFilterSubmit={props.onFilterSubmit} onClose={props.onClose} />
+        <FilterPopoverContent 
+          onFilterSubmit={props.onFilterSubmit} 
+          onClose={props.onClose}
+          showSuccessAlert={props.showSuccessAlert}
+          />
       </Popover.Content>
     </Popover>
   );

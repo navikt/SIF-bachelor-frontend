@@ -66,6 +66,7 @@ export interface FilterPopoverContentProps {
         selectedStatus: string[],
         selectedType: string[],
     }) => void; 
+    showSuccessAlert: (isShown: boolean) => void;
 };
 
 export interface DocumentViewerProps {
@@ -83,6 +84,7 @@ export interface FilterPopoverProps {
     openState: boolean;
     setOpenState: Dispatch<SetStateAction<boolean>>;
     onClose: () => void;
+    showSuccessAlert: (isShown: boolean) => void;
     onFilterSubmit: (filterData: {
       startDate?: Date,
       endDate?: Date,

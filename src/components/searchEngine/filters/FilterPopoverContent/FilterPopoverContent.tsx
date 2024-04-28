@@ -34,9 +34,6 @@ const FilterPopoverContent = ( props : FilterPopoverContentProps) => {
 
     // New state for error message visibility
     const [showError, setShowError] = useState("");
-    
-    // State for the saving filter alert
-    const [showSuccessAlert, setShowSuccessAlert] = useState(false);
 
     // Change the state of the input once we type in it
     const handleInputChange = (value : string) => {
@@ -171,6 +168,7 @@ const FilterPopoverContent = ( props : FilterPopoverContentProps) => {
         console.log("Lagret");
         console.log(filterData)
         setShowError(""); // Reset error message
+        props.showSuccessAlert(true);
     }
 
     /* ...datepickerProps ensures that we can select a date from the calender whilst datePicker input ensures that our selected date

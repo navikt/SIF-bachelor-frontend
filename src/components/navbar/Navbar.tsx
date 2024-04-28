@@ -118,7 +118,7 @@ const Navbar = () => {
       <h1 className="logo" onClick={()=>{returnHome()}}>Vju</h1>
       
       {(location.pathname === "/SearchResults" || location.pathname === "/error") && 
-        (<div style={{ width:"100px" }}>
+        (<div>
           <SearchEngine />
         </div>
         )

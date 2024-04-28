@@ -23,6 +23,8 @@ export const SearchEngine = () => {
     // For the input validation of the "brukerId"
     const [isValid, setIsValid] = useState(true);
 
+    const [alertShown, setAlertShown] = useState(false);
+
       // Error message
     const [errorMessage, setErrorMessage] = useState('');
     const [serverExceptionError, setExceptionError] = useState('');
@@ -41,6 +43,29 @@ export const SearchEngine = () => {
         setErrorMessage(''); // Reset the error message on component mount
       }, []); // The empty dependency array ensures this effect runs only once on mount
 
+    useEffect(() => {
+        console.log(alertShown)
+        if(alertShown){
+            setTimeout(() => {
+                setAlertShown(false);
+                console.log(alertShown)
+            }, 3000);
+        }
+    }, [alertShown]);
+
+    useEffect(() => {
+        const isValidInput = /^\d{3,11}$/.test(brukerId);
+        setIsValid(isValidInput);
+        if (isValidInput) {
+            setErrorMessage(''); // Clear error message if valid
+        } else if (brukerId === '') {
+            setErrorMessage(''); // Clear error message if input is empty
+        } else {
+            setErrorMessage('BrukerId må være et tresifret tall mellom 3 og 11'); // Set specific error message if invalid
+        }
+    }, [brukerId]); // Depend on brukerId to re-run validation
+    
+
     // Manage state for the filterData object that we receive in the dropdown to use in handleSearch
     const [filterData, setFilterData] = useState<filteredData>({
         startDate: undefined,
@@ -54,16 +79,7 @@ export const SearchEngine = () => {
 
     // Denne søke funksjonen oppdaterer userId state når vi skriver og endrer på inputen!
     const handleInputChange = (value: string) => {
-        const isValidInput = /^\d{3,11}$/.test(value);
-        setIsValid(isValidInput);
-        if (isValidInput) {
-            setBrukerId(value);
-            setErrorMessage('');
-        } else if (value === '') {
-            setErrorMessage('');
-        } else {
-            setErrorMessage('BrukerId må være et tresifret tall mellom 3 og 11');
-        }
+        setBrukerId(value); // Update state directly with input value
     };
 
     const handleSubmitFilter = (receivedFilterData: filteredData) => {
@@ -182,9 +198,12 @@ return(
                 setOpenState={setOpenState}
                 onFilterSubmit={handleSubmitFilter}
                 onClose={toggleIconRotation}
+                showSuccessAlert={setAlertShown}
             />
         </div>
         {errorMessage && brukerId && <div className={`alert-container ${isSearchResultsPage ?  'search-results-width' : ''}`}><Alert variant="warning">{errorMessage}</Alert></div>}
+        {alertShown && <Alert className={`${isSearchResultsPage ?  'search-results-alert' : ''}`} variant="success">Filteret er lagret!</Alert>}
+
 </div>
 );
 
