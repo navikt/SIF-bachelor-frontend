@@ -1,16 +1,17 @@
 FROM node:20.5.0-alpine
 
-WORKDIR /sif-vju-frontend/src
+WORKDIR /sif-vju-frontend/ 
 
-COPY public/ sif-vju-frontend/public
-COPY src/ sif-vju-frontend/src
-COPY package.json .
+COPY public/ public
+COPY src/ src
+COPY package*.json .
+COPY . .
 RUN npm install
 
 
-CMD ["npm","run", "build"]
+#CMD ["npm","run", "build"]
 #serve for å starte en statisk server isteden
-CMD [ "npx", "serve", "build" ] 
-COPY . .
+RUN npm run build
+#CMD [ "npx","serve","-s",  "build" ] 
 EXPOSE 3000
 
