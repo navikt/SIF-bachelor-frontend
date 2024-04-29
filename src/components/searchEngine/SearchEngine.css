@@ -17,9 +17,9 @@
 
 /* New style for when on the /SearchResults page */
 .search-input-container.search-results-width {
-  width: 300px;
+  width: 400px;
 }
 
-.alert-container.search-results-width{
-  width: 450px;
+.success-results-alert {
+  width:1000px;
 }

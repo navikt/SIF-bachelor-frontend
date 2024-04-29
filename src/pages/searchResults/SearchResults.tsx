@@ -1,12 +1,11 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
-import { Table, Tag, Chips, Alert, Button, Modal, TextField } from "@navikt/ds-react";
-import { PencilIcon } from "@navikt/aksel-icons";
+import { Table, Tag, Chips, Alert } from "@navikt/ds-react";
 import { PDFViewer } from "../../components/PDFViewer/PDFViewer";
 import { DocumentViewer } from "../../components/DocumentViewer/DocumentViewer";
 import { DocumentEditor } from "../../components/DocumentEditor/DocumentEditor";
 import { FeilRegistrer } from "../../components/FeilRegistrer/FeilRegistrer";
-import { IDocument, Journalpost, FilterOptions } from "../../components/types";
+import { IDocument, Journalpost, FilterOptions, SortState } from "../../components/types";
 import './SearchResults.css';
 
 /* formatDate to get DD.MM.YYYY */
@@ -37,11 +36,6 @@ const transformFilterOptionsToList = (options: FilterOptions): any[] => {
 
     return list;
 };
-interface SortState {
-    orderBy: string;
-    direction: "ascending" | "descending";
-}
-
   // Manage state for the filterData object that we receive in the dropdown to use in handleSearch
   
 export const SearchResults = () => {
@@ -60,8 +54,6 @@ export const SearchResults = () => {
     const [documents, setDocuments] = useState<IDocument[]>([]);
 
     const [sort, setSort] = useState<SortState | undefined>(undefined);
-
-    const journalPostArrayLength = journalpostList.length - 1;
 
     const handleSort = (sortKey: string | undefined) => {
         if (sortKey) {
@@ -147,8 +139,6 @@ export const SearchResults = () => {
 
     /* Kjempe mye redundant kode her, kanskje fjerne noen av disse og instansiere noen av de i selve useState()? */
     useEffect(()=>{
-        console.log(journalpostList)
-        setJournalpostList(location.state.dokumentoversikt.journalposter as Journalpost[])
         //console.log("Hi " + location.state)
         setDocuments(location.state.dokumentoversikt.journalposter[0].dokumenter)
         setUserkey(location.state.userkey)
@@ -207,6 +197,10 @@ export const SearchResults = () => {
         handleRowClick(journalId);
     };
 
+    const isVisible = (document: IDocument) => {
+        return documents.some(doc => doc.dokumentInfoId === document.dokumentInfoId);
+    }
+
     const addDocument = (documentToAdd: IDocument) => {
         // Find the document to add based on its ID
         console.log("documents before:")
@@ -228,6 +222,18 @@ export const SearchResults = () => {
         console.log("documents after:")
         console.log(documents)
     };
+
+    const changeStatus = (newStatus: string, sameJournalpostId: string) => {
+        console.log(newStatus + " and " + sameJournalpostId)
+
+        setJournalpostList(prevJournalpostList => 
+            prevJournalpostList.map(journalpost =>
+                journalpost.journalpostId === sameJournalpostId
+                ? { ...journalpost, journalstatus: newStatus }
+                : journalpost
+            )
+        );
+    }
 
     const addNewJournalPosts = (newJournalPost: Journalpost, oldJournalPost: Journalpost) => {
         // Here, handle the state update or any other operations with these objects
@@ -253,6 +259,10 @@ export const SearchResults = () => {
                 return "success"
             case("EKSPEDERT"):
                 return "warning"
+            case("UTGAAR"):
+                return "error"
+            case("AVBRUTT"):
+                return "error"
             default:
                 return "neutral"
         }
@@ -261,15 +271,19 @@ export const SearchResults = () => {
         return <Alert variant="error" style={{width: "5px"}}>Du har ikke tilgang til resurssen, vennligst prøv igjen senere.</Alert>;
     }
 
-
+    const shouldShowFeilRegistrer = (journalposttype: string, journalstatus: string) => {
+        return (journalposttype === "I" || journalposttype === "U") && 
+               (journalstatus !== "FERDIGSTILT") && 
+               (journalstatus !== "AVBRUTT") && 
+               (journalstatus !== "UTGAAR");
+    }
 
     return (
-        <>
             <div className="searchResultsWrapper">
                 <div className="searchResultsLeft">
                     <div className="searchResultsShelf">
+                        <h1>Navn: John / Jane Doe</h1>
                         <h2>{journalpostList.length} treff for "{userkey}"</h2>
-                        {/*<Button variant="secondary" onClick={logDoc}>Hent {selectedRows.length} dokumenter</Button>*/}
                     </div>
                     {filterList.length>0 &&(
                         <div className="filterList">
@@ -289,16 +303,15 @@ export const SearchResults = () => {
                     )}
                     
                     
-                    <Table zebraStripes sort={sort} onSortChange={(sortKey) => handleSort(sortKey)}>
+                    <Table sort={sort} onSortChange={(sortKey) => handleSort(sortKey)}>
                         <Table.Header>
                             <Table.Row>
-                                <Table.HeaderCell>Select</Table.HeaderCell>
+                                <Table.HeaderCell>Expand</Table.HeaderCell>
                                 <Table.ColumnHeader sortKey="journalpostId" sortable>ID</Table.ColumnHeader>
                                 <Table.HeaderCell scope="col">Title</Table.HeaderCell>
                                 <Table.HeaderCell scope="col">Type</Table.HeaderCell>
-                                <Table.ColumnHeader sortKey="datoOpprettet" sortable>Dato opprettet</Table.ColumnHeader>
-                                {/*<Table.HeaderCell scope="col">Dato opprettet</Table.HeaderCell>*/}
-                                <Table.HeaderCell scope="col">Status</Table.HeaderCell>
+                                <Table.ColumnHeader sortKey="datoOpprettet" sortable>Dato</Table.ColumnHeader>
+                                <Table.ColumnHeader sortKey="journalstatus" sortable>Status</Table.ColumnHeader>
                                 <Table.HeaderCell scope="col">Tema</Table.HeaderCell>
                             </Table.Row>
                         </Table.Header>
@@ -311,8 +324,7 @@ export const SearchResults = () => {
                                     className={`tableRow ${isRowClicked(journalpostId) ? "selectedRowOutline" : ""}`}
                                     content={
                                         <>
-                                            <h4 style={{margin: "0", marginBottom: "0.75rem"}}>Dokumenter</h4>
-                                            <p>Avsender: {avsenderMottakerNavn}</p>
+                                            <h4 style={{margin: "0", marginBottom: "0.75rem"}}>Dokumenter:</h4>
                                             <DocumentViewer 
                                                 documentsToView={journalpostList.find(entry => entry.journalpostId === journalpostId)?.dokumenter || []}
                                                 addGlobalDocument={addDocument}
@@ -320,6 +332,7 @@ export const SearchResults = () => {
                                                 isModal={isModalOpen}
                                                 handleSelectedIdandTitle={() => {}}
                                                 handleUnselectedIdandTitle={() => {}}
+                                                handleIsVisible={isVisible}
                                             />
                                             <div className="row-buttons">
                                                 <DocumentEditor
@@ -335,11 +348,14 @@ export const SearchResults = () => {
                                                         documents={documents}
                                                         setIsModalOpen={setIsModalOpen}
                                                         appendNewJournalpost={addNewJournalPosts}
+                                                        handleIsVisible={isVisible}
+                                                        onStatusChange={changeStatus}
                                                     />
-                                                    {((journalposttype === "I" || journalposttype === "U") && journalstatus !== "FERDIGSTILT") && 
+                                                    {shouldShowFeilRegistrer(journalposttype, journalstatus) && 
                                                         <FeilRegistrer
                                                             journalposttype={journalposttype}
                                                             journalpostId={journalpostId}
+                                                            onStatusChange={changeStatus}
                                                         />
                                                     }
                                             </div>
@@ -367,7 +383,6 @@ export const SearchResults = () => {
                     </div>
                 )}
             </div>
-        </>
     )
 }
 

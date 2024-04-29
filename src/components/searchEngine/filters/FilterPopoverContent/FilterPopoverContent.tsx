@@ -2,17 +2,7 @@ import "./FilterPopoverContent.css";
 import { Search, DatePicker, useDatepicker, Chips, Checkbox, CheckboxGroup, Button } from "@navikt/ds-react"; 
 import { ArrowRightLeftIcon } from '@navikt/aksel-icons';
 import { useState, useEffect } from 'react';
-
-type FilterPopoverContentProps = {
-    onClose: () => void;
-    onFilterSubmit: (filterData: {
-        startDate?: Date,
-        endDate?: Date,
-        filter: string[],
-        selectedStatus: string[],
-        selectedType: string[],
-    }) => void; 
-};
+import { FilterPopoverContentProps } from "../../../types";
 
 const FilterPopoverContent = ( props : FilterPopoverContentProps) => {
 
@@ -21,7 +11,6 @@ const FilterPopoverContent = ( props : FilterPopoverContentProps) => {
         "IAR", "IND", "KON", "KLL", "KTA", "KTR", "MED", "MOB", "OMS", "OPA", "OPP", "PEN", "PER", "REH",
         "REK", "RPO", "RVE", "SAA", "SAK", "SAP", "SER", "STO", "SUP", "SYK", "SYM", "TIL", "TRK", "TRY",
         "TSO", "TSR", "UFM", "UFO", "UKJ", "VEN", "YRA", "YRK"];
-
 
     // Local State management for the search input
     const [searchValue, setSearchValue] = useState('');
@@ -45,7 +34,7 @@ const FilterPopoverContent = ( props : FilterPopoverContentProps) => {
 
     // New state for error message visibility
     const [showError, setShowError] = useState("");
-    
+
     // Change the state of the input once we type in it
     const handleInputChange = (value : string) => {
         setSearchValue(value);
@@ -155,21 +144,9 @@ const FilterPopoverContent = ( props : FilterPopoverContentProps) => {
         setShowError("");
     }
 
-    const handleStatusChange = (value: string) => {
-        setSelectedStatus((currentSelectedStatus) =>
-          currentSelectedStatus.includes(value)
-            ? currentSelectedStatus.filter((status) => status !== value)
-            : [...currentSelectedStatus, value]
-        );
-      };
-      
-
     const submitFilter = () => {
         console.log("Form submitted");
         console.log("StartDate is: " + startDate + " and the endDate is: " + endDate);
-        /*console.log("The chosen temaer are: " + filter);
-        console.log("The chosen Status checkboxes are: " + selectedStatus);
-        console.log("The chosen Type checkboxes are: " + selectedType);*/
 
         // Check if either startDate or endDate is not selected
         if ((!startDate && endDate) || (!endDate && startDate)) {
@@ -191,6 +168,7 @@ const FilterPopoverContent = ( props : FilterPopoverContentProps) => {
         console.log("Lagret");
         console.log(filterData)
         setShowError(""); // Reset error message
+        props.showSuccessAlert(true);
     }
 
     /* ...datepickerProps ensures that we can select a date from the calender whilst datePicker input ensures that our selected date
