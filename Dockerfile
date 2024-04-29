@@ -8,9 +8,9 @@ COPY package.json .
 RUN npm install
 
 
-CMD ["npm", "build"]
+CMD ["npm","run", "build"]
 #serve for å starte en statisk server isteden
-CMD [ "npx", "serve" ] 
+CMD [ "npx", "serve", "build" ] 
 COPY . .
 EXPOSE 3000
 
