@@ -9,6 +9,9 @@
     max-width: 100%;
     position: relative;
     border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 .pdf-viewer-container>p{
     margin: 0;
@@ -22,10 +25,6 @@
 }
 .pdf-title>p{
     margin: 0;
-}
-.pdf-document{
-    
-
 }
 .pdf-document>p{
     margin: 5px 20px;

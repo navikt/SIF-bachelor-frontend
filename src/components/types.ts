@@ -33,10 +33,15 @@ export interface Journalpost {
     datoOpprettet: string;
     journalstatus: string;
     tema: string;
-    avsenderMottakerNavn: string;
+    avsenderMottaker: AvsenderMottaker;
     dokumenter: IDocument[];
 }
-
+export interface AvsenderMottaker {
+    erLikBruker: boolean;
+    id: number;
+    navn: string;
+    land?: string;
+}
 export interface FilterOptions {
     startDate?: Date;
     endDate?: Date;
@@ -77,6 +82,7 @@ export interface DocumentViewerProps {
     handleSelectedIdandTitle: (selectedDocs: IDocument[]) => void;
     handleUnselectedIdandTitle: (unselectedDocs: IDocument[]) => void;
     handleIsVisible: (document: IDocument) => boolean;
+    handleBrevkodeChange?: (nyBrevkode: string) => void;
 }
 
 export interface FilterPopoverProps {
@@ -117,4 +123,5 @@ export interface Metadata {
     tittel: string;
     journalposttype: string;
     tema: string;
+    avsenderMottaker: AvsenderMottaker;
 }

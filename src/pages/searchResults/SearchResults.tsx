@@ -309,32 +309,46 @@ export const SearchResults = () => {
                                 <Table.HeaderCell>Expand</Table.HeaderCell>
                                 <Table.ColumnHeader sortKey="journalpostId" sortable>ID</Table.ColumnHeader>
                                 <Table.HeaderCell scope="col">Title</Table.HeaderCell>
-                                <Table.HeaderCell scope="col">Type</Table.HeaderCell>
+                                <Table.HeaderCell scope="col">Inn/Ut</Table.HeaderCell>
                                 <Table.ColumnHeader sortKey="datoOpprettet" sortable>Dato</Table.ColumnHeader>
                                 <Table.ColumnHeader sortKey="journalstatus" sortable>Status</Table.ColumnHeader>
                                 <Table.HeaderCell scope="col">Tema</Table.HeaderCell>
                             </Table.Row>
                         </Table.Header>
                         <Table.Body>
-                            {sortedData.map(({ journalpostId, tittel, journalposttype, datoOpprettet, journalstatus, tema, avsenderMottakerNavn }, i) => (
+                            {sortedData.map(({ journalpostId, tittel, journalposttype, datoOpprettet, journalstatus, tema, avsenderMottaker }, i) => (
                                 <Table.ExpandableRow 
                                     key={i + journalpostId}
                                     onClick={() => addRowDocuments(journalpostId)}
                                     selected={selectedRows.includes(journalpostId)}
                                     className={`tableRow ${isRowClicked(journalpostId) ? "selectedRowOutline" : ""}`}
                                     content={
-                                        <>
-                                            <h4 style={{margin: "0", marginBottom: "0.75rem"}}>Dokumenter:</h4>
-                                            <DocumentViewer 
-                                                documentsToView={journalpostList.find(entry => entry.journalpostId === journalpostId)?.dokumenter || []}
-                                                addGlobalDocument={addDocument}
-                                                documents={documents}
-                                                isModal={isModalOpen}
-                                                handleSelectedIdandTitle={() => {}}
-                                                handleUnselectedIdandTitle={() => {}}
-                                                handleIsVisible={isVisible}
-                                            />
-                                            <div className="row-buttons">
+                                        <div className="jp-content">
+                                            <div className="jp-info-section">
+                                                <h4 className="jp-title">Avsender/mottaker: </h4>
+                                                <div className="avsendermottaker-info">
+                                                    <p>FNR: {avsenderMottaker.id}</p>
+                                                    <p>Navn: {avsenderMottaker.navn}</p>
+                                                    <p>Land: {avsenderMottaker.land ? avsenderMottaker.land : "Ikke relevant"}</p>
+                                                    <p>Er lik bruker: {avsenderMottaker.erLikBruker ? "true" : "false"}</p>
+                                                </div>
+                                            </div>
+                                            
+                                            <div className="jp-info-section">
+                                                <h4 className="jp-title">Dokumenter:</h4>
+                                                <DocumentViewer 
+                                                    documentsToView={journalpostList.find(entry => entry.journalpostId === journalpostId)?.dokumenter || []}
+                                                    addGlobalDocument={addDocument}
+                                                    documents={documents}
+                                                    isModal={isModalOpen}
+                                                    handleSelectedIdandTitle={() => {}}
+                                                    handleUnselectedIdandTitle={() => {}}
+                                                    handleIsVisible={isVisible}
+                                                />
+                                            </div>
+                                            
+                                           
+                                                <div className="row-buttons">
                                                 <DocumentEditor
                                                         brukerId={userkey}
                                                         journalpostId={journalpostId}
@@ -343,6 +357,7 @@ export const SearchResults = () => {
                                                         datoOpprettet={formatDate(new Date(datoOpprettet))}
                                                         journalstatus={journalstatus}
                                                         tema={tema}
+                                                        avsenderMottaker={avsenderMottaker}
                                                         documentsToView={journalpostList.find(entry => entry.journalpostId === journalpostId)?.dokumenter || []}
                                                         addGlobalDocument={addDocument}
                                                         documents={documents}
@@ -358,8 +373,10 @@ export const SearchResults = () => {
                                                             onStatusChange={changeStatus}
                                                         />
                                                     }
-                                            </div>
-                                        </>
+                                                </div> 
+                                                
+                                        
+                                        </div>
                                     }
                                 >
                                     <Table.DataCell>{journalpostId}</Table.DataCell>
@@ -367,8 +384,7 @@ export const SearchResults = () => {
                                     <Table.DataCell>{journalposttype}</Table.DataCell>
                                     <Table.DataCell>{formatDate(new Date(datoOpprettet))}</Table.DataCell>
                                     <Table.DataCell>
-                                        <Tag variant={selectTagVariant(journalstatus)}>{journalstatus}</Tag>
-                                        
+                                        <Tag variant={selectTagVariant(journalstatus)}>{journalstatus}</Tag> 
                                     </Table.DataCell>
                                     <Table.DataCell>{tema}</Table.DataCell>
                                 </Table.ExpandableRow>

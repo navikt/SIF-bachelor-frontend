@@ -1,17 +1,18 @@
 import { useEffect, useState } from "react";
-import { Table } from "@navikt/ds-react";
+import { Table, TextField } from "@navikt/ds-react";
 import { EyeSlashIcon, EyeIcon } from '@navikt/aksel-icons';
 import { IDocument } from "../types";
 import "./DocumentViewer.css";
 import { DocumentViewerProps } from "../types";
 
-export const DocumentViewer = ({ documentsToView, addGlobalDocument, documents, isModal, handleSelectedIdandTitle, handleUnselectedIdandTitle, handleIsVisible }: DocumentViewerProps) => {
+export const DocumentViewer = ({ documentsToView, addGlobalDocument, documents, isModal, handleSelectedIdandTitle, handleUnselectedIdandTitle, handleIsVisible}: DocumentViewerProps) => {
     const [selectedDocuments, setSelectedDocuments] = useState<IDocument[]>([])
     const [stateDocuments, setStateDocuments] = useState<IDocument[]>([])
     const [unselectedDocuments, setUnselectedDocuments] = useState<IDocument[]>(
         documentsToView // Initialize with all documents as unselected
     );
     const [selectedRows, setSelectedRows] = useState<string[]>([]);
+    const [localDocumentsToView, setLocalDocumentsToView] = useState<IDocument[]>(documentsToView)
    
     const addDocument = (documentToAdd: IDocument) => {
         // Find the document to add based on its ID
@@ -89,15 +90,56 @@ export const DocumentViewer = ({ documentsToView, addGlobalDocument, documents, 
         handleUnselectedIdandTitle(unselectedDocuments);
     }, [selectedDocuments, handleSelectedIdandTitle, unselectedDocuments, handleUnselectedIdandTitle]);
 
-    const toggleSelectedRow = (value: string) =>
-        setSelectedRows((list) =>
-          list.includes(value)
-            ? list.filter((id) => id !== value)
-            : [...list, value],
-    );
-    
+
     const isRowClicked = (id: string) => selectedRows.includes(id)
     
+
+    const handleBrevkodeInput = (documentId: string, newBrevkode: string) => {
+        const updatedDocuments = localDocumentsToView.map(doc => {
+            if (doc.dokumentInfoId === documentId) {
+                return { ...doc, brevkode: newBrevkode };
+            }
+            return doc;
+        });
+        setLocalDocumentsToView(updatedDocuments); // Update local state
+        const updateDocumentBrevkode = (docs: IDocument[]) =>
+            docs.map(doc => {
+                if (doc.dokumentInfoId === documentId) {
+                    return { ...doc, brevkode: newBrevkode };
+                }
+                return doc;
+        });
+        setSelectedDocuments(prevDocs => updateDocumentBrevkode(prevDocs));
+        setUnselectedDocuments(prevDocs => updateDocumentBrevkode(prevDocs));
+        console.log(localDocumentsToView)
+        console.log(selectedDocuments)
+        console.log(unselectedDocuments)
+    }
+    const handleTittelInput = (documentId: string, newTittel: string) => {
+        const updatedDocuments = localDocumentsToView.map(doc => {
+            if (doc.dokumentInfoId === documentId) {
+                return { ...doc, tittel: newTittel };
+            }
+            return doc;
+        });
+        setLocalDocumentsToView(updatedDocuments); // Update local state
+
+        const updateDocumentTittel = (docs: IDocument[]) =>
+            docs.map(doc => {
+                if (doc.dokumentInfoId === documentId) {
+                    return { ...doc, tittel: newTittel };
+                }
+                return doc;
+        });
+
+        setSelectedDocuments(prevDocs => updateDocumentTittel(prevDocs));
+        setUnselectedDocuments(prevDocs => updateDocumentTittel(prevDocs));
+        console.log(localDocumentsToView)
+        console.log(selectedDocuments)
+        console.log(unselectedDocuments)
+    };
+
+
     return (
         <div className="documents-wrapper">
             <Table size="small" zebraStripes>
@@ -109,7 +151,7 @@ export const DocumentViewer = ({ documentsToView, addGlobalDocument, documents, 
                     </Table.Row>
                 </Table.Header>
                 <Table.Body>
-                    {documentsToView.map((document: IDocument, i) => (
+                    {localDocumentsToView.map((document: IDocument, i) => (
                         
                         <Table.Row
                         key={i + document.dokumentInfoId}
@@ -118,8 +160,34 @@ export const DocumentViewer = ({ documentsToView, addGlobalDocument, documents, 
                         className={`${isModal ? "tableRow" : ""} ${isRowClicked(document.dokumentInfoId) ? "selectedRowOutline" : ""}`}
                         >   
                             <Table.DataCell>{document.dokumentInfoId}</Table.DataCell>
-                            <Table.DataCell>{document.tittel}</Table.DataCell>
-                            <Table.DataCell>{document.brevkode}</Table.DataCell>
+                            <Table.DataCell>{isModal ? (
+                                <TextField
+                                    label="Tittel."
+                                    hideLabel
+                                    defaultValue={document.tittel}
+                                    size="small"
+                                    htmlSize={14}
+                                    onClick={(e) => e.stopPropagation()}
+                                    onChange={(e) => handleTittelInput(document.dokumentInfoId, e.target.value)}
+                                />
+                                ) : (
+                                    document.tittel
+                                )}
+                            </Table.DataCell>
+                            <Table.DataCell>{isModal ? (
+                                <TextField
+                                    label="Brevkode."
+                                    hideLabel
+                                    defaultValue={document.brevkode}
+                                    size="small"
+                                    htmlSize={14}
+                                    onClick={(e) => e.stopPropagation()}
+                                    onChange={(e) => handleBrevkodeInput(document.dokumentInfoId, e.target.value)}
+                                />
+                                ) : (
+                                    document.brevkode
+                                )}
+                            </Table.DataCell>
                             {!isModal && (
                                 <Table.DataCell className="btn-holder">
                                     {handleIsVisible(document) ? (

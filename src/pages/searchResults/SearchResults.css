@@ -53,8 +53,35 @@
 }
 
 .row-buttons{
-    margin-top: 15px;
     display: flex;
-    gap: 30px;
+    gap: 3rem;
     align-items: center;
+}
+.avsendermottaker-info{
+    display: flex;
+    gap: 2rem;
+}
+.avsendermottaker-info > p{
+    margin: 0;
+}
+.jp-info-section{
+    border-left: 2px solid gray;
+    padding: 1rem 0rem;
+    padding-left: 2rem;
+    border-radius: 6px;
+
+}
+.jp-title{
+    margin: 0;
+    margin-bottom: 1rem;
+}
+.jp-content{
+    display: flex;
+    gap: 2rem;
+    flex-direction: column;
+}
+.jp-divider{
+    height: 1px;
+    width: 100%;
+    background-color: rgb(179, 179, 179);
 }

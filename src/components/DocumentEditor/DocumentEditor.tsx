@@ -1,10 +1,10 @@
 import {useRef, useState, useEffect } from "react"
 import {Button, Modal, TextField, Select } from "@navikt/ds-react"
 import { PencilIcon } from "@navikt/aksel-icons";
-import { IDocument, Journalpost, Metadata } from "../types";
+import { AvsenderMottaker, IDocument, Journalpost, Metadata } from "../types";
 import {DocumentViewer} from "../DocumentViewer/DocumentViewer";
 
-export const DocumentEditor = ({ brukerId, journalpostId, tittel, journalposttype, datoOpprettet, journalstatus, tema, documentsToView, addGlobalDocument, documents, appendNewJournalpost, handleIsVisible, onStatusChange}: { 
+export const DocumentEditor = ({ brukerId, journalpostId, tittel, journalposttype, datoOpprettet, journalstatus, tema, avsenderMottaker, documentsToView, addGlobalDocument, documents, appendNewJournalpost, handleIsVisible, onStatusChange}: { 
     brukerId: string,
     journalpostId: string, 
     tittel: string, 
@@ -12,6 +12,7 @@ export const DocumentEditor = ({ brukerId, journalpostId, tittel, journalposttyp
     datoOpprettet: string, 
     journalstatus: string, 
     tema: string,
+    avsenderMottaker: AvsenderMottaker,
     documentsToView: IDocument[],
     addGlobalDocument: (document: IDocument) => void,
     documents: IDocument[],
@@ -62,6 +63,7 @@ export const DocumentEditor = ({ brukerId, journalpostId, tittel, journalposttyp
         tittel: tittel,
         journalposttype: journalposttype,
         tema: tema,
+        avsenderMottaker: avsenderMottaker
     });
 
     // For the updated metadata in the journalpost
@@ -85,6 +87,7 @@ export const DocumentEditor = ({ brukerId, journalpostId, tittel, journalposttyp
         tittel: tittel,
         journalposttype: journalposttype,
         tema: tema,
+        avsenderMottaker: avsenderMottaker 
     });
 
     // Error message
@@ -97,7 +100,7 @@ export const DocumentEditor = ({ brukerId, journalpostId, tittel, journalposttyp
         setNewMetadata(prev => ({
             ...prev,
             dokumenter: selectedDocuments.map((document: IDocument) => ({
-                brevkode: "placeholder",
+                brevkode: document.brevkode,
                 dokumentvarianter: [
                     {
                         filtype: "PDFA",
@@ -161,7 +164,6 @@ export const DocumentEditor = ({ brukerId, journalpostId, tittel, journalposttyp
         tema: event.target.value,
         }));
     };
-
     const convertStatus = (journaltype: string) => {
         if(journaltype === "I") {
             return "UTGAAR";
@@ -218,7 +220,7 @@ export const DocumentEditor = ({ brukerId, journalpostId, tittel, journalposttyp
                     datoOpprettet: (new Date()).toString(), // Assuming you want to set the creation date to now
                     journalstatus: journalstatus, // You would need to define how to get this value
                     tema: newMetadata.tema, // Assuming you want to use the theme from newMetadata
-                    avsenderMottakerNavn: "placeholder",
+                    avsenderMottaker: newMetadata.avsenderMottaker,
                     dokumenter: selectedDocuments.map(doc => ({
                         dokumentInfoId: doc.dokumentInfoId,
                         tittel: doc.tittel,
@@ -235,7 +237,7 @@ export const DocumentEditor = ({ brukerId, journalpostId, tittel, journalposttyp
                 datoOpprettet: (new Date()).toString(), // Assuming you want to set the creation date to now
                 journalstatus: journalstatus, // You would need to define how to get this value
                 tema: oldMetadata.tema, // Assuming you want to use the theme from newMetadata
-                avsenderMottakerNavn: "placeholder",
+                avsenderMottaker: oldMetadata.avsenderMottaker,
                 dokumenter: unselectedDocuments.map(doc => ({
                     dokumentInfoId: doc.dokumentInfoId,
                     tittel: doc.tittel,
