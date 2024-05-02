@@ -166,7 +166,7 @@ export const DocumentEditor = ({ brukerId, journalpostId, tittel, journalposttyp
     };
     const convertStatus = (journaltype: string) => {
         if(journaltype === "I") {
-            return "UTGAAR";
+            return "UTGÅR";
         } else {
             return "AVBRUTT";
         }
@@ -267,7 +267,7 @@ export const DocumentEditor = ({ brukerId, journalpostId, tittel, journalposttyp
             <Button 
                 onClick={() => {ref.current?.showModal()}}
                 iconPosition="right" icon={<PencilIcon aria-hidden />} 
-                >Splitt Docs
+                >Splitt ut dokumenter
             </Button>
 
             <Modal ref={ref} header={{ heading: "Splitt Opp Dokumenter" }} width={"40%"}>
@@ -321,7 +321,7 @@ export const DocumentEditor = ({ brukerId, journalpostId, tittel, journalposttyp
                     </div>        
                 </Modal.Body>
                 <Modal.Footer>
-                    <Button onClick={splitDocs}>Opprett Nytt JournalPost</Button> {/* Her må vi setIsModalOpen(false) */}
+                    <Button onClick={splitDocs}>Splitt ut dokumenter til ny journalpost</Button> {/* Her må vi setIsModalOpen(false) */}
                     <Button
                         type="button"
                         variant="secondary"

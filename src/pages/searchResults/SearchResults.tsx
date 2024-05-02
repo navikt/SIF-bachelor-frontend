@@ -278,6 +278,19 @@ export const SearchResults = () => {
                (journalstatus !== "UTGAAR");
     }
 
+    const formatStatus = (status: string) => {
+        switch(status){
+            case("UTGAAR"):
+                return "Utgår"
+            case("UNDER_ARBEID"):
+                return "Under arbeid"
+            case("JOURNALFOERT"):
+                return "JOURNALFØRT"
+            default:
+                return status
+        }
+    }
+
     return (
             <div className="searchResultsWrapper">
                 <div className="searchResultsLeft">
@@ -306,7 +319,7 @@ export const SearchResults = () => {
                     <Table sort={sort} onSortChange={(sortKey) => handleSort(sortKey)}>
                         <Table.Header>
                             <Table.Row>
-                                <Table.HeaderCell>Expand</Table.HeaderCell>
+                                <Table.HeaderCell>Utvid</Table.HeaderCell>
                                 <Table.ColumnHeader sortKey="journalpostId" sortable>ID</Table.ColumnHeader>
                                 <Table.HeaderCell scope="col">Title</Table.HeaderCell>
                                 <Table.HeaderCell scope="col">Inn/Ut</Table.HeaderCell>
@@ -371,6 +384,7 @@ export const SearchResults = () => {
                                                             journalposttype={journalposttype}
                                                             journalpostId={journalpostId}
                                                             onStatusChange={changeStatus}
+                                                            formatStatus={formatStatus}
                                                         />
                                                     }
                                                 </div> 
@@ -384,7 +398,7 @@ export const SearchResults = () => {
                                     <Table.DataCell>{journalposttype}</Table.DataCell>
                                     <Table.DataCell>{formatDate(new Date(datoOpprettet))}</Table.DataCell>
                                     <Table.DataCell>
-                                        <Tag variant={selectTagVariant(journalstatus)}>{journalstatus}</Tag> 
+                                        <Tag variant={selectTagVariant(journalstatus)}>{formatStatus(journalstatus)}</Tag> 
                                     </Table.DataCell>
                                     <Table.DataCell>{tema}</Table.DataCell>
                                 </Table.ExpandableRow>
