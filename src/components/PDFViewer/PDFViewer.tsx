@@ -226,7 +226,7 @@ export const PDFViewer = ({ documentUrls, documents }: { documentUrls: Map<strin
             <ZoomPlusIcon onClick={()=>handleZoomIn()} className="toolbar-btns zoom-in"/>
             <ZoomMinusIcon onClick={()=>handleZoomOut()} className="toolbar-btns zoom-out"/>
             {currentPage && numPages && (
-                <p className="toolbar-btns page-index">{`Page ${currentPage} of ${numPages}`}</p>
+                <p className="toolbar-btns page-index">{`Side ${currentPage} av ${numPages}`}</p>
             )}
             {(mergedPdfUrl && documents.length > 0) ? (          
                     

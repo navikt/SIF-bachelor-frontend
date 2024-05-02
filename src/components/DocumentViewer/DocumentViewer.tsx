@@ -191,9 +191,9 @@ export const DocumentViewer = ({ documentsToView, addGlobalDocument, documents, 
                             {!isModal && (
                                 <Table.DataCell className="btn-holder">
                                     {handleIsVisible(document) ? (
-                                        <EyeIcon className="toggle-doc-btn" title="Hide document" fontSize="2rem" onClick={() => addGlobalDocument(document)}/>
+                                        <EyeIcon className="toggle-doc-btn" title="Gjem dokument" fontSize="2rem" onClick={() => addGlobalDocument(document)}/>
                                     ) : (
-                                        <EyeSlashIcon className="toggle-doc-btn" title="Show document" fontSize="2rem" onClick={() => addGlobalDocument(document)}/>
+                                        <EyeSlashIcon className="toggle-doc-btn" title="Vis dokument" fontSize="2rem" onClick={() => addGlobalDocument(document)}/>
                                     )}
                                     
                                 </Table.DataCell>
