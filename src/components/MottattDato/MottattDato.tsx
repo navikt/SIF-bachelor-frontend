@@ -2,7 +2,7 @@ import { Button, Modal, BodyLong } from "@navikt/ds-react";
 import { useState } from "react";
 import { TableIcon } from "@navikt/aksel-icons";
 
-export const MottattDato = ({journalpostId} : {journalpostId: string}) => {
+export const MottattDato = ({journalpostId, handleMottattDato} : { journalpostId: string, handleMottattDato: (journalpostId: string) => void}) => {
 
     // Error message
     const [errorMessage, setErrorMessage] = useState('');
@@ -42,6 +42,9 @@ export const MottattDato = ({journalpostId} : {journalpostId: string}) => {
         })
         .then(data => {
             console.log(data);
+            if(data === true){
+                handleMottattDato(journalpostId);
+            }
         })
         .catch((error) => {
             console.error('There has been a problem with your fetch operation:', error);

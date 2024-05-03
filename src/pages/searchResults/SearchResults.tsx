@@ -291,6 +291,17 @@ export const SearchResults = () => {
         return null;
     } 
 
+    const setMottattDato = (journalpostIdEndre: string) => {
+        console.log("We in da setMottattDato method")
+        setJournalpostList(prevJournalpostList => 
+            prevJournalpostList.map(journalpost =>
+                journalpost.journalpostId === journalpostIdEndre
+                ? { ...journalpost, relevanteDatoer: [...journalpost.relevanteDatoer, {dato: new Date().toISOString(), datotype: "DATO_REGISTRERT"}]}
+                : journalpost
+            )
+        );
+    }
+
     const formatStatus = (status: string) => {
         switch(status){
             case("UTGAAR"):
@@ -360,6 +371,7 @@ export const SearchResults = () => {
                                                         showMottattDato(journalposttype, journalstatus, relevanteDatoer) === "Show Button" ?
                                                         <MottattDato 
                                                             journalpostId = {journalpostId}
+                                                            handleMottattDato={setMottattDato}
                                                         /> :
                                                         <p>Dato Mottatt: {showMottattDato(journalposttype, journalstatus, relevanteDatoer)}</p>
                                                     )}
