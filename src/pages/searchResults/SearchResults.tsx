@@ -5,7 +5,8 @@ import { PDFViewer } from "../../components/PDFViewer/PDFViewer";
 import { DocumentViewer } from "../../components/DocumentViewer/DocumentViewer";
 import { DocumentEditor } from "../../components/DocumentEditor/DocumentEditor";
 import { FeilRegistrer } from "../../components/FeilRegistrer/FeilRegistrer";
-import { IDocument, Journalpost, FilterOptions, SortState } from "../../components/types";
+import { MottattDato } from "../../components/MottattDato/MottattDato";
+import { IDocument, Journalpost, FilterOptions, SortState, RelevantDato } from "../../components/types";
 import './SearchResults.css';
 
 /* formatDate to get DD.MM.YYYY */
@@ -278,6 +279,18 @@ export const SearchResults = () => {
                (journalstatus !== "UTGAAR");
     }
 
+    const showMottattDato = (journalposttype: string, journalstatus: string, relevanteDatoer: RelevantDato[]) => {
+        if(journalposttype === "I"){
+            const relevantDato = relevanteDatoer.find((dato) => dato.datotype === "DATO_REGISTRERT");
+            if (relevantDato) {
+                return formatDate(new Date(relevantDato.dato));
+            } else {
+                return "Show Button";
+            }
+        }
+        return null;
+    } 
+
     const formatStatus = (status: string) => {
         switch(status){
             case("UTGAAR"):
@@ -329,7 +342,7 @@ export const SearchResults = () => {
                             </Table.Row>
                         </Table.Header>
                         <Table.Body>
-                            {sortedData.map(({ journalpostId, tittel, journalposttype, datoOpprettet, journalstatus, tema, avsenderMottaker }, i) => (
+                            {sortedData.map(({ journalpostId, tittel, journalposttype, datoOpprettet, journalstatus, tema, avsenderMottaker, relevanteDatoer }, i) => (
                                 <Table.ExpandableRow 
                                     key={i + journalpostId}
                                     onClick={() => addRowDocuments(journalpostId)}
@@ -343,7 +356,13 @@ export const SearchResults = () => {
                                                     <p>FNR: {avsenderMottaker.id}</p>
                                                     <p>Navn: {avsenderMottaker.navn}</p>
                                                     <p>Land: {avsenderMottaker.land ? avsenderMottaker.land : "Ikke relevant"}</p>
-                                                    <p>Er lik bruker: {avsenderMottaker.erLikBruker ? "true" : "false"}</p>
+                                                    {journalposttype === "I" && (
+                                                        showMottattDato(journalposttype, journalstatus, relevanteDatoer) === "Show Button" ?
+                                                        <MottattDato 
+                                                            journalpostId = {journalpostId}
+                                                        /> :
+                                                        <p>Dato Mottatt: {showMottattDato(journalposttype, journalstatus, relevanteDatoer)}</p>
+                                                    )}
                                                 </div>
                                             </div>
                                             

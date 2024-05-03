@@ -16,7 +16,7 @@ export const FeilRegistrer = ({ journalposttype, journalpostId, onStatusChange, 
 
     const baseUrl = process.env.REACT_APP_BASE_URL
 
-    const registrerFeil = (journalpostId: string, journalposttype: string) => {
+    const registrerFeil = () => {
 
         const token = sessionStorage.getItem("token");
 
@@ -84,7 +84,7 @@ export const FeilRegistrer = ({ journalposttype, journalpostId, onStatusChange, 
                 </Modal.Body>
                 <Modal.Footer>
                 <Button type="button" variant="danger" onClick={() => {
-                    registrerFeil(journalpostId, journalposttype);
+                    registrerFeil();
                     }}>
                     Ja, jeg er sikker
                 </Button>

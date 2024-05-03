@@ -221,6 +221,7 @@ export const DocumentEditor = ({ brukerId, journalpostId, tittel, journalposttyp
                     journalstatus: journalstatus, // You would need to define how to get this value
                     tema: newMetadata.tema, // Assuming you want to use the theme from newMetadata
                     avsenderMottaker: newMetadata.avsenderMottaker,
+                    relevanteDatoer: [],
                     dokumenter: selectedDocuments.map(doc => ({
                         dokumentInfoId: doc.dokumentInfoId,
                         tittel: doc.tittel,
@@ -238,6 +239,7 @@ export const DocumentEditor = ({ brukerId, journalpostId, tittel, journalposttyp
                 journalstatus: journalstatus, // You would need to define how to get this value
                 tema: oldMetadata.tema, // Assuming you want to use the theme from newMetadata
                 avsenderMottaker: oldMetadata.avsenderMottaker,
+                relevanteDatoer: [],
                 dokumenter: unselectedDocuments.map(doc => ({
                     dokumentInfoId: doc.dokumentInfoId,
                     tittel: doc.tittel,

@@ -33,9 +33,16 @@ export interface Journalpost {
     datoOpprettet: string;
     journalstatus: string;
     tema: string;
+    relevanteDatoer: RelevantDato[];
     avsenderMottaker: AvsenderMottaker;
     dokumenter: IDocument[];
 }
+
+export interface RelevantDato {
+    dato: string;
+    datotype: string;
+}
+
 export interface AvsenderMottaker {
     erLikBruker: boolean;
     id: number;
