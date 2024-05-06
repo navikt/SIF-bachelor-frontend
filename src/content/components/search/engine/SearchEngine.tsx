@@ -1,16 +1,14 @@
 import {Search, Alert } from "@navikt/ds-react";
 import { useState, useRef, useEffect } from "react";
 import { FilterIcon } from '@navikt/aksel-icons';
-import FilterPopover from './filters/FilterPopover/FilterPopover';
+import { FilterPopover } from "../export";
 import {useNavigate, useLocation } from "react-router-dom";
-import { filteredData, ErrorResponse } from "../types";
+import { FilterOptions } from "../../../../assets/types/export";
 
 import "./SearchEngine.css";
-import "../../../routes/landing/LandingPage.css"
+import "../../../../routes/landing/LandingPage.css"
 
 export const SearchEngine = () => {
-
-    const baseUrl = process.env.REACT_APP_BASE_URL
 
     const [brukerId, setBrukerId] = useState('');
 
@@ -67,7 +65,7 @@ export const SearchEngine = () => {
     
 
     // Manage state for the filterData object that we receive in the dropdown to use in handleSearch
-    const [filterData, setFilterData] = useState<filteredData>({
+    const [filterData, setFilterData] = useState<FilterOptions>({
         startDate: undefined,
         endDate: undefined,
         filter: [],
@@ -82,7 +80,7 @@ export const SearchEngine = () => {
         setBrukerId(value); // Update state directly with input value
     };
 
-    const handleSubmitFilter = (receivedFilterData: filteredData) => {
+    const handleSubmitFilter = (receivedFilterData: FilterOptions) => {
         setFilterData(receivedFilterData);
         // console.log(filterData);
       };
@@ -125,7 +123,7 @@ export const SearchEngine = () => {
           };
         // Definer headers for POST request
             // Assuming /hentJournalposter endpoint expects a query parameter `brukerID`
-            fetch(baseUrl + "/hentJournalpostListe", {
+            fetch("/hentJournalpostListe", {
             method: 'POST',
             headers: {
             Authorization: `Bearer ${token}`,

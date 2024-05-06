@@ -1,6 +1,6 @@
 import { useLocation } from "react-router-dom";
 import "./ErrorPage.css";
-import errorPageImg from "../../assets/errorPageImg.jpg";
+import errorPageImg from "../../assets/images/errorPageImg.jpg";
 
 const ErrorDisplay = () => {
     const location = useLocation();

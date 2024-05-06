@@ -9,8 +9,6 @@ export const MottattDato = ({journalpostId, handleMottattDato} : { journalpostId
 
     const [open, setOpen] = useState(false);
 
-    const baseUrl = process.env.REACT_APP_BASE_URL
-
     const registrerMottattDato = () => {
         const token = sessionStorage.getItem("token");
 
@@ -26,7 +24,7 @@ export const MottattDato = ({journalpostId, handleMottattDato} : { journalpostId
             mottattDato: currentDate
           };
 
-        fetch(`${baseUrl}/oppdaterJournalpost`, {
+        fetch(`/oppdaterJournalpost`, {
             method: "POST",
             headers: {
                 Authorization: `Bearer ${token}`,

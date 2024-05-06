@@ -1,12 +1,12 @@
 import { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import { Table, Tag, Chips, Alert } from "@navikt/ds-react";
-import { PDFViewer } from "../../content/components/PDFViewer/PDFViewer";
-import { DocumentViewer } from "../../content/components/DocumentViewer/DocumentViewer";
-import { DocumentEditor } from "../../content/components/DocumentEditor/DocumentEditor";
-import { FeilRegistrer } from "../../content/components/FeilRegistrer/FeilRegistrer";
-import { MottattDato } from "../../content/components/MottattDato/MottattDato";
-import { IDocument, Journalpost, FilterOptions, SortState, RelevantDato } from "../../content/components/types";
+
+import { DocumentViewer, DocumentEditor, PDFViewer } from "../../content/components/documentHandling/export"
+import { FeilRegistrer, MottattDato } from "../../content/components/dataIO/export"
+
+import { IDocument, Journalpost, FilterOptions, RelevantDato } from "../../assets/types/export";
+
 import './SearchResults.css';
 import { formatDate, transformFilterOptionsToList, formatStatus, selectTagVariant, shouldShowFeilRegistrer,  } from "../../assets/utils/FormatUtils";
 

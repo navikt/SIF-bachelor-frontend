@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, ReactNode } from 'react';
-import { Journalpost } from '../components/types'; // Adjust the import path as needed
+import { Journalpost } from '../../assets/types/export'; // Adjust the import path as needed
 
 interface SearchContextType {
     journalpostList: Journalpost[];

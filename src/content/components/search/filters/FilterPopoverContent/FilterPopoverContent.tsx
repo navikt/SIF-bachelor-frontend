@@ -2,7 +2,7 @@ import "./FilterPopoverContent.css";
 import { Search, DatePicker, useDatepicker, Chips, Checkbox, CheckboxGroup, Button } from "@navikt/ds-react"; 
 import { ArrowRightLeftIcon } from '@navikt/aksel-icons';
 import { useState, useEffect } from 'react';
-import { FilterPopoverContentProps } from "../../../types";
+import { FilterPopoverContentProps } from "../../../../../assets/types/export";
 
 const FilterPopoverContent = ( props : FilterPopoverContentProps) => {
 

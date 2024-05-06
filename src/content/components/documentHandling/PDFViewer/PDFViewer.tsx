@@ -2,10 +2,9 @@ import React, { useState, useEffect, useRef } from "react";
 import { pdfjs } from "react-pdf"
 import "react-pdf/dist/esm/Page/TextLayer.css";
 import 'react-pdf/dist/Page/AnnotationLayer.css';
-import { IDocument, LogiskVedlegg, RotationInfo } from "../types";
+import { IDocument, LogiskVedlegg, RotationInfo, ErrorResponse, PDFViewerProps } from "../../../../assets/types/export";
 import { PDFDocument, Rotation, RotationTypes, degrees } from "pdf-lib";
 import "./PDFViewer.css"
-import { ErrorResponse } from "../types";
 import { Alert } from "@navikt/ds-react";
 import { RotateLeftIcon, RotateRightIcon, ZoomPlusIcon, ZoomMinusIcon } from '@navikt/aksel-icons';
 import { Page, Document, Outline } from 'react-pdf';
@@ -16,7 +15,7 @@ pdfjs.GlobalWorkerOptions.workerSrc = new URL(
     import.meta.url,
 ).toString();
 
-export const PDFViewer = ({ documentUrls, documents }: { documentUrls: Map<string, string>; documents: IDocument[] }) => {
+export const PDFViewer = ({ documentUrls, documents }: PDFViewerProps) => {
 
     const [currentPage, setCurrentPage] = useState(1);
     const [numPages, setNumPages] = useState<number | null >(null);
@@ -225,7 +224,7 @@ export const PDFViewer = ({ documentUrls, documents }: { documentUrls: Map<strin
             <RotateLeftIcon onClick={() => handleRotate('left')} className="toolbar-btns rotate-left" />
             <ZoomPlusIcon onClick={()=>handleZoomIn()} className="toolbar-btns zoom-in"/>
             <ZoomMinusIcon onClick={()=>handleZoomOut()} className="toolbar-btns zoom-out"/>
-            {currentPage && numPages && (
+            {currentPage && numPages && documents.length>0 &&(
                 <p className="toolbar-btns page-index">{`Side ${currentPage} av ${numPages}`}</p>
             )}
             {(mergedPdfUrl && documents.length > 0) ? (          
@@ -261,6 +260,7 @@ export const PDFViewer = ({ documentUrls, documents }: { documentUrls: Map<strin
                             </div>
                         )}
                     )}
+                
                     </Document>
                 </div>
             ) : (

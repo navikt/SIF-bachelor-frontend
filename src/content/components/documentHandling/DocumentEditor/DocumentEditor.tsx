@@ -1,28 +1,10 @@
 import {useRef, useState, useEffect } from "react"
 import {Button, Modal, TextField, Select } from "@navikt/ds-react"
 import { PencilIcon } from "@navikt/aksel-icons";
-import { AvsenderMottaker, IDocument, Journalpost, Metadata } from "../types";
+import { IDocument, Journalpost, Metadata, DocumentEditorProps } from "../../../../assets/types/export";
 import {DocumentViewer} from "../DocumentViewer/DocumentViewer";
 
-export const DocumentEditor = ({ brukerId, journalpostId, tittel, journalposttype, datoOpprettet, journalstatus, tema, avsenderMottaker, documentsToView, addGlobalDocument, documents, appendNewJournalpost, handleIsVisible, onStatusChange}: { 
-    brukerId: string,
-    journalpostId: string, 
-    tittel: string, 
-    journalposttype: string, 
-    datoOpprettet: string, 
-    journalstatus: string, 
-    tema: string,
-    avsenderMottaker: AvsenderMottaker,
-    documentsToView: IDocument[],
-    addGlobalDocument: (document: IDocument) => void,
-    documents: IDocument[],
-    setIsModalOpen: (isModalOpen: boolean) => void,
-    appendNewJournalpost: (newJournalPost: any, oldJournalPost: any) => void,
-    handleIsVisible: (document: IDocument) => boolean;
-    onStatusChange: (newStatus: string, journalpostId: string) => void
-}) => {
-    
-    const baseUrl = process.env.REACT_APP_BASE_URL
+export const DocumentEditor = ({ brukerId, journalpostId, tittel, journalposttype, datoOpprettet, journalstatus, tema, avsenderMottaker, documentsToView, addGlobalDocument, documents, appendNewJournalpost, handleIsVisible, onStatusChange}: DocumentEditorProps ) => {
 
     // State to keep track of selected document IDs
     const [selectedDocuments, setSelectedDocuments] = useState<IDocument[]>([]);
@@ -192,7 +174,7 @@ export const DocumentEditor = ({ brukerId, journalpostId, tittel, journalposttyp
           console.log(oldMetadata)
           console.log(newMetadata)
 
-        fetch(baseUrl + "/createJournalpost", {
+        fetch("/createJournalpost", {
             method: 'POST',
             headers: {
             Authorization: `Bearer ${token}`,

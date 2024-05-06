@@ -1,4 +1,4 @@
-import { FilterOptions } from "../../content/components/types";
+import { FilterOptions } from "../types/export";
 
 /* formatDate to get DD.MM.YYYY */
 export const formatDate = (date: Date) => {

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { IDocument } from "../components/types";
+import { IDocument } from "../../assets/types/export";
 
 interface UseDocumentsProps {
     initialDocuments: IDocument[];
@@ -18,7 +18,7 @@ const useDocuments = ({ initialDocuments }: UseDocumentsProps) => {
             for (const document of documents) {
                 const docId: string = document.dokumentInfoId;
                 if (!documentUrls.has(docId)) {
-                    const response = await fetch(`${baseUrl}/hentDokumenter?dokumentInfoId=${docId}&journalpostId=1`, {
+                    const response = await fetch(`/hentDokumenter?dokumentInfoId=${docId}&journalpostId=1`, {
                         headers: {
                             Authorization: `Bearer ${token}`,
                         },
