@@ -1,46 +1,20 @@
 import { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import { Table, Tag, Chips, Alert } from "@navikt/ds-react";
-import { PDFViewer } from "../../components/PDFViewer/PDFViewer";
-import { DocumentViewer } from "../../components/DocumentViewer/DocumentViewer";
-import { DocumentEditor } from "../../components/DocumentEditor/DocumentEditor";
-import { FeilRegistrer } from "../../components/FeilRegistrer/FeilRegistrer";
-import { MottattDato } from "../../components/MottattDato/MottattDato";
-import { IDocument, Journalpost, FilterOptions, SortState, RelevantDato } from "../../components/types";
+import { PDFViewer } from "../../content/components/PDFViewer/PDFViewer";
+import { DocumentViewer } from "../../content/components/DocumentViewer/DocumentViewer";
+import { DocumentEditor } from "../../content/components/DocumentEditor/DocumentEditor";
+import { FeilRegistrer } from "../../content/components/FeilRegistrer/FeilRegistrer";
+import { MottattDato } from "../../content/components/MottattDato/MottattDato";
+import { IDocument, Journalpost, FilterOptions, SortState, RelevantDato } from "../../content/components/types";
 import './SearchResults.css';
+import { formatDate, transformFilterOptionsToList, formatStatus, selectTagVariant, shouldShowFeilRegistrer,  } from "../../assets/utils/FormatUtils";
 
-/* formatDate to get DD.MM.YYYY */
-const formatDate = (date: Date) => {
-      const day = date.getDate().toString().padStart(2, '0');
-    const month = (date.getMonth() + 1).toString().padStart(2, '0');
-     const year = date.getFullYear().toString();
-    return `${day}.${month}.${year}`
-}  ;  
-
-const transformFilterOptionsToList = (options: FilterOptions): any[] => {
-    const list: any[] = [];
-    if(options.startDate) {list.push(formatDate(options.startDate));}
-    if(options.endDate) {list.push(formatDate(options.endDate));}
-    
-
-    options.filter.forEach((item, index) => {
-        list.push(item);
-    });
-
-    options.selectedStatus.forEach((item, index) => {
-        list.push(item);
-    });
-
-    options.selectedType.forEach((item, index) => { 
-        list.push(item);
-    });
-
-    return list;
-};
+import useDocuments from "../../content/hooks/useDocuments";
+import useSorting from "../../content/hooks/useSort";
   // Manage state for the filterData object that we receive in the dropdown to use in handleSearch
   
 export const SearchResults = () => {
-    const baseUrl = process.env.REACT_APP_BASE_URL
     const location = useLocation()
     const [userkey, setUserkey] = useState<string>(location.state.userkey)
     const [journalpostList, setJournalpostList] = useState<Journalpost[]>(location.state.dokumentoversikt.journalposter as Journalpost[]) || []
@@ -51,30 +25,11 @@ export const SearchResults = () => {
 
     const [selectedRows, selectRow] = useState<string[]>([]);
 
-    const [documentUrls, setDocumentUrls] = useState<Map<string, string>>(new Map());
-    const [documents, setDocuments] = useState<IDocument[]>([]);
+    const { documents, setDocuments, documentUrls, setDocumentUrls } = useDocuments({
+        initialDocuments: location.state.dokumentoversikt.journalposter[0].dokumenter,
+    });
 
-    const [sort, setSort] = useState<SortState | undefined>(undefined);
-
-    const handleSort = (sortKey: string | undefined) => {
-        if (sortKey) {
-            setSort((prevSort) =>
-            prevSort && sortKey === prevSort.orderBy && prevSort.direction === "descending"
-                ? undefined
-                : {
-                    orderBy: sortKey,
-                    direction:
-                    prevSort && sortKey === prevSort.orderBy && prevSort.direction === "ascending"
-                        ? "descending"
-                        : "ascending",
-                }
-            );
-        } else {
-            // Handle case when sortKey is undefined (clear sorting)
-            setSort(undefined);
-        }
-    };
-
+   
     const comparator = (a: Journalpost, b: Journalpost, orderBy: keyof Journalpost) => {
         if (b[orderBy] < a[orderBy] || b[orderBy] === undefined) {
             return -1;
@@ -85,69 +40,16 @@ export const SearchResults = () => {
         return 0;
     };
 
-    const sortedData = journalpostList.slice().sort((a, b) => {
-        if (sort) {
-            return sort.direction === "descending"
-                ? comparator(b, a, sort.orderBy as keyof Journalpost)
-                : comparator(a, b, sort.orderBy as keyof Journalpost);
-        }
-        return 0; // Changed from 1 to 0
-    });
+    const { sort, handleSort, sortedData } = useSorting<Journalpost>();
 
-    useEffect(() => {
-
-        const fetchDocuments = async () => {
-            
-            const fetchedUrls = new Map<string, string>()
-            const token = sessionStorage.getItem("token")
-            for (const document of documents) {
-                const docId: string = document.dokumentInfoId;
-
-                if(documentUrls.has(docId) !== (undefined || true)){
-                    //console.log(documentUrls.has(docId))
-                    //console.log("Couldnt find saved document:", docId); // Add this line to check if documents are being fetched
-                    const response = await fetch(baseUrl+"/hentDokumenter?dokumentInfoId=" + docId + "&journalpostId=1", { // ! VIKTIG ! HER MÅ document.originalJournalpostId BRUKES ISTEDET FOR 1
-                        headers: {
-                            Authorization: `Bearer ${token}`
-                        }
-                    })
-                    if (!response.ok) {
-                        console.error("Failed to fetch document: " + docId)
-                    }
     
-                    const blob = await response.blob()
-                    const objectReference = URL.createObjectURL(blob)
-                    fetchedUrls.set(docId, objectReference)
-                }else{
-                    //console.log("Found saved document: " + documentUrls.get(docId))
-                }
-                
-            }
-    
-            setDocumentUrls(prevUrls => {
-                const newUrls = new Map([...prevUrls, ...fetchedUrls])
-                return newUrls
-            })
-    
-            console.log("Fetched documents:", fetchedUrls); // Add this line to check the fetched documents
-        }
-    
-        if (documents.length > 0) {
-            fetchDocuments()
-        }
-    
-    }, [ documents ]);
 
     /* Kjempe mye redundant kode her, kanskje fjerne noen av disse og instansiere noen av de i selve useState()? */
     useEffect(()=>{
-        //console.log("Hi " + location.state)
         setDocuments(location.state.dokumentoversikt.journalposter[0].dokumenter)
         setUserkey(location.state.userkey)
         setFilterOptions(location.state.filterOptions)
-        //console.log("LOGGER LOKAL FILTEROPTIONS")
-        //console.log(filterOptions)
         setFilterList(transformFilterOptionsToList(filterOptions))
-        //console.log(filterList)
         selectRow([location.state.dokumentoversikt.journalposter[0].journalpostId])
     }, [location.state, filterOptions])
 
@@ -250,36 +152,14 @@ export const SearchResults = () => {
         ]);
     };
 
-    const selectTagVariant = (journalStatus: string) => {
-        switch(journalStatus.toUpperCase()){
-            case("UNDER_ARBEID"):
-                return "alt1"
-            case("JOURNALFOERT"):
-                return "info"  
-            case("FERDIGSTILT"):
-                return "success"
-            case("EKSPEDERT"):
-                return "warning"
-            case("UTGAAR"):
-                return "error"
-            case("AVBRUTT"):
-                return "error"
-            default:
-                return "neutral"
-        }
-    }
+
+
     if (!sessionStorage.getItem("token")) {
         return <Alert variant="error" style={{width: "5px"}}>Du har ikke tilgang til resurssen, vennligst prøv igjen senere.</Alert>;
     }
 
-    const shouldShowFeilRegistrer = (journalposttype: string, journalstatus: string) => {
-        return (journalposttype === "I" || journalposttype === "U") && 
-               (journalstatus !== "FERDIGSTILT") && 
-               (journalstatus !== "AVBRUTT") && 
-               (journalstatus !== "UTGAAR");
-    }
-
     const showMottattDato = (journalposttype: string, journalstatus: string, relevanteDatoer: RelevantDato[]) => {
+        console.log(relevanteDatoer)
         if(journalposttype === "I"){
             const relevantDato = relevanteDatoer.find((dato) => dato.datotype === "DATO_REGISTRERT");
             if (relevantDato) {
@@ -302,18 +182,6 @@ export const SearchResults = () => {
         );
     }
 
-    const formatStatus = (status: string) => {
-        switch(status){
-            case("UTGAAR"):
-                return "Utgår"
-            case("UNDER_ARBEID"):
-                return "Under arbeid"
-            case("JOURNALFOERT"):
-                return "JOURNALFØRT"
-            default:
-                return status
-        }
-    }
 
     return (
             <div className="searchResultsWrapper">
@@ -353,7 +221,7 @@ export const SearchResults = () => {
                             </Table.Row>
                         </Table.Header>
                         <Table.Body>
-                            {sortedData.map(({ journalpostId, tittel, journalposttype, datoOpprettet, journalstatus, tema, avsenderMottaker, relevanteDatoer }, i) => (
+                            {sortedData(journalpostList, comparator).map(({ journalpostId, tittel, journalposttype, datoOpprettet, journalstatus, tema, avsenderMottaker, relevanteDatoer }, i) => (
                                 <Table.ExpandableRow 
                                     key={i + journalpostId}
                                     onClick={() => addRowDocuments(journalpostId)}

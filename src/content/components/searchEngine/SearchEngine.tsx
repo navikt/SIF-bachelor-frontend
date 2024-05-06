@@ -6,7 +6,7 @@ import {useNavigate, useLocation } from "react-router-dom";
 import { filteredData, ErrorResponse } from "../types";
 
 import "./SearchEngine.css";
-import "../../pages/landing/LandingPage.css"
+import "../../../routes/landing/LandingPage.css"
 
 export const SearchEngine = () => {
 
