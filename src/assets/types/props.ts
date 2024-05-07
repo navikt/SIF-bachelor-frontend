@@ -1,5 +1,6 @@
 import React, { Dispatch, SetStateAction } from 'react';
 import { IDocument, AvsenderMottaker } from "./models";
+import { FilterOptions } from './misc';
 
 export interface FilterPopoverContentProps {
     onClose: () => void;
@@ -37,6 +38,12 @@ export interface FilterPopoverProps {
       selectedStatus: string[],
       selectedType: string[],
   }) => void;
+}
+
+export interface SearchHandlerProps {
+    brukerId: string;
+    isValid: boolean;
+    filterData: FilterOptions;
 }
 
 export interface DocumentEditorProps {

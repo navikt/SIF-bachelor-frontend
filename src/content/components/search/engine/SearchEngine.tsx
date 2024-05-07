@@ -4,6 +4,7 @@ import { FilterIcon } from '@navikt/aksel-icons';
 import { FilterPopover } from "../export";
 import {useNavigate, useLocation } from "react-router-dom";
 import { FilterOptions } from "../../../../assets/types/export";
+import useSearchHandler from "../../../hooks/useSearchHandler";
 
 import "./SearchEngine.css";
 import "../../../../routes/landing/LandingPage.css"
@@ -11,31 +12,29 @@ import "../../../../routes/landing/LandingPage.css"
 export const SearchEngine = () => {
 
     const [brukerId, setBrukerId] = useState('');
-
     // Manage state for rotating the filterIcon when clicking on it, initially false, aka not rotated
-    const [isRotated, setIsRotated] = useState(false);
-
+    const [isRotated, setIsRotated] = useState<boolean>(false);
     // Manage state for opening the dropdown menu, which is initially false, aka dropdown menu not triggered.
-    const [openState, setOpenState] = useState(false);
-
+    const [openState, setOpenState] = useState<boolean>(false);
     // For the input validation of the "brukerId"
-    const [isValid, setIsValid] = useState(true);
-
+    const [isValid, setIsValid] = useState<boolean>(true);
     const [alertShown, setAlertShown] = useState(false);
-
-      // Error message
-    const [errorMessage, setErrorMessage] = useState('');
-    const [serverExceptionError, setExceptionError] = useState('');
-    const [errorCode, setErrorCode] = useState('');
-  
+    // Manage state for the filterData object that we receive in the dropdown to use in handleSearch
+    const [filterData, setFilterData] = useState<FilterOptions>({
+        startDate: undefined,
+        endDate: undefined,
+        filter: [],
+        selectedStatus: [],
+        selectedType: [],
+    });
     const FilterIconRef = useRef(null);
-
-    const navigate = useNavigate();
-
     const location = useLocation();
 
     // Check if the current path is /SearchResults for resizable searchbar 
     const isSearchResultsPage = location.pathname === "/SearchResults" || location.pathname === "/error";
+
+    const { handleSearch, errorMessage, setErrorMessage, serverExceptionError, errorCode } = useSearchHandler({ brukerId, isValid, filterData });
+
 
     useEffect(() => {
         setErrorMessage(''); // Reset the error message on component mount
@@ -62,18 +61,6 @@ export const SearchEngine = () => {
             setErrorMessage('BrukerId må være et tresifret tall mellom 3 og 11'); // Set specific error message if invalid
         }
     }, [brukerId]); // Depend on brukerId to re-run validation
-    
-
-    // Manage state for the filterData object that we receive in the dropdown to use in handleSearch
-    const [filterData, setFilterData] = useState<FilterOptions>({
-        startDate: undefined,
-        endDate: undefined,
-        filter: [],
-        selectedStatus: [],
-        selectedType: [],
-    });
-
-    
 
     // Denne søke funksjonen oppdaterer userId state når vi skriver og endrer på inputen!
     const handleInputChange = (value: string) => {
@@ -89,81 +76,6 @@ export const SearchEngine = () => {
         setOpenState(!openState);
         setIsRotated(!isRotated);
       };
-
-    const handleSearch = () => {
-
-        if(!brukerId) {
-            setErrorMessage("Du må fylle inn en gyldig bruker-ID før du kan søke!");
-            return;
-        }
-        
-        if (!isValid) {
-            setErrorMessage('Du må skrive inn et gyldig 3 til 11 sifret tall før du kan søke!');
-            return;
-        }
-
-        const token = sessionStorage.getItem("token");
-
-        if(!token) {
-            setErrorMessage("Du må logge inn for å søke!");
-            return;
-        }
-        
-        // Opprett JSON body med userId
-        const requestBody = {
-            brukerId: {
-              id: brukerId,
-              type: "FNR" 
-            },
-            fraDato: filterData.startDate,
-            tilDato: filterData.endDate,
-            journalposttyper: filterData.selectedType,
-            journalstatuser: filterData.selectedStatus,
-            tema: filterData.filter,
-          };
-        // Definer headers for POST request
-            // Assuming /hentJournalposter endpoint expects a query parameter `brukerID`
-            fetch("/hentJournalpostListe", {
-            method: 'POST',
-            headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-            },
-            body: JSON.stringify(requestBody), // Konverterer JavaScript objekt til en JSON string
-        })
-        .then(response => {
-            if (!response.ok) {
-                return response.json().then((body) => {
-                    throw { status: response.status, errorMessage: body.errorMessage };
-                });
-            }
-            return response.json(); // Parse response as JSON
-        })
-        .then(data => {
-            if(data.errorMessage){
-                setExceptionError(data.errorMessage);
-              }
-            else{
-                data.filterOptions = filterData
-                data.userkey = brukerId
-                data.uniqueActionId = Array.from({length: 16}, () => Math.floor(Math.random() * 16).toString(16)).join('')
-                console.log(data)
-                navigate("/SearchResults", {state: data})
-                // Oppdater tilstand her om nødvendig, f.eks. setJournalposts(data)
-            }
-        })
-        .catch(error => {
-            // Check if the error has a status property
-            if (error.status) {
-                console.log("The error status is: " + error.status)
-                navigate('/error', { state: { errorCode: error.status, errorMessage: error.errorMessage
-                     || 'An unexpected error occurred.' } });
-            } else {
-                console.error('Error fetching data:', error);   
-                navigate('/error', { state: { errorCode: 'Unknown Error', errorMessage: 'An unexpected error occurred. Please try again later.' } });
-            }
-        });
-            };
 
     // Conditional rendering based on the error state
     if (serverExceptionError) {

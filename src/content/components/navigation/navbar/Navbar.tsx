@@ -5,7 +5,6 @@ import './Navbar.css';
 import { SearchEngine } from "../../search/export";
 
 const Navbar = () => {
-  const baseUrl = process.env.REACT_APP_BASE_URL
   const navigate = useNavigate();
   const location = useLocation();
   
@@ -38,32 +37,6 @@ const Navbar = () => {
     const expirationTime = sessionStorage.getItem('token_expiration');
     return expirationTime !== null && new Date().getTime() < Number(expirationTime);
   };
-  
-  const callProtectedEndpoint = async () => {
-
-    const token = sessionStorage.getItem("token");
-
-    try{
-      const response = await fetch(baseUrl + '/test/protected', {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      //Oppdatering av statussymbol 
-      if (response.ok) {
-        setStatusColor("green");
-        //dersom vi ikke er authorized vil statussymbolet være oransj.
-      } else if (response.status === 401) {
-        setStatusColor("orange");
-      } else {
-        // Handle other statuses if needed
-        setStatusColor("gray");
-      }
-    }catch(err){
-      console.error('Error calling the protected endpoint:', err);
-      setStatusColor("red");
-    }
-  }
 
    // Function to toggle login/logout
   const toggleLogin = async () => {
