@@ -214,7 +214,7 @@ export const DocumentEditor = ({ brukerId, journalpostId, tittel, journalposttyp
                 };
 
             const oldJournalPost: Journalpost = {
-                journalpostId: newJournalpostIds[0], // This is the new ID from the response
+                journalpostId: newJournalpostIds[0],// This is the new ID from the response
                 tittel: oldMetadata.tittel, // Assuming you want to use the title from newMetadata
                 journalposttype: oldMetadata.journalposttype, // Assuming you want to use the journal post type from newMetadata
                 datoOpprettet: (new Date()).toString(), // Assuming you want to set the creation date to now

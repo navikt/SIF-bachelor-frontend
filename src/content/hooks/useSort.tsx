@@ -5,7 +5,7 @@ interface SortState {
     direction: 'ascending' | 'descending';
 }
 
-const useSorting = <T,>() => {
+const useSort = <T,>() => {
     const [sort, setSort] = useState<SortState | undefined>(undefined);
 
     const handleSort = (sortKey: string | undefined) => {
@@ -32,4 +32,4 @@ const useSorting = <T,>() => {
     return { sort, handleSort, sortedData };
 };
 
-export default useSorting;
+export default useSort;

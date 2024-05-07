@@ -1,8 +1,12 @@
 import './LandingPage.css';
 import dokSearchIcon from "../../assets/images/dokSearchIcon.svg";
 import { SearchEngine } from "../../content/components/search/export"
+import useTitle from '../../content/hooks/useTitle';
 
 export const LandingPage = () => {
+
+  useTitle("Vju - Hjem")
+
   return (
     <div className="landing-container">
       <div className="content">

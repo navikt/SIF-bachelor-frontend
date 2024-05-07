@@ -10,26 +10,25 @@ import { IDocument, Journalpost, FilterOptions, RelevantDato } from "../../asset
 import './SearchResults.css';
 import { formatDate, transformFilterOptionsToList, formatStatus, selectTagVariant, shouldShowFeilRegistrer,  } from "../../assets/utils/FormatUtils";
 
-import useDocuments from "../../content/hooks/useDocuments";
-import useSorting from "../../content/hooks/useSort";
+import { useDocuments, useSort, useTitle } from "../../content/hooks/export";
   // Manage state for the filterData object that we receive in the dropdown to use in handleSearch
   
 export const SearchResults = () => {
+
     const location = useLocation()
     const [userkey, setUserkey] = useState<string>(location.state.userkey)
     const [journalpostList, setJournalpostList] = useState<Journalpost[]>(location.state.dokumentoversikt.journalposter as Journalpost[]) || []
     const [filterOptions, setFilterOptions] = useState<FilterOptions>(location.state.filterOptions);
     const [filterList, setFilterList] = useState<string[]>([])
-
     const [isModalOpen, setIsModalOpen] = useState<boolean>(false)
-
     const [selectedRows, selectRow] = useState<string[]>([]);
 
     const { documents, setDocuments, documentUrls, setDocumentUrls } = useDocuments({
         initialDocuments: location.state.dokumentoversikt.journalposter[0].dokumenter,
     });
 
-   
+    useTitle("Vju - Resultat")
+
     const comparator = (a: Journalpost, b: Journalpost, orderBy: keyof Journalpost) => {
         if (b[orderBy] < a[orderBy] || b[orderBy] === undefined) {
             return -1;
@@ -40,7 +39,7 @@ export const SearchResults = () => {
         return 0;
     };
 
-    const { sort, handleSort, sortedData } = useSorting<Journalpost>();
+    const { sort, handleSort, sortedData } = useSort<Journalpost>();
 
     
 

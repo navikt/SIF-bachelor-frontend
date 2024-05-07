@@ -15,6 +15,7 @@ function App() {
         <Route path="/" element={<LandingPage />} />
         <Route path="/searchResults" element={<SearchResults />} />
         <Route path="/error" element={<ErrorDisplay />} />
+        
       </Routes>
       {/*<Footer />*/}
     </div>
