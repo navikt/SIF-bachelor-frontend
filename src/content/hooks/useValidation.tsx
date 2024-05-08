@@ -1,11 +1,11 @@
 import { useState } from "react";
-import { tema, brukerIdType, amType } from "../../assets/utils/FormatUtils";
+import { tema, brukerIdType, amType, landListe } from "../../assets/utils/FormatUtils";
 
 // Regular expressions for validation
 const idRegex = /^\d{3,11}$/; // BrukerId validation: 3 to 11 digits
 const fnrRegex = /^[0-9]{11}$/; // 11-digit number (example for FNR)
 const nameRegex = /^[A-Za-zæøåÆØÅ\s-]{2,30}$/; // Only letters, spaces, hyphens
-const AMRegex = /^[0-9]{11}$/;
+const tittelRegex = /^[A-Za-zæøåÆØÅ\s-]{2,30}$/; // Only letters, spaces, hyphens
 
 export const useValidation = () => {
   const [brukerIdError, setBrukerIdError] = useState<string>("");
@@ -23,37 +23,44 @@ export const useValidation = () => {
       setBrukerIdError("");
     }
   };
+
   const validateBrukerType = (type: string) => {
     if (!brukerIdType.includes(type)) {
-      setBrukerIdTypeError("Brukertype er enten FNR, ORGNR eller AKTOERID");
-    } else {
-      setBrukerIdTypeError("");
+        setBrukerIdTypeError("Brukertype er enten FNR, ORGNR eller AKTOERID");
+      } else {
+        setBrukerIdTypeError("");
     }
   }
 
-  const validateAvsenderMottaker = (id: string, name: string, land: string) => {
+  const validateAvsenderMottaker = (id: string, name: string, land: string, type: string) => {
     if (!fnrRegex.test(id)) {
-      setAvsenderMottakerIdError("Invalid ID");
+      setAvsenderMottakerIdError("Avsender / Mottaker ID må være 11 siffer");
     } else {
       setAvsenderMottakerIdError("");
     }
 
     if (!nameRegex.test(name)) {
-      setAvsenderMottakerNameError("Invalid Name");
+      setAvsenderMottakerNameError("Navn må være mellom 2 og 30 tegn langt");
     } else {
       setAvsenderMottakerNameError("");
     }
 
-    if (land === "") {
-      setAvsenderMottakerLandError("Land is required");
+    if (!amType.includes(type)) {
+        setAvsenderMottakerLandError("Type er enten FNR, ORGNR, HPPNR, UTL_ORG, NULL eller UKJENT");
+      } else {
+        setAvsenderMottakerLandError("");
+    }
+
+    if (landListe.includes(land)) {
+      setAvsenderMottakerLandError("Tilgjengelige land er Norge, Sverige, Danmark og Finland");
     } else {
       setAvsenderMottakerLandError("");
     }
   };
 
   const validateTittel = (tittel: string) => {
-    if (tittel.length < 2) {
-      setTittelError("Title too short");
+    if (!tittelRegex.test(tittel)) {
+      setTittelError("Tittel må være mellom 2 og 30 tegn langt");
     } else {
       setTittelError("");
     }
@@ -61,7 +68,7 @@ export const useValidation = () => {
 
   const validateTema = (inputTema: string) => {
     if (!tema.includes(inputTema)) {
-      setTemaError("Invalid Tema");
+      setTemaError("Tema må være en av de tilgjengelige temaene");
     } else {
       setTemaError("");
     }
@@ -75,6 +82,7 @@ export const useValidation = () => {
     tittelError,
     temaError,
     validateBrukerId,
+    validateBrukerType,
     validateAvsenderMottaker,
     validateTittel,
     validateTema,

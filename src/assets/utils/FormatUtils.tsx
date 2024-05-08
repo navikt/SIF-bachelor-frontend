@@ -118,3 +118,5 @@ export const tema = ["AAP", "AAR", "AGR", "ARP", "ARS", "BAR", "BID", "BIL", "DA
 export const brukerIdType = ["FNR", "AKTOERID", "ORGNR"];
 
 export const amType = ["FNR", "ORGNR", "HPPNR", "UTL_ORG", "NULL", "UKJENT"];
+
+export const landListe = ["Norge", "Sverige", "Danmark", "Finland"];
