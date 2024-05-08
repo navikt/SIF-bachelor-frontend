@@ -120,9 +120,6 @@ export const PDFViewer = ({ documentUrls, documents }: PDFViewerProps) => {
     }
 
     useEffect(() => {
-
-        
-
         if (documentUrls && documents.length > 0) {
             parseRotationLib()
             mergePdfs();
@@ -179,7 +176,6 @@ export const PDFViewer = ({ documentUrls, documents }: PDFViewerProps) => {
                     const logiskVedlegg: LogiskVedlegg = {tittel: JSON.stringify(currentDocument.rotationLib)}
                     currentDocument.logiskeVedlegg = [logiskVedlegg]
                     
-
                     // Log the rotation update
                     console.log(`Rotated page ${pageWithinDocument} of document ${currentDocument.dokumentInfoId} by ${normalizedRotation} degrees`);
                 } else {
@@ -192,7 +188,6 @@ export const PDFViewer = ({ documentUrls, documents }: PDFViewerProps) => {
                     console.log(`Rotation information for page ${pageWithinDocument} of document ${currentDocument.dokumentInfoId} not found`);
                 }
 
-                
                 // Optionally, you may want to update the document in the documents array
                 documents[currentDocumentIndex] = currentDocument;
             } else {

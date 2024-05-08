@@ -3,14 +3,9 @@ import { Search, DatePicker, useDatepicker, Chips, Checkbox, CheckboxGroup, Butt
 import { ArrowRightLeftIcon } from '@navikt/aksel-icons';
 import { useState, useEffect } from 'react';
 import { FilterPopoverContentProps } from "../../../../../assets/types/export";
+import { tema } from "../../../../../assets/utils/FormatUtils";
 
 const FilterPopoverContent = ( props : FilterPopoverContentProps) => {
-
-    const tema = ["AAP", "AAR", "AGR", "ARP", "ARS", "BAR", "BID", "BIL", "DAG", "ENF", "ERS",
-        "EYB", "EYO", "FAR", "FEI", "FIP", "FOR", "FOS", "FRI", "FUL", "GEN", "GRA", "GRU", "HEL", "HJE",
-        "IAR", "IND", "KON", "KLL", "KTA", "KTR", "MED", "MOB", "OMS", "OPA", "OPP", "PEN", "PER", "REH",
-        "REK", "RPO", "RVE", "SAA", "SAK", "SAP", "SER", "STO", "SUP", "SYK", "SYM", "TIL", "TRK", "TRY",
-        "TSO", "TSR", "UFM", "UFO", "UKJ", "VEN", "YRA", "YRK"];
 
     // Local State management for the search input
     const [searchValue, setSearchValue] = useState('');

@@ -1,7 +1,7 @@
 import {useRef, useState, useEffect } from "react"
-import {Button, Modal, TextField, Select } from "@navikt/ds-react"
+import {Button, Modal, TextField, Table } from "@navikt/ds-react"
 import { PencilIcon } from "@navikt/aksel-icons";
-import { IDocument, Journalpost, Metadata, DocumentEditorProps } from "../../../../assets/types/export";
+import { IDocument, Journalpost, DocumentEditorProps } from "../../../../assets/types/export";
 import {DocumentViewer} from "../DocumentViewer/DocumentViewer";
 import { convertStatus, displayType, metadataTemplate } from "../../../../assets/utils/FormatUtils";
 
@@ -72,13 +72,6 @@ export const DocumentEditor = ({ brukerId, journalpostId, tittel, journalposttyp
         setNewMetadata((prevMetadata) => ({
         ...prevMetadata,
         tittel: event.target.value,
-        }));
-    };
-
-    const handleStatusChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-        setNewMetadata((prevMetadata) => ({
-        ...prevMetadata,
-        status: event.target.value,
         }));
     };
 
@@ -200,6 +193,49 @@ export const DocumentEditor = ({ brukerId, journalpostId, tittel, journalposttyp
                             onChange={handleTittelChange}
                             className="inputBox"
                         />
+                        <h3>Avsender / Mottaker </h3>
+                        <Table>
+                            <Table.Header>
+                                <Table.Row>
+                                    <Table.HeaderCell scope="col">ID</Table.HeaderCell>
+                                    <Table.HeaderCell scope="col">ID-Type</Table.HeaderCell>
+                                    <Table.HeaderCell scope="col">Navn</Table.HeaderCell>
+                                    <Table.HeaderCell scope="col">Land</Table.HeaderCell>
+                                </Table.Row>
+                            </Table.Header>
+                            <Table.Body>
+                                <Table.Row>
+                                    <Table.DataCell>
+                                        <TextField
+                                        label="ID"
+                                        hideLabel
+                                        value={avsenderMottaker.id}
+                                        />
+                                    </Table.DataCell>
+                                    <Table.DataCell>
+                                        <TextField
+                                        label="ID-Type"
+                                        hideLabel
+                                        value={avsenderMottaker.type}
+                                        />
+                                    </Table.DataCell>
+                                    <Table.DataCell>
+                                        <TextField
+                                        label="Navn"
+                                        hideLabel
+                                        value={avsenderMottaker.navn}
+                                        />
+                                    </Table.DataCell>
+                                    <Table.DataCell>
+                                        <TextField
+                                        label="Land"
+                                        hideLabel
+                                        value={avsenderMottaker.land}
+                                        />
+                                    </Table.DataCell>
+                                </Table.Row>
+                            </Table.Body>
+                        </Table>
                         <TextField      
                             label="Type"      
                             value={displayType(newMetadata.journalposttype)}
@@ -212,11 +248,12 @@ export const DocumentEditor = ({ brukerId, journalpostId, tittel, journalposttyp
                             className="inputBox"
                             readOnly
                         />
-                        <Select label="Status" onChange={handleStatusChange} readOnly>
-                            <option value="JOURNALFOERT">Journalført</option>
-                            <option value="FERDIGSTILT">Utgående</option>
-                            <option value="NOTAT">Notat</option>
-                        </Select>
+                        <TextField      
+                            label="Status"      
+                            value={journalstatus}
+                            className="inputBox"
+                            readOnly
+                        />
                         <TextField      
                             label="Tema"      
                             value={newMetadata.tema}
@@ -236,7 +273,7 @@ export const DocumentEditor = ({ brukerId, journalpostId, tittel, journalposttyp
                     </div>        
                 </Modal.Body>
                 <Modal.Footer>
-                    <Button onClick={splitDocs}>Splitt ut dokumenter til ny journalpost</Button> {/* Her må vi setIsModalOpen(false) */}
+                    <Button onClick={splitDocs}>Splitt ut dokumenter til ny journalpost</Button>
                     <Button
                         type="button"
                         variant="secondary"

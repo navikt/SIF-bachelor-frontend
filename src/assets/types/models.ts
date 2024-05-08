@@ -35,6 +35,7 @@ export interface AvsenderMottaker {
     id: number;
     navn: string;
     land?: string;
+    type: string;
 }
 
 export interface Metadata {
