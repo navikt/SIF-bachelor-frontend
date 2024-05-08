@@ -34,7 +34,7 @@ export interface AvsenderMottaker {
     erLikBruker: boolean;
     id: number;
     navn: string;
-    land?: string;
+    land: string;
     type: string;
 }
 

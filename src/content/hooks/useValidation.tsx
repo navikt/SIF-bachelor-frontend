@@ -9,8 +9,9 @@ const tittelRegex = /^[A-Za-zæøåÆØÅ\s-]{2,30}$/; // Only letters, spaces, 
 
 export const useValidation = () => {
   const [brukerIdError, setBrukerIdError] = useState<string>("");
-  const [brukerIdTypeError, setBrukerIdTypeError] = useState<string>("");
+  const [brukerTypeError, setBrukerTypeError] = useState<string>("");
   const [avsenderMottakerIdError, setAvsenderMottakerIdError] = useState<string>("");
+  const [avsenderMottakerTypeError, setAvsenderMottakerTypeError] = useState<string>("");
   const [avsenderMottakerNameError, setAvsenderMottakerNameError] = useState<string>("");
   const [avsenderMottakerLandError, setAvsenderMottakerLandError] = useState<string>("");
   const [tittelError, setTittelError] = useState<string>("");
@@ -26,9 +27,9 @@ export const useValidation = () => {
 
   const validateBrukerType = (type: string) => {
     if (!brukerIdType.includes(type)) {
-        setBrukerIdTypeError("Brukertype er enten FNR, ORGNR eller AKTOERID");
+        setBrukerTypeError("Brukertype er enten FNR, ORGNR eller AKTOERID");
       } else {
-        setBrukerIdTypeError("");
+        setBrukerTypeError("");
     }
   }
 
@@ -46,12 +47,12 @@ export const useValidation = () => {
     }
 
     if (!amType.includes(type)) {
-        setAvsenderMottakerLandError("Type er enten FNR, ORGNR, HPPNR, UTL_ORG, NULL eller UKJENT");
+        setAvsenderMottakerTypeError("Type er enten FNR, ORGNR, HPPNR, UTL_ORG, NULL eller UKJENT");
       } else {
-        setAvsenderMottakerLandError("");
+        setAvsenderMottakerTypeError("");
     }
 
-    if (landListe.includes(land)) {
+    if (!landListe.includes(land)) {
       setAvsenderMottakerLandError("Tilgjengelige land er Norge, Sverige, Danmark og Finland");
     } else {
       setAvsenderMottakerLandError("");
@@ -76,7 +77,9 @@ export const useValidation = () => {
 
   return {
     brukerIdError,
+    brukerTypeError,
     avsenderMottakerIdError,
+    avsenderMottakerTypeError,
     avsenderMottakerNameError,
     avsenderMottakerLandError,
     tittelError,

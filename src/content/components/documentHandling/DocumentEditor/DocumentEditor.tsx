@@ -38,7 +38,11 @@ export const DocumentEditor = ({ brukerId, journalpostId, tittel, journalposttyp
     const ref = useRef<HTMLDialogElement>(null);
 
     // Input validation custom hook
-    const { validateBrukerId, validateAvsenderMottaker, validateTittel, validateTema } = useValidation();
+    const { 
+        validateBrukerId, validateBrukerType, validateAvsenderMottaker, validateTittel, validateTema,
+        brukerIdError, brukerTypeError, avsenderMottakerIdError, avsenderMottakerNameError, 
+        avsenderMottakerLandError, avsenderMottakerTypeError, tittelError, temaError 
+    } = useValidation();
 
     useEffect(() => {
         // Map each selectedDocumentId to a new entry in dokumentvarianter
@@ -77,38 +81,76 @@ export const DocumentEditor = ({ brukerId, journalpostId, tittel, journalposttyp
     const handleInputChange = <T extends keyof DocumentEditorInput>(
         field: T
       ) => (event: React.ChangeEvent<HTMLInputElement>) => {
+        const value = event.target.value;
         setNewMetadata((prevMetadata) => ({
           ...prevMetadata,
-          [field]: event.target.value,
+          [field]: value,
         }));
+
+        // Validate input
+      switch (field) {
+        case "tittel":
+          validateTittel(value);
+          break;
+        case "tema":
+          validateTema(value);
+          break;
+        default:
+          break;
+      }
     };
 
-        // Nested field update
-    const handleNestedInputChangeBruker = <T extends keyof DocumentEditorInput["bruker"]>(
-        parentField: "bruker",
-        field: T
-    ) => (event: React.ChangeEvent<HTMLInputElement>) => {
-        setNewMetadata((prevMetadata) => ({
+
+    const handleNestedInputChangeBruker =
+    <T extends keyof DocumentEditorInput["bruker"]>(
+      parentField: "bruker",
+      field: T
+    ) =>
+    (event: React.ChangeEvent<HTMLInputElement>) => {
+      const value = event.target.value;
+      setNewMetadata((prevMetadata) => ({
         ...prevMetadata,
         [parentField]: {
-            ...prevMetadata[parentField],
-            [field]: event.target.value,
+          ...prevMetadata[parentField],
+          [field]: value,
         },
-        }));
+      }));
+
+      // Validate Bruker fields
+      switch (field) {
+        case "id":
+          validateBrukerId(value);
+          break;
+        case "type":
+          validateBrukerType(value);
+          break;
+        default:
+          break;
+      }
     };
 
-    // Nested field update
-    const handleNestedInputChangeAM = <T extends keyof DocumentEditorInput["avsenderMottaker"]>(
-        parentField: "avsenderMottaker",
-        field: T
-    ) => (event: React.ChangeEvent<HTMLInputElement>) => {
-        setNewMetadata((prevMetadata) => ({
+    const handleNestedInputChangeAM =
+    <T extends keyof DocumentEditorInput["avsenderMottaker"]>(
+      parentField: "avsenderMottaker",
+      field: T
+    ) =>
+    (event: React.ChangeEvent<HTMLInputElement>) => {
+      const value = event.target.value;
+      setNewMetadata((prevMetadata) => ({
         ...prevMetadata,
         [parentField]: {
-            ...prevMetadata[parentField],
-            [field]: event.target.value,
+          ...prevMetadata[parentField],
+          [field]: value,
         },
-        }));
+      }));
+
+      // Validate Avsender/Mottaker fields
+      validateAvsenderMottaker(
+        (field === "id" ? value : newMetadata.avsenderMottaker.id).toString(),
+        (field === "navn" ? value : newMetadata.avsenderMottaker.navn).toString(),
+        (field === "land" ? value : newMetadata.avsenderMottaker.land).toString(),
+        (field === "type" ? value : newMetadata.avsenderMottaker.type).toString()
+      );
     };
       
 
@@ -220,36 +262,43 @@ export const DocumentEditor = ({ brukerId, journalpostId, tittel, journalposttyp
                             <TextField 
                                 label="Bruker-ID" 
                                 value={newMetadata.bruker.id} 
-                                onChange={handleNestedInputChangeBruker("bruker", "id")} />
+                                onChange={handleNestedInputChangeBruker("bruker", "id")}
+                                error={brukerIdError} />
                             <TextField 
                                 label="ID-Type" 
                                 value={newMetadata.bruker.type}  
-                                onChange={handleNestedInputChangeBruker("bruker","type")} />
+                                onChange={handleNestedInputChangeBruker("bruker","type")}
+                                error={brukerTypeError} />
                         </div>
                         <h3>Avsender / Mottaker</h3>
                             <div className="input-group bordered">
                                 <TextField 
                                     label="ID" 
                                     value={newMetadata.avsenderMottaker.id}
-                                    onChange={handleNestedInputChangeAM("avsenderMottaker", "id")} />
+                                    onChange={handleNestedInputChangeAM("avsenderMottaker", "id")}
+                                    error={avsenderMottakerIdError} />
                                 <TextField 
                                     label="ID-Type" 
                                     value={newMetadata.avsenderMottaker.type} 
-                                    onChange={handleNestedInputChangeAM("avsenderMottaker", "type")} />
+                                    onChange={handleNestedInputChangeAM("avsenderMottaker", "type")}
+                                    error={avsenderMottakerTypeError} />
                                 <TextField 
                                     label="Navn" 
                                     value={newMetadata.avsenderMottaker.navn} 
-                                    onChange={handleNestedInputChangeAM("avsenderMottaker", "navn")}   />
+                                    onChange={handleNestedInputChangeAM("avsenderMottaker", "navn")}
+                                    error={avsenderMottakerNameError} />
                                 <TextField 
                                     label="Land" 
                                     value={newMetadata.avsenderMottaker.land} 
-                                    onChange={handleNestedInputChangeAM("avsenderMottaker", "land")} />
+                                    onChange={handleNestedInputChangeAM("avsenderMottaker", "land")}
+                                    error={avsenderMottakerLandError} />
                             </div>         
                         <TextField      
                             label="Tittel"      
                             value={newMetadata.tittel}
                             onChange={handleInputChange("tittel")}
                             className="inputBox"
+                            error={tittelError}
                         />
                         <TextField      
                             label="Type"      
@@ -274,6 +323,7 @@ export const DocumentEditor = ({ brukerId, journalpostId, tittel, journalposttyp
                             value={newMetadata.tema}
                             onChange={handleInputChange("tema")}
                             className="inputBox"
+                            error={temaError}
                         />
                         <h2>Velg dokumenter</h2>
                         <DocumentViewer 
