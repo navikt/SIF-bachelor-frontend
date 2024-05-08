@@ -4,6 +4,7 @@ import { PencilIcon } from "@navikt/aksel-icons";
 import { IDocument, Journalpost, DocumentEditorProps } from "../../../../assets/types/export";
 import {DocumentViewer} from "../DocumentViewer/DocumentViewer";
 import { convertStatus, displayType, metadataTemplate } from "../../../../assets/utils/FormatUtils";
+import "./DocumentEditor.css";
 
 export const DocumentEditor = ({ brukerId, journalpostId, tittel, journalposttype, datoOpprettet, journalstatus, tema, avsenderMottaker, documentsToView, addGlobalDocument, documents, appendNewJournalpost, handleIsVisible, onStatusChange}: DocumentEditorProps ) => {
 
@@ -89,8 +90,6 @@ export const DocumentEditor = ({ brukerId, journalpostId, tittel, journalposttyp
             setErrorMessage("Du må logge inn for å søke!");
             return;
         }
-
-        console.log(journalpostId);
 
         // Opprett JSON body med userId
         const requestBody = {
@@ -180,13 +179,41 @@ export const DocumentEditor = ({ brukerId, journalpostId, tittel, journalposttyp
 
             <Modal ref={ref} header={{ heading: "Splitt Opp Dokumenter" }} width={"40%"}>
                 <Modal.Body>
-                    <div>
+                    <div className="submit-body">
                         <TextField      
                             label="Journalpost ID"      
                             value={journalpostId}
                             className="inputBox"
                             readOnly
                         />
+
+                        <Table>
+                            <Table.Header>
+                                <Table.Row>
+                                    <Table.HeaderCell scope="col">Bruker-ID</Table.HeaderCell>
+                                    <Table.HeaderCell scope="col">ID-Type</Table.HeaderCell>
+                                </Table.Row>
+                            </Table.Header>
+                            <Table.Body>
+                                <Table.Row>
+                                    <Table.DataCell>
+                                        <TextField
+                                        label="ID"
+                                        hideLabel
+                                        value={brukerId}
+                                        />
+                                    </Table.DataCell>
+                                    <Table.DataCell>
+                                        <TextField
+                                        label="ID-Type"
+                                        hideLabel
+                                        value={avsenderMottaker.type}
+                                        />
+                                    </Table.DataCell>
+                                </Table.Row>
+                            </Table.Body>
+                        </Table>
+
                         <TextField      
                             label="Tittel"      
                             value={newMetadata.tittel}

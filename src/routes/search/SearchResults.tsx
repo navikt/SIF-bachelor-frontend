@@ -23,7 +23,7 @@ export const SearchResults = () => {
     const [isModalOpen, setIsModalOpen] = useState<boolean>(false)
     const [selectedRows, selectRow] = useState<string[]>([]);
 
-    const { documents, setDocuments, documentUrls, setDocumentUrls } = useDocuments({
+    const { documents, setDocuments, documentUrls } = useDocuments({
         initialDocuments: location.state.dokumentoversikt.journalposter[0].dokumenter,
     });
 
@@ -41,8 +41,6 @@ export const SearchResults = () => {
 
     const { sort, handleSort, sortedData } = useSort<Journalpost>();
 
-    
-
     /* Kjempe mye redundant kode her, kanskje fjerne noen av disse og instansiere noen av de i selve useState()? */
     useEffect(()=>{
         setDocuments(location.state.dokumentoversikt.journalposter[0].dokumenter)
@@ -50,6 +48,7 @@ export const SearchResults = () => {
         setFilterOptions(location.state.filterOptions)
         setFilterList(transformFilterOptionsToList(filterOptions))
         selectRow([location.state.dokumentoversikt.journalposter[0].journalpostId])
+        console.log(location.state)
     }, [location.state, filterOptions])
 
 

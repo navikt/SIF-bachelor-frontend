@@ -12,8 +12,6 @@ const Navbar = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(sessionStorage.getItem('token') !== null);
   // Another boolean hook which sets itself to true if a token stored in sessionStorage is found and we set the button's content to "Logg ut" if true.
   const [buttonText, setButtonText] = useState(sessionStorage.getItem('token') ? "Logg ut" : "Logg inn");
-  //For statussymbol - kan fjernes (Er her bare for å se at alt funker)
-  const [statusColor, setStatusColor] = useState("gray");
 
   useEffect(() => {
     const interval = setInterval(() => {

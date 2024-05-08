@@ -58,7 +58,8 @@ const useSearchHandler = ({ brukerId, isValid, filterData }: SearchHandlerProps)
         .then(data => {
             console.log("DATA SOM GÅR VIDERE:")
             console.log(data)
-            data.filterOptions = filterData
+            data.filterOptions = filterData;
+            data.userkey = brukerId;
             navigate("/SearchResults", { state: data });
         })
         .catch(error => {

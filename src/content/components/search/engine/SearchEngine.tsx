@@ -2,7 +2,7 @@ import {Search, Alert } from "@navikt/ds-react";
 import { useState, useRef, useEffect } from "react";
 import { FilterIcon } from '@navikt/aksel-icons';
 import { FilterPopover } from "../export";
-import {useNavigate, useLocation } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import { FilterOptions } from "../../../../assets/types/export";
 import useSearchHandler from "../../../hooks/useSearchHandler";
 
