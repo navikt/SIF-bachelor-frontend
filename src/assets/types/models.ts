@@ -58,3 +58,17 @@ export interface Metadata {
     tema: string;
     avsenderMottaker: AvsenderMottaker;
 }
+
+export interface DocumentEditorInput {
+    bruker: {
+        id: string;
+        type: string;
+    };
+    journalpostId: string;
+    tittel: string;
+    journalposttype: string;
+    datoOpprettet: string;
+    journalstatus: string;
+    tema: string;
+    avsenderMottaker: AvsenderMottaker;
+}

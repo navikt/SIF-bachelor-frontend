@@ -17,8 +17,7 @@ export const SearchEngine = () => {
     const [isRotated, setIsRotated] = useState<boolean>(false);
     // Manage state for opening the dropdown menu, which is initially false, aka dropdown menu not triggered.
     const [openState, setOpenState] = useState<boolean>(false);
-    // For the input validation of the "brukerId"
-    const [isValid, setIsValid] = useState<boolean>(true);
+
     const [alertShown, setAlertShown] = useState(false);
     // Manage state for the filterData object that we receive in the dropdown to use in handleSearch
     const [filterData, setFilterData] = useState<FilterOptions>({

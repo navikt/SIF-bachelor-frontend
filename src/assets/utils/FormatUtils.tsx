@@ -114,3 +114,7 @@ export const tema = ["AAP", "AAR", "AGR", "ARP", "ARS", "BAR", "BID", "BIL", "DA
 "IAR", "IND", "KON", "KLL", "KTA", "KTR", "MED", "MOB", "OMS", "OPA", "OPP", "PEN", "PER", "REH",
 "REK", "RPO", "RVE", "SAA", "SAK", "SAP", "SER", "STO", "SUP", "SYK", "SYM", "TIL", "TRK", "TRY",
 "TSO", "TSR", "UFM", "UFO", "UKJ", "VEN", "YRA", "YRK"];
+
+export const brukerIdType = ["FNR", "AKTOERID", "ORGNR"];
+
+export const amType = ["FNR", "ORGNR", "HPPNR", "UTL_ORG", "NULL", "UKJENT"];

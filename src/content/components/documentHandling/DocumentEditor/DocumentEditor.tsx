@@ -2,6 +2,7 @@ import {useRef, useState, useEffect } from "react"
 import {Button, Modal, TextField, Table } from "@navikt/ds-react"
 import { PencilIcon } from "@navikt/aksel-icons";
 import { IDocument, Journalpost, DocumentEditorProps } from "../../../../assets/types/export";
+import { DocumentEditorInput } from "../../../../assets/types/export";
 import {DocumentViewer} from "../DocumentViewer/DocumentViewer";
 import { convertStatus, displayType, metadataTemplate } from "../../../../assets/utils/FormatUtils";
 import "./DocumentEditor.css";
@@ -73,19 +74,43 @@ export const DocumentEditor = ({ brukerId, journalpostId, tittel, journalposttyp
 
     }, [selectedDocuments, unselectedDocuments]);
 
-    const handleTittelChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const handleInputChange = <T extends keyof DocumentEditorInput>(
+        field: T
+      ) => (event: React.ChangeEvent<HTMLInputElement>) => {
         setNewMetadata((prevMetadata) => ({
-        ...prevMetadata,
-        tittel: event.target.value,
+          ...prevMetadata,
+          [field]: event.target.value,
         }));
     };
 
-    const handleTemaChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        // Nested field update
+    const handleNestedInputChangeBruker = <T extends keyof DocumentEditorInput["bruker"]>(
+        parentField: "bruker",
+        field: T
+    ) => (event: React.ChangeEvent<HTMLInputElement>) => {
         setNewMetadata((prevMetadata) => ({
         ...prevMetadata,
-        tema: event.target.value,
+        [parentField]: {
+            ...prevMetadata[parentField],
+            [field]: event.target.value,
+        },
         }));
     };
+
+    // Nested field update
+    const handleNestedInputChangeAM = <T extends keyof DocumentEditorInput["avsenderMottaker"]>(
+        parentField: "avsenderMottaker",
+        field: T
+    ) => (event: React.ChangeEvent<HTMLInputElement>) => {
+        setNewMetadata((prevMetadata) => ({
+        ...prevMetadata,
+        [parentField]: {
+            ...prevMetadata[parentField],
+            [field]: event.target.value,
+        },
+        }));
+    };
+      
 
     const splitDocs = async () => {
         const token = sessionStorage.getItem("token");
@@ -102,8 +127,8 @@ export const DocumentEditor = ({ brukerId, journalpostId, tittel, journalposttyp
             newMetadata: newMetadata,       
           };
 
-          console.log(oldMetadata)
-          console.log(newMetadata)
+        console.log(oldMetadata)
+        console.log(newMetadata)
 
         fetch("/createJournalpost", {
             method: 'POST',
@@ -190,81 +215,40 @@ export const DocumentEditor = ({ brukerId, journalpostId, tittel, journalposttyp
                             className="inputBox"
                             readOnly
                         />
-                        <h3> Bruker </h3>
-                        <Table>
-                            <Table.Header>
-                                <Table.Row>
-                                    <Table.HeaderCell scope="col">Bruker-ID</Table.HeaderCell>
-                                    <Table.HeaderCell scope="col">ID-Type</Table.HeaderCell>
-                                </Table.Row>
-                            </Table.Header>
-                            <Table.Body>
-                                <Table.Row>
-                                    <Table.DataCell>
-                                        <TextField
-                                        label="ID"
-                                        hideLabel
-                                        value={brukerId}
-                                        />
-                                    </Table.DataCell>
-                                    <Table.DataCell>
-                                        <TextField
-                                        label="ID-Type"
-                                        hideLabel
-                                        value={avsenderMottaker.type}
-                                        />
-                                    </Table.DataCell>
-                                </Table.Row>
-                            </Table.Body>
-                        </Table>
-
-                        <h3>Avsender / Mottaker </h3>
-                        <Table>
-                            <Table.Header>
-                                <Table.Row>
-                                    <Table.HeaderCell scope="col">ID</Table.HeaderCell>
-                                    <Table.HeaderCell scope="col">ID-Type</Table.HeaderCell>
-                                    <Table.HeaderCell scope="col">Navn</Table.HeaderCell>
-                                    <Table.HeaderCell scope="col">Land</Table.HeaderCell>
-                                </Table.Row>
-                            </Table.Header>
-                            <Table.Body>
-                                <Table.Row>
-                                    <Table.DataCell>
-                                        <TextField
-                                        label="ID"
-                                        hideLabel
-                                        value={avsenderMottaker.id}
-                                        />
-                                    </Table.DataCell>
-                                    <Table.DataCell>
-                                        <TextField
-                                        label="ID-Type"
-                                        hideLabel
-                                        value={avsenderMottaker.type}
-                                        />
-                                    </Table.DataCell>
-                                    <Table.DataCell>
-                                        <TextField
-                                        label="Navn"
-                                        hideLabel
-                                        value={avsenderMottaker.navn}
-                                        />
-                                    </Table.DataCell>
-                                    <Table.DataCell>
-                                        <TextField
-                                        label="Land"
-                                        hideLabel
-                                        value={avsenderMottaker.land}
-                                        />
-                                    </Table.DataCell>
-                                </Table.Row>
-                            </Table.Body>
-                        </Table>
+                        <h3>Bruker</h3>
+                        <div className="input-group bordered">
+                            <TextField 
+                                label="Bruker-ID" 
+                                value={newMetadata.bruker.id} 
+                                onChange={handleNestedInputChangeBruker("bruker", "id")} />
+                            <TextField 
+                                label="ID-Type" 
+                                value={newMetadata.bruker.type}  
+                                onChange={handleNestedInputChangeBruker("bruker","type")} />
+                        </div>
+                        <h3>Avsender / Mottaker</h3>
+                            <div className="input-group bordered">
+                                <TextField 
+                                    label="ID" 
+                                    value={newMetadata.avsenderMottaker.id}
+                                    onChange={handleNestedInputChangeAM("avsenderMottaker", "id")} />
+                                <TextField 
+                                    label="ID-Type" 
+                                    value={newMetadata.avsenderMottaker.type} 
+                                    onChange={handleNestedInputChangeAM("avsenderMottaker", "type")} />
+                                <TextField 
+                                    label="Navn" 
+                                    value={newMetadata.avsenderMottaker.navn} 
+                                    onChange={handleNestedInputChangeAM("avsenderMottaker", "navn")}   />
+                                <TextField 
+                                    label="Land" 
+                                    value={newMetadata.avsenderMottaker.land} 
+                                    onChange={handleNestedInputChangeAM("avsenderMottaker", "land")} />
+                            </div>         
                         <TextField      
                             label="Tittel"      
                             value={newMetadata.tittel}
-                            onChange={handleTittelChange}
+                            onChange={handleInputChange("tittel")}
                             className="inputBox"
                         />
                         <TextField      
@@ -288,7 +272,7 @@ export const DocumentEditor = ({ brukerId, journalpostId, tittel, journalposttyp
                         <TextField      
                             label="Tema"      
                             value={newMetadata.tema}
-                            onChange={handleTemaChange}
+                            onChange={handleInputChange("tema")}
                             className="inputBox"
                         />
                         <h2>Velg dokumenter</h2>
@@ -311,7 +295,6 @@ export const DocumentEditor = ({ brukerId, journalpostId, tittel, journalposttyp
                         onClick={() =>{
                             ref.current?.close()
                         }}
-                        
                     >Avbryt
                     </Button>
                 </Modal.Footer>
