@@ -3,20 +3,15 @@ import { useNavigate } from 'react-router-dom';
 
 import { SearchHandlerProps } from '../../assets/types/props';
 
-const useSearchHandler = ({ brukerId, isValid, filterData }: SearchHandlerProps) => {
+const useSearchHandler = ({ brukerId, brukerIdError, filterData }: SearchHandlerProps) => {
     const [errorMessage, setErrorMessage] = useState('');
     const [serverExceptionError, setExceptionError] = useState('');
     const [errorCode, setErrorCode] = useState('');
     const navigate = useNavigate();
 
     const handleSearch = () => {
-        if (!brukerId) {
-            setErrorMessage("Du må fylle inn en gyldig bruker-ID før du kan søke!");
-            return;
-        }
-        
-        if (!isValid) {
-            setErrorMessage('Du må skrive inn et gyldig 3 til 11 sifret tall før du kan søke!');
+        if (brukerIdError || !brukerId) {
+            setErrorMessage("Du må skrive inn et gyldig 3 til 11 sifret tall før du kan søke!");
             return;
         }
 

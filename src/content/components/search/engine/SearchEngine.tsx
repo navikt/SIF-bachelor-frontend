@@ -5,6 +5,7 @@ import { FilterPopover } from "../export";
 import { useLocation } from "react-router-dom";
 import { FilterOptions } from "../../../../assets/types/export";
 import useSearchHandler from "../../../hooks/useSearchHandler";
+import { useValidation } from "../../../hooks/useValidation";
 
 import "./SearchEngine.css";
 import "../../../../routes/landing/LandingPage.css"
@@ -33,7 +34,9 @@ export const SearchEngine = () => {
     // Check if the current path is /SearchResults for resizable searchbar 
     const isSearchResultsPage = location.pathname === "/SearchResults" || location.pathname === "/error";
 
-    const { handleSearch, errorMessage, setErrorMessage, serverExceptionError, errorCode } = useSearchHandler({ brukerId, isValid, filterData });
+    const { brukerIdError, validateBrukerId } = useValidation();
+
+    const { handleSearch, errorMessage, setErrorMessage, serverExceptionError, errorCode } = useSearchHandler({ brukerId, brukerIdError, filterData });
 
 
     useEffect(() => {
@@ -51,16 +54,8 @@ export const SearchEngine = () => {
     }, [alertShown]);
 
     useEffect(() => {
-        const isValidInput = /^\d{3,11}$/.test(brukerId);
-        setIsValid(isValidInput);
-        if (isValidInput) {
-            setErrorMessage(''); // Clear error message if valid
-        } else if (brukerId === '') {
-            setErrorMessage(''); // Clear error message if input is empty
-        } else {
-            setErrorMessage('BrukerId må være et tresifret tall mellom 3 og 11'); // Set specific error message if invalid
-        }
-    }, [brukerId]); // Depend on brukerId to re-run validation
+        validateBrukerId(brukerId); // Validate brukerId using custom hook
+      }, [brukerId]);
 
     // Denne søke funksjonen oppdaterer userId state når vi skriver og endrer på inputen!
     const handleInputChange = (value: string) => {
@@ -69,7 +64,6 @@ export const SearchEngine = () => {
 
     const handleSubmitFilter = (receivedFilterData: FilterOptions) => {
         setFilterData(receivedFilterData);
-        // console.log(filterData);
       };
 
     const toggleIconRotation = () => {
@@ -95,7 +89,7 @@ return(
                 className="search-bar"
                 placeholder="Skriv inn bruker-ID"
                 onChange={handleInputChange}
-                onSearchClick={handleSearch} />                
+                onSearchClick={handleSearch} />            
             <FilterIcon
                 className={`filter-icon ${isRotated ? 'rotated' : ''}`} 
                 ref={FilterIconRef} 
@@ -111,7 +105,7 @@ return(
                 showSuccessAlert={setAlertShown}
             />
         </div>
-        {errorMessage && brukerId && <div className={`alert-container ${isSearchResultsPage ?  'search-results-width' : ''}`}><Alert variant="warning">{errorMessage}</Alert></div>}
+        {brukerIdError && brukerId && <div className={`alert-container ${isSearchResultsPage ?  'search-results-width' : ''}`}><Alert variant="warning">{brukerIdError}</Alert></div>}
         {alertShown && <Alert className={`${isSearchResultsPage ?  'search-results-alert' : ''}`} variant="success">Filteret er lagret!</Alert>}
 
     </div>

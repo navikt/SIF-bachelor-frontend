@@ -5,6 +5,7 @@ import { IDocument, Journalpost, DocumentEditorProps } from "../../../../assets/
 import {DocumentViewer} from "../DocumentViewer/DocumentViewer";
 import { convertStatus, displayType, metadataTemplate } from "../../../../assets/utils/FormatUtils";
 import "./DocumentEditor.css";
+import { useValidation } from "../../../hooks/useValidation";
 
 export const DocumentEditor = ({ brukerId, journalpostId, tittel, journalposttype, datoOpprettet, journalstatus, tema, avsenderMottaker, documentsToView, addGlobalDocument, documents, appendNewJournalpost, handleIsVisible, onStatusChange}: DocumentEditorProps ) => {
 
@@ -34,6 +35,9 @@ export const DocumentEditor = ({ brukerId, journalpostId, tittel, journalposttyp
     const [errorMessage, setErrorMessage] = useState('');
 
     const ref = useRef<HTMLDialogElement>(null);
+
+    // Input validation custom hook
+    const { validateBrukerId, validateAvsenderMottaker, validateTittel, validateTema } = useValidation();
 
     useEffect(() => {
         // Map each selectedDocumentId to a new entry in dokumentvarianter
@@ -186,7 +190,7 @@ export const DocumentEditor = ({ brukerId, journalpostId, tittel, journalposttyp
                             className="inputBox"
                             readOnly
                         />
-
+                        <h3> Bruker </h3>
                         <Table>
                             <Table.Header>
                                 <Table.Row>
@@ -214,12 +218,6 @@ export const DocumentEditor = ({ brukerId, journalpostId, tittel, journalposttyp
                             </Table.Body>
                         </Table>
 
-                        <TextField      
-                            label="Tittel"      
-                            value={newMetadata.tittel}
-                            onChange={handleTittelChange}
-                            className="inputBox"
-                        />
                         <h3>Avsender / Mottaker </h3>
                         <Table>
                             <Table.Header>
@@ -263,6 +261,12 @@ export const DocumentEditor = ({ brukerId, journalpostId, tittel, journalposttyp
                                 </Table.Row>
                             </Table.Body>
                         </Table>
+                        <TextField      
+                            label="Tittel"      
+                            value={newMetadata.tittel}
+                            onChange={handleTittelChange}
+                            className="inputBox"
+                        />
                         <TextField      
                             label="Type"      
                             value={displayType(newMetadata.journalposttype)}

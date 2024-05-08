@@ -42,7 +42,7 @@ export interface FilterPopoverProps {
 
 export interface SearchHandlerProps {
     brukerId: string;
-    isValid: boolean;
+    brukerIdError: string;
     filterData: FilterOptions;
 }
 
