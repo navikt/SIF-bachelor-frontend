@@ -67,3 +67,21 @@ export const shouldShowFeilRegistrer = (journalposttype: string, journalstatus: 
            (journalstatus !== "AVBRUTT") && 
            (journalstatus !== "UTGAAR");
 }
+
+export const convertStatus = (journaltype: string) => {
+    if(journaltype === "I") {
+        return "UTGÅR";
+    } else {
+        return "AVBRUTT";
+    }
+}
+
+export const displayType = (type: string) => {
+    if (type === "U") {
+        return "Utgående";
+    } else if (type === "I") {
+        return "Inngående";
+    } else if (type === "N") {
+        return "Notat";
+    }
+}

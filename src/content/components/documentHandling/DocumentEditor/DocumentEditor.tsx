@@ -3,6 +3,7 @@ import {Button, Modal, TextField, Select } from "@navikt/ds-react"
 import { PencilIcon } from "@navikt/aksel-icons";
 import { IDocument, Journalpost, Metadata, DocumentEditorProps } from "../../../../assets/types/export";
 import {DocumentViewer} from "../DocumentViewer/DocumentViewer";
+import { convertStatus, displayType } from "../../../../assets/utils/FormatUtils";
 
 export const DocumentEditor = ({ brukerId, journalpostId, tittel, journalposttype, datoOpprettet, journalstatus, tema, avsenderMottaker, documentsToView, addGlobalDocument, documents, appendNewJournalpost, handleIsVisible, onStatusChange}: DocumentEditorProps ) => {
 
@@ -109,21 +110,7 @@ export const DocumentEditor = ({ brukerId, journalpostId, tittel, journalposttyp
             }))
         }));
 
-        // As soon as selectedDocumentIds updates, update newMetadata
-        // setNewMetadata({...newMetadata, dokumentVarianter: newDokumentvarianter})
-        // As soon as unselectedDocumentIds updates, update oldMetadata
-        // setOldMetadata({...oldMetadata, dokumentID: unselectedDocumentIds});
     }, [selectedDocuments, unselectedDocuments]);
-
-    const displayType = (type: string) => {
-        if (type === "U") {
-            return "Utgående";
-        } else if (type === "I") {
-            return "Inngående";
-        } else if (type === "N") {
-            return "Notat";
-        }
-    }
 
         // Update handlers for each metadata field
     const handleTittelChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -146,13 +133,6 @@ export const DocumentEditor = ({ brukerId, journalpostId, tittel, journalposttyp
         tema: event.target.value,
         }));
     };
-    const convertStatus = (journaltype: string) => {
-        if(journaltype === "I") {
-            return "UTGÅR";
-        } else {
-            return "AVBRUTT";
-        }
-    }
 
     const splitDocs = async () => {
         const token = sessionStorage.getItem("token");
@@ -310,10 +290,6 @@ export const DocumentEditor = ({ brukerId, journalpostId, tittel, journalposttyp
                         type="button"
                         variant="secondary"
                         onClick={() =>{
-                            /*
-                            setIsModalOpen(!isModal)
-                            
-                            console.log("Nå er modal: " + isModal)*/
                             ref.current?.close()
                         }}
                         
