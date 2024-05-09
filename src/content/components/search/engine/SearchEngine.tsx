@@ -53,7 +53,7 @@ export const SearchEngine = () => {
     }, [alertShown]);
 
     useEffect(() => {
-        validateBrukerId(brukerId); // Validate brukerId using custom hook
+        validateBrukerId(brukerId);
       }, [brukerId]);
 
     // Denne søke funksjonen oppdaterer userId state når vi skriver og endrer på inputen!

@@ -3,6 +3,7 @@ import { Table, TextField } from "@navikt/ds-react";
 import { EyeSlashIcon, EyeIcon } from '@navikt/aksel-icons';
 import { IDocument, DocumentViewerProps } from "../../../../assets/types/export";
 import "./DocumentViewer.css";
+import { useValidation } from "../../../hooks/useValidation";
 
 export const DocumentViewer = ({ documentsToView, addGlobalDocument, documents, isModal, handleSelectedIdandTitle, handleUnselectedIdandTitle, handleIsVisible}: DocumentViewerProps) => {
     const [selectedDocuments, setSelectedDocuments] = useState<IDocument[]>([])
@@ -13,6 +14,8 @@ export const DocumentViewer = ({ documentsToView, addGlobalDocument, documents, 
     const [selectedRows, setSelectedRows] = useState<string[]>([]);
     const [localDocumentsToView, setLocalDocumentsToView] = useState<IDocument[]>(documentsToView)
    
+    const { validateTittel, tittelError, brevkodeError, validateBrevkode } = useValidation();
+
     const addDocument = (documentToAdd: IDocument) => {
         // Find the document to add based on its ID
         if (documentToAdd) {
@@ -110,6 +113,9 @@ export const DocumentViewer = ({ documentsToView, addGlobalDocument, documents, 
         });
         setSelectedDocuments(prevDocs => updateDocumentBrevkode(prevDocs));
         setUnselectedDocuments(prevDocs => updateDocumentBrevkode(prevDocs));
+
+        validateBrevkode(newBrevkode);
+
         console.log(localDocumentsToView)
         console.log(selectedDocuments)
         console.log(unselectedDocuments)
@@ -133,6 +139,9 @@ export const DocumentViewer = ({ documentsToView, addGlobalDocument, documents, 
 
         setSelectedDocuments(prevDocs => updateDocumentTittel(prevDocs));
         setUnselectedDocuments(prevDocs => updateDocumentTittel(prevDocs));
+
+        validateTittel(newTittel);
+
         console.log(localDocumentsToView)
         console.log(selectedDocuments)
         console.log(unselectedDocuments)
@@ -168,6 +177,7 @@ export const DocumentViewer = ({ documentsToView, addGlobalDocument, documents, 
                                     htmlSize={14}
                                     onClick={(e) => e.stopPropagation()}
                                     onChange={(e) => handleTittelInput(document.dokumentInfoId, e.target.value)}
+                                    error={tittelError}
                                 />
                                 ) : (
                                     document.tittel
@@ -182,6 +192,7 @@ export const DocumentViewer = ({ documentsToView, addGlobalDocument, documents, 
                                     htmlSize={14}
                                     onClick={(e) => e.stopPropagation()}
                                     onChange={(e) => handleBrevkodeInput(document.dokumentInfoId, e.target.value)}
+                                    error={brevkodeError}
                                 />
                                 ) : (
                                     document.brevkode
