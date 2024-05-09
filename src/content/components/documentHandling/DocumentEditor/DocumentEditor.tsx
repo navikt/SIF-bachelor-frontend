@@ -48,6 +48,29 @@ export const DocumentEditor = ({ brukerId, journalpostId, tittel, journalposttyp
         avsenderMottakerLandError, avsenderMottakerTypeError, tittelError, temaError 
     } = useValidation();
 
+    const validateInputs = () => {
+        // Validate all relevant fields
+        validateBrukerId(newMetadata.bruker.id);
+        validateBrukerType(newMetadata.bruker.type);
+        // Got a weird error with the id so I had to toString() it
+        validateAvsenderMottaker(
+            newMetadata.avsenderMottaker.id.toString(),
+            newMetadata.avsenderMottaker.navn,
+            newMetadata.avsenderMottaker.land,
+            newMetadata.avsenderMottaker.type
+        );
+        validateTittel(newMetadata.tittel);
+        validateTema(newMetadata.tema);
+
+        // Check if any validation errors exist
+        return !(
+            brukerIdError || brukerTypeError ||
+            avsenderMottakerIdError || avsenderMottakerNameError ||
+            avsenderMottakerLandError || avsenderMottakerTypeError ||
+            tittelError || temaError || tittBrev
+        );
+    };
+
     const { splitDocs } = useSplitDocs({
         journalpostId: journalpostId,
         oldMetadata: oldMetadata,
@@ -57,12 +80,21 @@ export const DocumentEditor = ({ brukerId, journalpostId, tittel, journalposttyp
         appendNewJournalpost: appendNewJournalpost,
         onStatusChange: onStatusChange,
         selectedDocuments: selectedDocuments,
-        unselectedDocuments: unselectedDocuments
+        unselectedDocuments: unselectedDocuments,
     });
-
+    const mottaTittBrev = (tittBrev: string) => {
+        setTittBrev(tittBrev)
+    }
     const splitDocuments = () => {
-        ref.current?.close()
-        splitDocs()
+        if (!validateInputs()) {
+            console.log("Inputs IKKE VALIDATED")
+            //setErrorMessage({message:"Vennligst fyll ut alle feltene riktig før du splitter.", variant:"warning"});
+            topRef.current?.scrollIntoView({ behavior: 'smooth' });
+        }else{
+            splitDocs()
+            ref.current?.close()
+        }   
+        
     }
     useEffect(() => {
         // Map each selectedDocumentId to a new entry in dokumentvarianter
@@ -171,7 +203,7 @@ export const DocumentEditor = ({ brukerId, journalpostId, tittel, journalposttyp
         (field === "type" ? value : newMetadata.avsenderMottaker.type).toString()
       );
     };
-      
+    
 
     return(
         <div>
@@ -184,7 +216,7 @@ export const DocumentEditor = ({ brukerId, journalpostId, tittel, journalposttyp
             <Modal ref={ref} header={{ heading: "Splitt Opp Dokumenter" }} width={"40%"}>
                 <Modal.Body>
                 <div ref={topRef} />
-                    {errorMessage && <Alert variant="error">{errorMessage}</Alert>}
+                    {errorMessage?.message && <Alert variant="error">{errorMessage.message}</Alert>}
                     <div className="submit-body">
                         <TextField      
                             label="Journalpost ID"      

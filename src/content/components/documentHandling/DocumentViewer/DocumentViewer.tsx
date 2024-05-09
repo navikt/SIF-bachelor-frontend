@@ -3,8 +3,7 @@ import { Table, TextField } from "@navikt/ds-react";
 import { EyeSlashIcon, EyeIcon } from '@navikt/aksel-icons';
 import { IDocument, DocumentViewerProps } from "../../../../assets/types/export";
 import "./DocumentViewer.css";
-import useError from "../../../hooks/useError";
-import { useValidation } from "../../../hooks/useValidation";
+import { useValidation, useError } from "../../../hooks/export";
 
 export const DocumentViewer = ({ documentsToView, addGlobalDocument, documents, isModal, handleSelectedIdandTitle, handleUnselectedIdandTitle, handleIsVisible, handleInputValidation}: DocumentViewerProps) => {
     const [selectedDocuments, setSelectedDocuments] = useState<IDocument[]>([])
