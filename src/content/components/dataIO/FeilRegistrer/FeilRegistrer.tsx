@@ -37,7 +37,6 @@ export const FeilRegistrer = ({ journalposttype, journalpostId, onStatusChange, 
                 setErrorMessage({message: "Kunne ikke feilregistrere. Prøv igjen senere.", variant: "error"})
                 throw new Error('Network response was not ok');
             }
-            setErrorMessage(null)
             return response.json(); // Read the response body only once
         })
         .then(data => {

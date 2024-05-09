@@ -1,13 +1,12 @@
 import { useContext, useCallback, useState } from "react";
 import { useError } from "./export";
-import { Journalpost, Metadata, UseSplitDocsProps } from "../../assets/types/export";
+import { Journalpost, UseSplitDocsProps } from "../../assets/types/export";
 import { convertStatus } from "../../assets/utils/FormatUtils";
 
-const useSplitDocs = ({journalpostId, oldMetadata, newMetadata, journalstatus, journalposttype, appendNewJournalpost, onStatusChange, selectedDocuments, unselectedDocuments}:UseSplitDocsProps) => { 
+const useSplitDocs = ({journalpostId, oldMetadata, newMetadata, journalstatus, journalposttype, appendNewJournalpost, onStatusChange, selectedDocuments, unselectedDocuments, setLocalErr}: UseSplitDocsProps) => { 
     
     const { setErrorMessage } = useError()
     
-    const [localErr, setLocalErr] = useState<string>("")
     const splitDocs = useCallback(async () => {
 
         const token = sessionStorage.getItem("token");

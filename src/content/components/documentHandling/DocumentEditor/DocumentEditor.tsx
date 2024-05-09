@@ -34,6 +34,7 @@ export const DocumentEditor = ({ brukerId, journalpostId, tittel, journalposttyp
 
     // Error message
     const { errorMessage, setErrorMessage } = useError()
+    const [localErr, setLocalErr] = useState<string>("")
 
     const [tittBrev, setTittBrev] = useState("");
 
@@ -81,6 +82,7 @@ export const DocumentEditor = ({ brukerId, journalpostId, tittel, journalposttyp
         onStatusChange: onStatusChange,
         selectedDocuments: selectedDocuments,
         unselectedDocuments: unselectedDocuments,
+        setLocalErr: setLocalErr
     });
     const mottaTittBrev = (tittBrev: string) => {
         setTittBrev(tittBrev)
@@ -88,10 +90,12 @@ export const DocumentEditor = ({ brukerId, journalpostId, tittel, journalposttyp
     
     const splitDocuments = () => {
         if (!validateInputs()) {
+            setLocalErr("Dobbeltsjekk at alle feltene oppfyller kravene.")
             console.log("Inputs IKKE VALIDATED")
             //setErrorMessage({message:"Vennligst fyll ut alle feltene riktig før du splitter.", variant:"warning"});
             topRef.current?.scrollIntoView({ behavior: 'smooth' });
         }else{
+            setLocalErr("")
             setErrorMessage({message: "Splitt vellykket!", variant:"success"})
             splitDocs()
             ref.current?.close()
@@ -218,7 +222,7 @@ export const DocumentEditor = ({ brukerId, journalpostId, tittel, journalposttyp
             <Modal ref={ref} header={{ heading: "Splitt Opp Dokumenter" }} width={"40%"}>
                 <Modal.Body>
                 <div ref={topRef} />
-                    {errorMessage?.message && <Alert variant="error">{errorMessage.message}</Alert>}
+                    {localErr && <Alert variant="error">{localErr}</Alert>}
                     <div className="submit-body">
                         <TextField      
                             label="Journalpost ID"      

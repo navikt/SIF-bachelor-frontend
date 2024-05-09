@@ -53,7 +53,7 @@ export const selectTagVariant = (journalStatus: string) => {
             return "success"
         case("EKSPEDERT"):
             return "warning"
-        case("UTGÅR"):
+        case("UTGAAR"):
             return "error"
         case("AVBRUTT"):
             return "error"

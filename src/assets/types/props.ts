@@ -75,6 +75,7 @@ export interface UseSplitDocsProps {
     onStatusChange: (newStatus: string, journalpostId: string) => void;
     selectedDocuments: IDocument[]
     unselectedDocuments: IDocument[]
+    setLocalErr: (error: string) => void
 }
 
 export interface PDFViewerProps {

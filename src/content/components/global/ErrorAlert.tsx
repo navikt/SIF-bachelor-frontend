@@ -13,6 +13,7 @@ const ErrorAlert = () => {
             setShow(true)
             const timer = setTimeout(() => {
                 setShow(false)
+                setErrorMessage(null)
             }, 3000)
 
             return () => clearTimeout(timer);
