@@ -6,6 +6,7 @@ const idRegex = /^\d{3,11}$/; // BrukerId validation: 3 to 11 digits
 const fnrRegex = /^[0-9]{11}$/; // 11-digit number (example for FNR)
 const nameRegex = /^[A-Za-zæøåÆØÅ\s-]{2,30}$/; // Only letters, spaces, hyphens
 const tittelRegex = /^[A-Za-zæøåÆØÅ\s-]{2,30}$/; // Only letters, spaces, hyphens
+const brevkodeRegex = /^NAV \d{2}-\d{2}\.\d{2}$/;
 
 const useValidation = () => {
 
@@ -17,6 +18,7 @@ const useValidation = () => {
   const [avsenderMottakerLandError, setAvsenderMottakerLandError] = useState<string>("");
   const [tittelError, setTittelError] = useState<string>("");
   const [temaError, setTemaError] = useState<string>("");
+  const [brevkodeError, setBrevkodeError] = useState<string>("");
 
   const validateBrukerId = (id: string) => {
     if (!idRegex.test(id)) {
@@ -76,6 +78,14 @@ const useValidation = () => {
     }
   };
 
+  const validateBrevkode = (brevkode: string) => {
+    if (!brevkodeRegex.test(brevkode)) {
+      setBrevkodeError("Brevkode må være av formatet 'NAV 00-00.00'");
+    } else {
+      setBrevkodeError("");
+    }
+  };
+
   return {
     brukerIdError,
     brukerTypeError,
@@ -85,11 +95,13 @@ const useValidation = () => {
     avsenderMottakerLandError,
     tittelError,
     temaError,
+    brevkodeError,
     validateBrukerId,
     validateBrukerType,
     validateAvsenderMottaker,
     validateTittel,
     validateTema,
+    validateBrevkode
   };
 };
 

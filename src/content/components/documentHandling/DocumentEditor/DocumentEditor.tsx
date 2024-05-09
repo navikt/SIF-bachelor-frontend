@@ -1,10 +1,10 @@
 import {useRef, useState, useEffect } from "react"
-import {Button, Modal, TextField, Table } from "@navikt/ds-react"
+import {Button, Modal, TextField, Alert } from "@navikt/ds-react"
 import { PencilIcon } from "@navikt/aksel-icons";
 import { IDocument, Journalpost, DocumentEditorProps, Metadata } from "../../../../assets/types/export";
 import { DocumentEditorInput } from "../../../../assets/types/export";
 import {DocumentViewer} from "../DocumentViewer/DocumentViewer";
-import { convertStatus, displayType, metadataTemplate } from "../../../../assets/utils/FormatUtils";
+import { convertStatus, displayType, metadataTemplate, isReadOnly, Status } from "../../../../assets/utils/FormatUtils";
 import "./DocumentEditor.css";
 import { useError, useValidation, useSplitDocs } from "../../../hooks/export";
 
@@ -35,7 +35,11 @@ export const DocumentEditor = ({ brukerId, journalpostId, tittel, journalposttyp
     // Error message
     const { errorMessage, setErrorMessage } = useError()
 
+    const [tittBrev, setTittBrev] = useState("");
+
     const ref = useRef<HTMLDialogElement>(null);
+
+    const topRef = useRef<HTMLDivElement>(null);
 
     // Input validation custom hook
     const { 
@@ -116,7 +120,6 @@ export const DocumentEditor = ({ brukerId, journalpostId, tittel, journalposttyp
       }
     };
 
-
     const handleNestedInputChangeBruker =
     <T extends keyof DocumentEditorInput["bruker"]>(
       parentField: "bruker",
@@ -180,6 +183,8 @@ export const DocumentEditor = ({ brukerId, journalpostId, tittel, journalposttyp
 
             <Modal ref={ref} header={{ heading: "Splitt Opp Dokumenter" }} width={"40%"}>
                 <Modal.Body>
+                <div ref={topRef} />
+                    {errorMessage && <Alert variant="error">{errorMessage}</Alert>}
                     <div className="submit-body">
                         <TextField      
                             label="Journalpost ID"      
@@ -193,11 +198,13 @@ export const DocumentEditor = ({ brukerId, journalpostId, tittel, journalposttyp
                                 label="Bruker-ID" 
                                 value={newMetadata.bruker.id} 
                                 onChange={handleNestedInputChangeBruker("bruker", "id")}
+                                readOnly={isReadOnly(journalstatus as Status, "bruker.id")}
                                 error={brukerIdError} />
                             <TextField 
                                 label="ID-Type" 
                                 value={newMetadata.bruker.type}  
                                 onChange={handleNestedInputChangeBruker("bruker","type")}
+                                readOnly={isReadOnly(journalstatus as Status, "bruker.type")}
                                 error={brukerTypeError} />
                         </div>
                         <h3>Avsender / Mottaker</h3>
@@ -206,27 +213,32 @@ export const DocumentEditor = ({ brukerId, journalpostId, tittel, journalposttyp
                                     label="ID" 
                                     value={newMetadata.avsenderMottaker.id}
                                     onChange={handleNestedInputChangeAM("avsenderMottaker", "id")}
+                                    readOnly={isReadOnly(journalstatus as Status, "avsenderMottaker.id")}
                                     error={avsenderMottakerIdError} />
                                 <TextField 
                                     label="ID-Type" 
                                     value={newMetadata.avsenderMottaker.type} 
                                     onChange={handleNestedInputChangeAM("avsenderMottaker", "type")}
+                                    readOnly={isReadOnly(journalstatus as Status, "avsenderMottaker.type")}
                                     error={avsenderMottakerTypeError} />
                                 <TextField 
                                     label="Navn" 
                                     value={newMetadata.avsenderMottaker.navn} 
                                     onChange={handleNestedInputChangeAM("avsenderMottaker", "navn")}
+                                    readOnly={isReadOnly(journalstatus as Status, "avsenderMottaker.navn")}
                                     error={avsenderMottakerNameError} />
                                 <TextField 
                                     label="Land" 
                                     value={newMetadata.avsenderMottaker.land} 
                                     onChange={handleNestedInputChangeAM("avsenderMottaker", "land")}
+                                    readOnly={isReadOnly(journalstatus as Status, "avsenderMottaker.land")}
                                     error={avsenderMottakerLandError} />
                             </div>         
                         <TextField      
                             label="Tittel"      
                             value={newMetadata.tittel}
                             onChange={handleInputChange("tittel")}
+                            readOnly={isReadOnly(journalstatus as Status, "tittel")}
                             className="inputBox"
                             error={tittelError}
                         />
@@ -252,6 +264,7 @@ export const DocumentEditor = ({ brukerId, journalpostId, tittel, journalposttyp
                             label="Tema"      
                             value={newMetadata.tema}
                             onChange={handleInputChange("tema")}
+                            readOnly={isReadOnly(journalstatus as Status, "tema")}
                             className="inputBox"
                             error={temaError}
                         />
@@ -264,6 +277,7 @@ export const DocumentEditor = ({ brukerId, journalpostId, tittel, journalposttyp
                             handleSelectedIdandTitle={handleSelectedDocumentsChange}
                             handleUnselectedIdandTitle={handleUnselectedDocumentsChange}
                             handleIsVisible={handleIsVisible}
+                            handleInputValidation={mottaTittBrev}
                         />
                     </div>        
                 </Modal.Body>

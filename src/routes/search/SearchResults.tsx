@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { useLocation } from "react-router-dom";
 import { Table, Tag, Chips } from "@navikt/ds-react";
 
@@ -25,6 +26,8 @@ export const SearchResults = () => {
     const { documents, setDocuments, documentUrls } = useDocuments({
         initialDocuments: location.state.dokumentoversikt.journalposter[0].dokumenter,
     });
+
+    const navigate = useNavigate();
 
     useTitle("Vju - Resultat")
 
@@ -242,6 +245,7 @@ export const SearchResults = () => {
                                                     handleSelectedIdandTitle={() => {}}
                                                     handleUnselectedIdandTitle={() => {}}
                                                     handleIsVisible={isVisible}
+                                                    handleInputValidation={() => {}}
                                                 />
                                             </div>
                                             

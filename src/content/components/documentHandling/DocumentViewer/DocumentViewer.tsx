@@ -4,8 +4,9 @@ import { EyeSlashIcon, EyeIcon } from '@navikt/aksel-icons';
 import { IDocument, DocumentViewerProps } from "../../../../assets/types/export";
 import "./DocumentViewer.css";
 import useError from "../../../hooks/useError";
+import { useValidation } from "../../../hooks/useValidation";
 
-export const DocumentViewer = ({ documentsToView, addGlobalDocument, documents, isModal, handleSelectedIdandTitle, handleUnselectedIdandTitle, handleIsVisible}: DocumentViewerProps) => {
+export const DocumentViewer = ({ documentsToView, addGlobalDocument, documents, isModal, handleSelectedIdandTitle, handleUnselectedIdandTitle, handleIsVisible, handleInputValidation}: DocumentViewerProps) => {
     const [selectedDocuments, setSelectedDocuments] = useState<IDocument[]>([])
     const [stateDocuments, setStateDocuments] = useState<IDocument[]>([])
     const [unselectedDocuments, setUnselectedDocuments] = useState<IDocument[]>(
@@ -13,6 +14,9 @@ export const DocumentViewer = ({ documentsToView, addGlobalDocument, documents, 
     );
     const [selectedRows, setSelectedRows] = useState<string[]>([]);
     const [localDocumentsToView, setLocalDocumentsToView] = useState<IDocument[]>(documentsToView)
+   
+    const { validateTittel, tittelError, brevkodeError, validateBrevkode } = useValidation();
+
     const { setErrorMessage } = useError()
    
     const addDocument = (documentToAdd: IDocument) => {
@@ -75,6 +79,15 @@ export const DocumentViewer = ({ documentsToView, addGlobalDocument, documents, 
         }
     };
 
+    useEffect(() => {
+        if(tittelError === "" && brevkodeError === ""){
+            handleInputValidation("");
+        }
+        else{
+            handleInputValidation("Dokument-metainfo er ikke fylt ut riktig.");
+        }
+    },[tittelError, brevkodeError])
+
     useEffect(()=>{ 
         if(!isModal){
             setSelectedDocuments(documents)
@@ -107,6 +120,12 @@ export const DocumentViewer = ({ documentsToView, addGlobalDocument, documents, 
         });
         setSelectedDocuments(prevDocs => updateDocumentBrevkode(prevDocs));
         setUnselectedDocuments(prevDocs => updateDocumentBrevkode(prevDocs));
+
+        validateBrevkode(newBrevkode);
+
+        console.log(localDocumentsToView)
+        console.log(selectedDocuments)
+        console.log(unselectedDocuments)
     }
     const handleTittelInput = (documentId: string, newTittel: string) => {
         const updatedDocuments = localDocumentsToView.map(doc => {
@@ -127,6 +146,12 @@ export const DocumentViewer = ({ documentsToView, addGlobalDocument, documents, 
 
         setSelectedDocuments(prevDocs => updateDocumentTittel(prevDocs));
         setUnselectedDocuments(prevDocs => updateDocumentTittel(prevDocs));
+
+        validateTittel(newTittel);
+
+        console.log(localDocumentsToView)
+        console.log(selectedDocuments)
+        console.log(unselectedDocuments)
     };
 
 
@@ -159,6 +184,7 @@ export const DocumentViewer = ({ documentsToView, addGlobalDocument, documents, 
                                     htmlSize={14}
                                     onClick={(e) => e.stopPropagation()}
                                     onChange={(e) => handleTittelInput(document.dokumentInfoId, e.target.value)}
+                                    error={tittelError}
                                 />
                                 ) : (
                                     document.tittel
@@ -173,6 +199,7 @@ export const DocumentViewer = ({ documentsToView, addGlobalDocument, documents, 
                                     htmlSize={14}
                                     onClick={(e) => e.stopPropagation()}
                                     onChange={(e) => handleBrevkodeInput(document.dokumentInfoId, e.target.value)}
+                                    error={brevkodeError}
                                 />
                                 ) : (
                                     document.brevkode

@@ -121,3 +121,24 @@ export const brukerIdType = ["FNR", "AKTOERID", "ORGNR"];
 export const amType = ["FNR", "ORGNR", "HPPNR", "UTL_ORG", "NULL", "UKJENT"];
 
 export const landListe = ["Norge", "Sverige", "Danmark", "Finland"];
+
+
+export type Status = 'EKSPEDERT' | 'JOURNALFOERT' | 'UNDER_ARBEID' | 'FERDIGSTILT';
+
+// Helper function to determine whether fields should be read-only
+export const isReadOnly = (status: Status, fieldName: string): boolean => {
+    // Define which fields should be read-only based on the status
+    const readOnlyForSpecificFields = {
+        "EKSPEDERT": ["bruker.id", "bruker.type", "avsenderMottaker.id", "avsenderMottaker.type", "avsenderMottaker.navn", "avsenderMottaker.land", "tittel", "tema"],
+        "JOURNALFOERT": ["bruker.id", "bruker.type"], // Add the fields that should be read-only for this status
+        "UNDER_ARBEID": [""], // Add the fields that should be read-only for this status
+        "FERDIGSTILT": ["bruker.id", "bruker.type", "avsenderMottaker.id", "avsenderMottaker.type", "avsenderMottaker.navn", "avsenderMottaker.land", "tittel", "tema"], // Add the fields that should be read-only for this status
+    };
+
+    if (readOnlyForSpecificFields[status]?.includes(fieldName)) {
+        return true;
+    }
+    else{
+        return false;
+    }
+}

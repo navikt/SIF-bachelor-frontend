@@ -19,6 +19,7 @@ export interface DocumentViewerProps {
     addGlobalDocument: (document: IDocument) => void;
     documents: IDocument[];
     isModal: boolean;
+    handleInputValidation: (isValidated: string) => void;
     handleSelectedIdandTitle: (selectedDocs: IDocument[]) => void;
     handleUnselectedIdandTitle: (unselectedDocs: IDocument[]) => void;
     handleIsVisible: (document: IDocument) => boolean;
