@@ -27,8 +27,6 @@ export const SearchResults = () => {
         initialDocuments: location.state.dokumentoversikt.journalposter[0].dokumenter,
     });
 
-    const navigate = useNavigate();
-
     useTitle("Vju - Resultat")
 
     const comparator = (a: Journalpost, b: Journalpost, orderBy: keyof Journalpost) => {
@@ -124,6 +122,7 @@ export const SearchResults = () => {
 
     const changeStatus = (newStatus: string, sameJournalpostId: string) => {
 
+        console.log(newStatus)
         setJournalpostList(prevJournalpostList => 
             prevJournalpostList.map(journalpost =>
                 journalpost.journalpostId === sameJournalpostId
