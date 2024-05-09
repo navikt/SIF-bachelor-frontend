@@ -1,0 +1,19 @@
+/* ErrorAlert.css */
+.error-box {
+    width: 400px;
+    position: fixed;
+    bottom: 20px;
+    right: -400px; /* Start off-screen */
+    transition: right 0.3s ease-in-out;
+    box-shadow: 2px 3px 72px -31px rgba(0,0,0,0.75);
+    -webkit-box-shadow: 2px 3px 72px -31px rgba(0,0,0,0.75);
+    -moz-box-shadow: 2px 3px 72px -31px rgba(0,0,0,0.75);
+}
+.error-box.show {
+    right: 10px; /* Slide in position */
+}
+.error-box-close{
+    cursor: pointer;
+    transform: scale(1.05);
+    background-color: red;
+}

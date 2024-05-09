@@ -1,6 +1,6 @@
-import React, { Dispatch, SetStateAction } from 'react';
-import { IDocument, AvsenderMottaker } from "./models";
-import { FilterOptions } from './misc';
+import React, { Dispatch, ReactNode, SetStateAction } from 'react';
+import { IDocument, AvsenderMottaker, Metadata } from "./models";
+import { FilterOptions, SetErrorProp } from './misc';
 
 export interface FilterPopoverContentProps {
     onClose: () => void;
@@ -11,7 +11,7 @@ export interface FilterPopoverContentProps {
         selectedStatus: string[],
         selectedType: string[],
     }) => void; 
-    showSuccessAlert: (isShown: boolean) => void;
+    onSuccess: (errorProp: SetErrorProp) => void;
 };
 
 export interface DocumentViewerProps {
@@ -30,7 +30,7 @@ export interface FilterPopoverProps {
     openState: boolean;
     setOpenState: Dispatch<SetStateAction<boolean>>;
     onClose: () => void;
-    showSuccessAlert: (isShown: boolean) => void;
+    onSuccess: (errorProp: SetErrorProp) => void;
     onFilterSubmit: (filterData: {
       startDate?: Date,
       endDate?: Date,
@@ -64,7 +64,23 @@ export interface DocumentEditorProps {
     onStatusChange: (newStatus: string, journalpostId: string) => void;
 }
 
+export interface UseSplitDocsProps {
+    journalpostId: string;
+    oldMetadata: Metadata;
+    newMetadata: Metadata;
+    journalstatus: string;
+    journalposttype: string;
+    appendNewJournalpost: (newPost: any, oldPost: any) => void;
+    onStatusChange: (newStatus: string, journalpostId: string) => void;
+    selectedDocuments: IDocument[]
+    unselectedDocuments: IDocument[]
+}
+
 export interface PDFViewerProps {
     documentUrls: Map<string, string>;
     documents: IDocument[]
+}
+
+export interface ErrorProviderProps{
+    children: ReactNode;
 }

@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { IDocument } from "../../assets/types/export";
+import useError from "./useError";
 
 interface UseDocumentsProps {
     initialDocuments: IDocument[];
@@ -8,12 +9,17 @@ interface UseDocumentsProps {
 const useDocuments = ({ initialDocuments }: UseDocumentsProps) => {
     const [documents, setDocuments] = useState<IDocument[]>(initialDocuments);
     const [documentUrls, setDocumentUrls] = useState<Map<string, string>>(new Map());
-    const baseUrl = process.env.REACT_APP_BASE_URL
+    const { setErrorMessage } = useError()
 
     useEffect(() => {
         const fetchDocuments = async () => {
             const fetchedUrls = new Map<string, string>();
             const token = sessionStorage.getItem("token");
+
+            if(!token){
+                setErrorMessage({message: "Du må logge inn for tilgang til disse ressursene.", variant: "warning"})
+                setDocumentUrls(new Map())
+            }
 
             for (const document of documents) {
                 const docId: string = document.dokumentInfoId;
@@ -24,9 +30,15 @@ const useDocuments = ({ initialDocuments }: UseDocumentsProps) => {
                         },
                     });
                     if (!response.ok) {
-                        console.error("Failed to fetch document:", docId);
-                        continue;
+                        if(response.status === 401){
+                            setErrorMessage({message:"Logg inn for tilgang til denne ressursen", variant:"warning"})
+                            return
+                        }else{
+                            setErrorMessage({message: "Kunne ikke hente dokumenter. Prøv igjen senere.", variant:"error"})
+                            return
+                        }   
                     }
+                    setErrorMessage(null)
                     const blob = await response.blob();
                     fetchedUrls.set(docId, URL.createObjectURL(blob));
                 }

@@ -2,6 +2,7 @@ import { Button, Modal, BodyLong } from "@navikt/ds-react";
 import { useState } from "react";
 import { TasklistStartIcon, XMarkOctagonIcon } from "@navikt/aksel-icons";
 import { convertStatus } from "../../../../assets/utils/FormatUtils";
+import { useError } from "../../../hooks/export"
 
 export const FeilRegistrer = ({ journalposttype, journalpostId, onStatusChange, formatStatus}: {
     journalposttype: string,
@@ -11,22 +12,21 @@ export const FeilRegistrer = ({ journalposttype, journalpostId, onStatusChange, 
 }) => {
 
     // Error message
-    const [errorMessage, setErrorMessage] = useState('');
+    const {errorMessage, setErrorMessage} = useError()
 
     const [open, setOpen] = useState(false);
-
-    const baseUrl = process.env.REACT_APP_BASE_URL
 
     const registrerFeil = () => {
 
         const token = sessionStorage.getItem("token");
 
         if(!token) {
-            setErrorMessage("Du må logge inn for å søke!");
+            setErrorMessage({message: "Du må logge inn for å feilregistrere", variant:"warning"});
+            setOpen(false);
             return;
         }
 
-        fetch(`${baseUrl}/feilregistrer?journalpostId=${journalpostId}&type=${journalposttype}`, {
+        fetch(`/feilregistrer?journalpostId=${journalpostId}&type=${journalposttype}`, {
             method: "GET",
             headers: {
                 Authorization: `Bearer ${token}`
@@ -34,8 +34,10 @@ export const FeilRegistrer = ({ journalposttype, journalpostId, onStatusChange, 
         })
         .then(response => {
             if (!response.ok) {
+                setErrorMessage({message: "Kunne ikke feilregistrere. Prøv igjen senere.", variant: "error"})
                 throw new Error('Network response was not ok');
             }
+            setErrorMessage(null)
             return response.json(); // Read the response body only once
         })
         .then(data => {
@@ -45,8 +47,9 @@ export const FeilRegistrer = ({ journalposttype, journalpostId, onStatusChange, 
             }
         })
         .catch((error) => {
-            console.error('There has been a problem with your fetch operation:', error);
+            setErrorMessage({message: error, variant: "error"})
         });
+        setErrorMessage(null)
         setOpen(false);
     }
 

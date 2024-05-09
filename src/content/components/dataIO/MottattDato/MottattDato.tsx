@@ -1,11 +1,12 @@
 import { Button, Modal, BodyLong } from "@navikt/ds-react";
 import { useState } from "react";
 import { TableIcon } from "@navikt/aksel-icons";
+import { useError } from "../../../hooks/export";
 
 export const MottattDato = ({journalpostId, handleMottattDato} : { journalpostId: string, handleMottattDato: (journalpostId: string) => void}) => {
 
     // Error message
-    const [errorMessage, setErrorMessage] = useState('');
+    const {errorMessage, setErrorMessage} = useError()
 
     const [open, setOpen] = useState(false);
 
@@ -13,7 +14,8 @@ export const MottattDato = ({journalpostId, handleMottattDato} : { journalpostId
         const token = sessionStorage.getItem("token");
 
         if(!token) {
-            setErrorMessage("Du må logge inn for å søke!");
+            setErrorMessage({message: "Du må logge inn for å registrere dato!", variant:"warning"});
+            setOpen(false)
             return;
         }
 
@@ -34,8 +36,9 @@ export const MottattDato = ({journalpostId, handleMottattDato} : { journalpostId
         })
         .then(response => {
             if (!response.ok) {
-                throw new Error('Network response was not ok');
+                setErrorMessage({message:"Kunne ikke oppdatere journalen. Prøv igjen senere.", variant: "error"})
             }
+            setErrorMessage(null)
             return response.json(); // Read the response body only once
         })
         .then(data => {
@@ -45,7 +48,7 @@ export const MottattDato = ({journalpostId, handleMottattDato} : { journalpostId
             }
         })
         .catch((error) => {
-            console.error('There has been a problem with your fetch operation:', error);
+            setErrorMessage({message:"Kunne ikke oppdatere journalen. Prøv igjen senere.", variant: "error"})
         });
         setOpen(false);
     }

@@ -1,5 +1,6 @@
-import { FilterOptions } from "../types/export";
-import { AvsenderMottaker } from "../types/export";
+import { FilterOptions, AvsenderMottaker, Metadata } from "../types/export";
+
+
 /* formatDate to get DD.MM.YYYY */
 export const formatDate = (date: Date) => {
     const day = date.getDate().toString().padStart(2, '0');
@@ -52,7 +53,7 @@ export const selectTagVariant = (journalStatus: string) => {
             return "success"
         case("EKSPEDERT"):
             return "warning"
-        case("UTGAAR"):
+        case("UTGÅR"):
             return "error"
         case("AVBRUTT"):
             return "error"
@@ -86,7 +87,7 @@ export const displayType = (type: string) => {
     }
 }
 
-export const metadataTemplate = (brukerId: string, tittel: string, journalposttype: string, datoOpprettet: string, tema: string, avsenderMottaker: AvsenderMottaker) => {
+export const metadataTemplate = (brukerId: string, tittel: string, journalposttype: string, datoOpprettet: string, tema: string, avsenderMottaker: AvsenderMottaker): Metadata => {
     return {
         bruker: {
             id: brukerId,

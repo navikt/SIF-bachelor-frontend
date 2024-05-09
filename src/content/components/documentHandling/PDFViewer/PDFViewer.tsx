@@ -3,11 +3,12 @@ import { pdfjs } from "react-pdf"
 import "react-pdf/dist/esm/Page/TextLayer.css";
 import 'react-pdf/dist/Page/AnnotationLayer.css';
 import { IDocument, LogiskVedlegg, RotationInfo, ErrorResponse, PDFViewerProps } from "../../../../assets/types/export";
-import { PDFDocument, Rotation, RotationTypes, degrees } from "pdf-lib";
+import { PDFDocument, Rotation, RotationTypes } from "pdf-lib";
 import "./PDFViewer.css"
 import { Alert } from "@navikt/ds-react";
 import { RotateLeftIcon, RotateRightIcon, ZoomPlusIcon, ZoomMinusIcon } from '@navikt/aksel-icons';
 import { Page, Document, Outline } from 'react-pdf';
+import { useError } from "../../../hooks/export"
 
 
 pdfjs.GlobalWorkerOptions.workerSrc = new URL(
@@ -16,14 +17,15 @@ pdfjs.GlobalWorkerOptions.workerSrc = new URL(
 ).toString();
 
 export const PDFViewer = ({ documentUrls, documents }: PDFViewerProps) => {
-
+    
     const [currentPage, setCurrentPage] = useState(1);
     const [numPages, setNumPages] = useState<number | null >(null);
     const [mergedPdfUrl, setMergedPdfUrl] = useState<string | undefined>(undefined);
-    const [ExceptionError, setExceptionError] = useState("");
     const [scale, setScale] = useState(1); // Start with no zoom
     const pageRefs = useRef<(HTMLDivElement | null)[]>([]);
     const [mergeTrigger, setMergeTrigger] = useState<number>(Math.random)
+
+    const { setErrorMessage } = useError()
 
     const handleScroll = () => {
         // Iterate through page refs to check intersection with viewport
@@ -64,12 +66,13 @@ export const PDFViewer = ({ documentUrls, documents }: PDFViewerProps) => {
             for (const document of documents) {
                 const url = documentUrls.get(document.dokumentInfoId);
                 if (!url) {
-                    setExceptionError("URL not found for document with ID: " + document.dokumentInfoId);
+                    //setErrorMessage("URL not found for document with ID: " + document.dokumentInfoId);
                     return;
                 }
                 const pdfBytes = await fetch(url).then(async response => {
                     if (!response.ok) {
                         const errorResponse = await response.json(); 
+                        setErrorMessage({message: "Kunne ikke hente dokument med ID: " + document.dokumentInfoId, variant: "error"})
                         throw new Error(errorResponse.errorMessage || `Failed to fetch document with ID ${document.dokumentInfoId}: ${response.statusText}`);
                     }
                     const buffer = await response.arrayBuffer()
@@ -93,7 +96,6 @@ export const PDFViewer = ({ documentUrls, documents }: PDFViewerProps) => {
 
                 const copiedPages = await mergedPdf.copyPages(pdf, pdf.getPageIndices());
                 document.pageCount= copiedPages.length
-                console.log(copiedPages)
                 /* This will add all of the page objects of a document to mergedPdf, so that in the pdf reader on the
                    right, it will display ALL the PDFs in a single journalpost one after the other. */
                 copiedPages.forEach((page, pageIndex) => {
@@ -110,11 +112,11 @@ export const PDFViewer = ({ documentUrls, documents }: PDFViewerProps) => {
                 // The error is an HTTP response from the backend
                 const errorData: ErrorResponse = await error.json();
                 console.error("There was an error merging the PDFs: ", errorData.errorMessage);
-                setExceptionError(errorData.errorMessage || "An unexpected error occurred while merging documents.");
+                setErrorMessage({message: "Kunne ikke laste inn dokumentene. Prøv igjen senere", variant: "error"} );
             } else {
                 // The error is a JavaScript error
                 console.error("There was an error merging the PDFs: ", error);
-                setExceptionError((error as ErrorResponse).errorMessage || "An unexpected error occurred while merging documents.");
+                setErrorMessage({message:"Kunne ikke laste inn dokumentene. Prøv igjen senere", variant:"error"});
             }
         }
     }
@@ -185,7 +187,6 @@ export const PDFViewer = ({ documentUrls, documents }: PDFViewerProps) => {
 
                     const logiskVedlegg: LogiskVedlegg = {tittel: JSON.stringify(currentDocument.rotationLib)}
                     currentDocument.logiskeVedlegg = [logiskVedlegg]
-                    console.log(`Rotation information for page ${pageWithinDocument} of document ${currentDocument.dokumentInfoId} not found`);
                 }
 
                 // Optionally, you may want to update the document in the documents array
@@ -195,8 +196,10 @@ export const PDFViewer = ({ documentUrls, documents }: PDFViewerProps) => {
                 console.log(`Rotation information not available for document ${currentDocument.dokumentInfoId}`);
             }
         } else {
+            setErrorMessage({message: "Fant ingen dokument relatert til denne siden.", variant:"error"})
             console.log("No document found for the current page");
         }
+        setErrorMessage(null)
         setMergeTrigger(Math.random)
         console.log(documents)
     };
@@ -209,9 +212,7 @@ export const PDFViewer = ({ documentUrls, documents }: PDFViewerProps) => {
         setScale(scale => scale - 0.10); // Decrease zoom by 10%
     };
 
-    if(ExceptionError){
-        return <Alert variant="error">{ExceptionError}</Alert>
-    }
+   
     let lastDocumentIndexDisplayed = -1;
     return (
         <div className="pdf-viewer-container">

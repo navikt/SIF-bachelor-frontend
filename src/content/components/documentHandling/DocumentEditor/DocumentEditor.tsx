@@ -1,12 +1,12 @@
 import {useRef, useState, useEffect } from "react"
 import {Button, Modal, TextField, Table } from "@navikt/ds-react"
 import { PencilIcon } from "@navikt/aksel-icons";
-import { IDocument, Journalpost, DocumentEditorProps } from "../../../../assets/types/export";
+import { IDocument, Journalpost, DocumentEditorProps, Metadata } from "../../../../assets/types/export";
 import { DocumentEditorInput } from "../../../../assets/types/export";
 import {DocumentViewer} from "../DocumentViewer/DocumentViewer";
 import { convertStatus, displayType, metadataTemplate } from "../../../../assets/utils/FormatUtils";
 import "./DocumentEditor.css";
-import { useValidation } from "../../../hooks/useValidation";
+import { useError, useValidation, useSplitDocs } from "../../../hooks/export";
 
 export const DocumentEditor = ({ brukerId, journalpostId, tittel, journalposttype, datoOpprettet, journalstatus, tema, avsenderMottaker, documentsToView, addGlobalDocument, documents, appendNewJournalpost, handleIsVisible, onStatusChange}: DocumentEditorProps ) => {
 
@@ -27,13 +27,13 @@ export const DocumentEditor = ({ brukerId, journalpostId, tittel, journalposttyp
     };
 
     // oldMetadata which is originally in the journalpost
-    const [oldMetadata, setOldMetadata] = useState(metadataTemplate(brukerId, tittel, journalposttype, datoOpprettet, tema, avsenderMottaker));
+    const [oldMetadata, setOldMetadata] = useState<Metadata>(metadataTemplate(brukerId, tittel, journalposttype, datoOpprettet, tema, avsenderMottaker));
 
     // For the updated metadata in the journalpost
-    const [newMetadata, setNewMetadata] = useState(metadataTemplate(brukerId, tittel, journalposttype, datoOpprettet, tema, avsenderMottaker));
+    const [newMetadata, setNewMetadata] = useState<Metadata>(metadataTemplate(brukerId, tittel, journalposttype, datoOpprettet, tema, avsenderMottaker));
 
     // Error message
-    const [errorMessage, setErrorMessage] = useState('');
+    const { errorMessage, setErrorMessage } = useError()
 
     const ref = useRef<HTMLDialogElement>(null);
 
@@ -44,6 +44,22 @@ export const DocumentEditor = ({ brukerId, journalpostId, tittel, journalposttyp
         avsenderMottakerLandError, avsenderMottakerTypeError, tittelError, temaError 
     } = useValidation();
 
+    const { splitDocs } = useSplitDocs({
+        journalpostId: journalpostId,
+        oldMetadata: oldMetadata,
+        newMetadata: newMetadata,
+        journalstatus: journalstatus,
+        journalposttype: journalposttype,
+        appendNewJournalpost: appendNewJournalpost,
+        onStatusChange: onStatusChange,
+        selectedDocuments: selectedDocuments,
+        unselectedDocuments: unselectedDocuments
+    });
+
+    const splitDocuments = () => {
+        ref.current?.close()
+        splitDocs()
+    }
     useEffect(() => {
         // Map each selectedDocumentId to a new entry in dokumentvarianter
         setNewMetadata(prev => ({
@@ -82,7 +98,7 @@ export const DocumentEditor = ({ brukerId, journalpostId, tittel, journalposttyp
         field: T
       ) => (event: React.ChangeEvent<HTMLInputElement>) => {
         const value = event.target.value;
-        setNewMetadata((prevMetadata) => ({
+        setNewMetadata((prevMetadata: Metadata) => ({
           ...prevMetadata,
           [field]: value,
         }));
@@ -154,92 +170,6 @@ export const DocumentEditor = ({ brukerId, journalpostId, tittel, journalposttyp
     };
       
 
-    const splitDocs = async () => {
-        const token = sessionStorage.getItem("token");
-
-        if(!token) {
-            setErrorMessage("Du må logge inn for å søke!");
-            return;
-        }
-
-        // Opprett JSON body med userId
-        const requestBody = {
-            journalpostID : journalpostId,
-            oldMetadata: oldMetadata,
-            newMetadata: newMetadata,       
-          };
-
-        console.log(oldMetadata)
-        console.log(newMetadata)
-
-        fetch("/createJournalpost", {
-            method: 'POST',
-            headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-            },
-            body: JSON.stringify(requestBody), // Konverterer JavaScript objekt til en JSON string
-        })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-            }
-            return response.json(); 
-        })  
-        .then(data => {
-            console.log(data); 
-            const newJournalpostIds = data.map((journalpost: any) => journalpost.journalpostId);
-            console.log(newJournalpostIds);
-            
-            const newJournalPost: Journalpost = {
-                journalpostId: newJournalpostIds[1], 
-                tittel: newMetadata.tittel, 
-                journalposttype: newMetadata.journalposttype,
-                datoOpprettet: (new Date()).toString(), 
-                journalstatus: journalstatus, 
-                tema: newMetadata.tema, 
-                avsenderMottaker: newMetadata.avsenderMottaker,
-                relevanteDatoer: [],
-                dokumenter: selectedDocuments.map(doc => ({
-                    dokumentInfoId: doc.dokumentInfoId,
-                    tittel: doc.tittel,
-                    brevkode: doc.brevkode,
-                    originalJournalpostId: journalpostId,
-                    logiskeVedlegg: []
-                }))
-            };
-
-            const oldJournalPost: Journalpost = {
-                journalpostId: newJournalpostIds[0],
-                tittel: oldMetadata.tittel, 
-                journalposttype: oldMetadata.journalposttype, 
-                datoOpprettet: (new Date()).toString(), 
-                journalstatus: journalstatus, 
-                tema: oldMetadata.tema, 
-                avsenderMottaker: oldMetadata.avsenderMottaker,
-                relevanteDatoer: [],
-                dokumenter: unselectedDocuments.map(doc => ({
-                    dokumentInfoId: doc.dokumentInfoId,
-                    tittel: doc.tittel,
-                    brevkode: doc.brevkode,
-                    originalJournalpostId: journalpostId,
-                    logiskeVedlegg: []
-                }))
-            }; 
-            
-            appendNewJournalpost(newJournalPost, oldJournalPost); 
-
-            const newJournalStatus = convertStatus(journalposttype);
-            onStatusChange(newJournalStatus, journalpostId); 
-        })
-        .catch(error => {
-            console.error('There has been a problem with your fetch operation:', error);
-        });
-
-        console.log(requestBody)
-        console.log("Modalen er nå lukket")
-        ref.current?.close()
-    }
     return(
         <div>
             <Button 
@@ -338,7 +268,7 @@ export const DocumentEditor = ({ brukerId, journalpostId, tittel, journalposttyp
                     </div>        
                 </Modal.Body>
                 <Modal.Footer>
-                    <Button onClick={splitDocs}>Splitt ut dokumenter til ny journalpost</Button>
+                    <Button onClick={()=>splitDocuments()}>Splitt ut dokumenter til ny journalpost</Button>
                     <Button
                         type="button"
                         variant="secondary"

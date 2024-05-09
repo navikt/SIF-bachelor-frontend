@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
-import { Table, Tag, Chips, Alert } from "@navikt/ds-react";
+import { Table, Tag, Chips } from "@navikt/ds-react";
 
 import { DocumentViewer, DocumentEditor, PDFViewer } from "../../content/components/documentHandling/export"
 import { FeilRegistrer, MottattDato } from "../../content/components/dataIO/export"
@@ -22,7 +22,6 @@ export const SearchResults = () => {
     const [filterList, setFilterList] = useState<string[]>([])
     const [isModalOpen, setIsModalOpen] = useState<boolean>(false)
     const [selectedRows, selectRow] = useState<string[]>([]);
-
     const { documents, setDocuments, documentUrls } = useDocuments({
         initialDocuments: location.state.dokumentoversikt.journalposter[0].dokumenter,
     });
@@ -104,8 +103,6 @@ export const SearchResults = () => {
 
     const addDocument = (documentToAdd: IDocument) => {
         // Find the document to add based on its ID
-        console.log("documents before:")
-        console.log(documents)
         if (documentToAdd) {
             setDocuments(prevDocuments => {
                 // Check if the document already exists in the documents state
@@ -120,12 +117,9 @@ export const SearchResults = () => {
                 }
             });
         }
-        console.log("documents after:")
-        console.log(documents)
     };
 
     const changeStatus = (newStatus: string, sameJournalpostId: string) => {
-        console.log(newStatus + " and " + sameJournalpostId)
 
         setJournalpostList(prevJournalpostList => 
             prevJournalpostList.map(journalpost =>
@@ -149,12 +143,6 @@ export const SearchResults = () => {
             oldJournalPost
         ]);
     };
-
-
-
-    if (!sessionStorage.getItem("token")) {
-        return <Alert variant="error" style={{width: "5px"}}>Du har ikke tilgang til resurssen, vennligst prøv igjen senere.</Alert>;
-    }
 
     const showMottattDato = (journalposttype: string, journalstatus: string, relevanteDatoer: RelevantDato[]) => {
         console.log(relevanteDatoer)

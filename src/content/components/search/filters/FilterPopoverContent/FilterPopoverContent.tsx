@@ -4,6 +4,7 @@ import { ArrowRightLeftIcon } from '@navikt/aksel-icons';
 import { useState, useEffect } from 'react';
 import { FilterPopoverContentProps } from "../../../../../assets/types/export";
 import { tema } from "../../../../../assets/utils/FormatUtils";
+import useError from "../../../../hooks/useError";
 
 const FilterPopoverContent = ( props : FilterPopoverContentProps) => {
 
@@ -28,7 +29,7 @@ const FilterPopoverContent = ( props : FilterPopoverContentProps) => {
     const [selectedType, setSelectedType] = useState<string[]>([]);
 
     // New state for error message visibility
-    const [showError, setShowError] = useState("");
+    const {errorMessage, setErrorMessage} = useError();
 
     // Change the state of the input once we type in it
     const handleInputChange = (value : string) => {
@@ -136,18 +137,16 @@ const FilterPopoverContent = ( props : FilterPopoverContentProps) => {
         setFilter([]);
         setSelectedStatus([]);
         setSelectedType([]);
-        setShowError("");
+        setErrorMessage(null);
     }
 
     const submitFilter = () => {
-        console.log("Form submitted");
-        console.log("StartDate is: " + startDate + " and the endDate is: " + endDate);
 
         // Check if either startDate or endDate is not selected
         if ((!startDate && endDate) || (!endDate && startDate)) {
             // Prevent form submission and show error message
             console.log("Error: Please select both a start date and an end date.");
-            setShowError("Du må ha velge både startDato og endDato!"); // Show error message
+            setErrorMessage({message: "Du må ha velge både startdato og sluttdato!", variant:"info"}); // Show error message
             return; // Exit the function to prevent further execution
         }
 
@@ -160,10 +159,8 @@ const FilterPopoverContent = ( props : FilterPopoverContentProps) => {
         };
         props.onFilterSubmit(filterData);
         props.onClose();
-        console.log("Lagret");
-        console.log(filterData)
-        setShowError(""); // Reset error message
-        props.showSuccessAlert(true);
+        setErrorMessage(null); // Reset error message
+        props.onSuccess({message: "Lagret!", variant:"success"});
     }
 
     /* ...datepickerProps ensures that we can select a date from the calender whilst datePicker input ensures that our selected date
@@ -258,11 +255,6 @@ const FilterPopoverContent = ( props : FilterPopoverContentProps) => {
                     <Button onClick={submitFilter}>Lagre</Button>
                 </div>
             </div>
-            {showError && (
-                    <div style={{ color: 'red', marginTop: '10px' }}>
-                        {showError}
-                    </div>
-                )}
         </div>
     );
 };

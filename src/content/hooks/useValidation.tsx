@@ -7,7 +7,8 @@ const fnrRegex = /^[0-9]{11}$/; // 11-digit number (example for FNR)
 const nameRegex = /^[A-Za-zæøåÆØÅ\s-]{2,30}$/; // Only letters, spaces, hyphens
 const tittelRegex = /^[A-Za-zæøåÆØÅ\s-]{2,30}$/; // Only letters, spaces, hyphens
 
-export const useValidation = () => {
+const useValidation = () => {
+
   const [brukerIdError, setBrukerIdError] = useState<string>("");
   const [brukerTypeError, setBrukerTypeError] = useState<string>("");
   const [avsenderMottakerIdError, setAvsenderMottakerIdError] = useState<string>("");
@@ -91,3 +92,5 @@ export const useValidation = () => {
     validateTema,
   };
 };
+
+export default useValidation

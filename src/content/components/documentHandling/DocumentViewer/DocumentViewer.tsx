@@ -3,6 +3,7 @@ import { Table, TextField } from "@navikt/ds-react";
 import { EyeSlashIcon, EyeIcon } from '@navikt/aksel-icons';
 import { IDocument, DocumentViewerProps } from "../../../../assets/types/export";
 import "./DocumentViewer.css";
+import useError from "../../../hooks/useError";
 
 export const DocumentViewer = ({ documentsToView, addGlobalDocument, documents, isModal, handleSelectedIdandTitle, handleUnselectedIdandTitle, handleIsVisible}: DocumentViewerProps) => {
     const [selectedDocuments, setSelectedDocuments] = useState<IDocument[]>([])
@@ -12,6 +13,7 @@ export const DocumentViewer = ({ documentsToView, addGlobalDocument, documents, 
     );
     const [selectedRows, setSelectedRows] = useState<string[]>([]);
     const [localDocumentsToView, setLocalDocumentsToView] = useState<IDocument[]>(documentsToView)
+    const { setErrorMessage } = useError()
    
     const addDocument = (documentToAdd: IDocument) => {
         // Find the document to add based on its ID
@@ -29,7 +31,6 @@ export const DocumentViewer = ({ documentsToView, addGlobalDocument, documents, 
                 }
             });
         }
-        console.log(stateDocuments)
     };
 
     const select = (document: IDocument) => {
@@ -39,7 +40,6 @@ export const DocumentViewer = ({ documentsToView, addGlobalDocument, documents, 
             addDocumentIdandTitle(document)
             handleRowClick(document.dokumentInfoId)
         }
-        console.log(selectedRows)
     };
     const handleRowClick = (id: string) => {
         setSelectedRows(prevSelectedRows => {
@@ -54,9 +54,6 @@ export const DocumentViewer = ({ documentsToView, addGlobalDocument, documents, 
     }
 
     const addDocumentIdandTitle = (documentToToggle: IDocument) => {
-        // Find the document to add based on its ID
-        console.log("Documents before toggle:");
-        console.log(documents);
 
         if (documentToToggle) {
             setSelectedDocuments(prevSelected => {
@@ -110,9 +107,6 @@ export const DocumentViewer = ({ documentsToView, addGlobalDocument, documents, 
         });
         setSelectedDocuments(prevDocs => updateDocumentBrevkode(prevDocs));
         setUnselectedDocuments(prevDocs => updateDocumentBrevkode(prevDocs));
-        console.log(localDocumentsToView)
-        console.log(selectedDocuments)
-        console.log(unselectedDocuments)
     }
     const handleTittelInput = (documentId: string, newTittel: string) => {
         const updatedDocuments = localDocumentsToView.map(doc => {
@@ -133,9 +127,6 @@ export const DocumentViewer = ({ documentsToView, addGlobalDocument, documents, 
 
         setSelectedDocuments(prevDocs => updateDocumentTittel(prevDocs));
         setUnselectedDocuments(prevDocs => updateDocumentTittel(prevDocs));
-        console.log(localDocumentsToView)
-        console.log(selectedDocuments)
-        console.log(unselectedDocuments)
     };
 
 

@@ -3,8 +3,10 @@ import { useState, useEffect } from "react";
 import { useNavigate, useLocation} from "react-router-dom";
 import './Navbar.css';
 import { SearchEngine } from "../../search/export";
+import useError from "../../../hooks/useError";
 
 const Navbar = () => {
+  const { setErrorMessage } = useError()
   const navigate = useNavigate();
   const location = useLocation();
   
@@ -18,7 +20,7 @@ const Navbar = () => {
       console.log("The useEffect is triggered");
       if (!isTokenValid()) {
         // Handle token expiration
-        console.error('Token expired');
+        setErrorMessage({message: "Din sesjon har utløpt. Vennligst logg inn igjen.", variant: "info"})
        // toggleLogin(); // Comment out or remove this if we don't want to automatically log in again
       }
     }, 60000); // Check every minute
@@ -51,16 +53,18 @@ const Navbar = () => {
           sessionStorage.setItem('token_expiration', expirationTime.toString()); // Convert expirationTime to string
           setIsLoggedIn(true);
           setButtonText("Logg ut");
+          setErrorMessage({message: "Logget inn!", variant:"success"})
         } else {
-          console.error('Error fetching token with status:', response.status, response.statusText);
+          setErrorMessage({message: "Kunne ikke hente sesjonstoken. Vennligst prøv igjen senere", variant:"warning"})
         }
       } catch (error) {
-        console.error('Error fetching token:', error);
+        setErrorMessage({message: "Kunne ikke logge deg inn. Vennligst prøv igjen senere", variant:"warning"})
       }
     } else {
       sessionStorage.removeItem('token'); // Remove the token from sessionStorage
       sessionStorage.removeItem('token_expiration');
       setIsLoggedIn(false);
+      setErrorMessage({message: "Logget ut!", variant:"info"})
       setButtonText("Logg inn");
     }
   };
