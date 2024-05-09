@@ -85,12 +85,14 @@ export const DocumentEditor = ({ brukerId, journalpostId, tittel, journalposttyp
     const mottaTittBrev = (tittBrev: string) => {
         setTittBrev(tittBrev)
     }
+    
     const splitDocuments = () => {
         if (!validateInputs()) {
             console.log("Inputs IKKE VALIDATED")
             //setErrorMessage({message:"Vennligst fyll ut alle feltene riktig før du splitter.", variant:"warning"});
             topRef.current?.scrollIntoView({ behavior: 'smooth' });
         }else{
+            setErrorMessage({message: "Splitt vellykket!", variant:"success"})
             splitDocs()
             ref.current?.close()
         }   

@@ -49,7 +49,7 @@ export const FeilRegistrer = ({ journalposttype, journalpostId, onStatusChange, 
         .catch((error) => {
             setErrorMessage({message: error, variant: "error"})
         });
-        setErrorMessage(null)
+        setErrorMessage({message: "Feilregistrert", variant: "success"})
         setOpen(false);
     }
 

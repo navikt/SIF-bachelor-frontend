@@ -38,7 +38,6 @@ export const MottattDato = ({journalpostId, handleMottattDato} : { journalpostId
             if (!response.ok) {
                 setErrorMessage({message:"Kunne ikke oppdatere journalen. Prøv igjen senere.", variant: "error"})
             }
-            setErrorMessage(null)
             return response.json(); // Read the response body only once
         })
         .then(data => {
@@ -50,6 +49,7 @@ export const MottattDato = ({journalpostId, handleMottattDato} : { journalpostId
         .catch((error) => {
             setErrorMessage({message:"Kunne ikke oppdatere journalen. Prøv igjen senere.", variant: "error"})
         });
+        setErrorMessage({message: "Satt dato mottatt.", variant: "success"})
         setOpen(false);
     }
 
