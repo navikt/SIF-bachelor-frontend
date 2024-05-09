@@ -71,7 +71,7 @@ export const shouldShowFeilRegistrer = (journalposttype: string, journalstatus: 
 
 export const convertStatus = (journaltype: string) => {
     if(journaltype === "I") {
-        return "UTGÅR";
+        return "UTGAAR";
     } else {
         return "AVBRUTT";
     }

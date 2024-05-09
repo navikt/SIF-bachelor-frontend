@@ -122,6 +122,7 @@ export const SearchResults = () => {
 
     const changeStatus = (newStatus: string, sameJournalpostId: string) => {
 
+        console.log(newStatus)
         setJournalpostList(prevJournalpostList => 
             prevJournalpostList.map(journalpost =>
                 journalpost.journalpostId === sameJournalpostId
