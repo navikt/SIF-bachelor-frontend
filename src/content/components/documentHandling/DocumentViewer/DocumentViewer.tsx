@@ -5,7 +5,7 @@ import { IDocument, DocumentViewerProps } from "../../../../assets/types/export"
 import "./DocumentViewer.css";
 import { useValidation } from "../../../hooks/useValidation";
 
-export const DocumentViewer = ({ documentsToView, addGlobalDocument, documents, isModal, handleSelectedIdandTitle, handleUnselectedIdandTitle, handleIsVisible}: DocumentViewerProps) => {
+export const DocumentViewer = ({ documentsToView, addGlobalDocument, documents, isModal, handleSelectedIdandTitle, handleUnselectedIdandTitle, handleIsVisible, handleInputValidation}: DocumentViewerProps) => {
     const [selectedDocuments, setSelectedDocuments] = useState<IDocument[]>([])
     const [stateDocuments, setStateDocuments] = useState<IDocument[]>([])
     const [unselectedDocuments, setUnselectedDocuments] = useState<IDocument[]>(
@@ -80,6 +80,15 @@ export const DocumentViewer = ({ documentsToView, addGlobalDocument, documents, 
             });
         }
     };
+
+    useEffect(() => {
+        if(tittelError === "" && brevkodeError === ""){
+            handleInputValidation("");
+        }
+        else{
+            handleInputValidation("Dokument-metainfo er ikke fylt ut riktig.");
+        }
+    },[tittelError, brevkodeError])
 
     useEffect(()=>{ 
         if(!isModal){

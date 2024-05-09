@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { useLocation } from "react-router-dom";
 import { Table, Tag, Chips, Alert } from "@navikt/ds-react";
 
@@ -26,6 +27,8 @@ export const SearchResults = () => {
     const { documents, setDocuments, documentUrls } = useDocuments({
         initialDocuments: location.state.dokumentoversikt.journalposter[0].dokumenter,
     });
+
+    const navigate = useNavigate();
 
     useTitle("Vju - Resultat")
 
@@ -150,10 +153,8 @@ export const SearchResults = () => {
         ]);
     };
 
-
-
-    if (!sessionStorage.getItem("token")) {
-        return <Alert variant="error" style={{width: "5px"}}>Du har ikke tilgang til resurssen, vennligst prøv igjen senere.</Alert>;
+    if (!sessionStorage.getItem("token") || location.state === undefined || location.state === null) {
+        navigate('/error', { state: { errorCode: "401", errorMessage: "Du har ikke tilgang til denne resurssen, vennligst prøv igjen senere" || 'An unexpected error occurred.' } });
     }
 
     const showMottattDato = (journalposttype: string, journalstatus: string, relevanteDatoer: RelevantDato[]) => {
@@ -254,6 +255,7 @@ export const SearchResults = () => {
                                                     handleSelectedIdandTitle={() => {}}
                                                     handleUnselectedIdandTitle={() => {}}
                                                     handleIsVisible={isVisible}
+                                                    handleInputValidation={() => {}}
                                                 />
                                             </div>
                                             

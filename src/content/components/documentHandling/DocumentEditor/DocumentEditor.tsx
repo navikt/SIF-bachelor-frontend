@@ -1,5 +1,5 @@
 import {useRef, useState, useEffect } from "react"
-import {Button, Modal, TextField, Table } from "@navikt/ds-react"
+import {Button, Modal, TextField, Alert } from "@navikt/ds-react"
 import { PencilIcon } from "@navikt/aksel-icons";
 import { IDocument, Journalpost, DocumentEditorProps } from "../../../../assets/types/export";
 import { DocumentEditorInput } from "../../../../assets/types/export";
@@ -35,7 +35,11 @@ export const DocumentEditor = ({ brukerId, journalpostId, tittel, journalposttyp
     // Error message
     const [errorMessage, setErrorMessage] = useState('');
 
+    const [tittBrev, setTittBrev] = useState("");
+
     const ref = useRef<HTMLDialogElement>(null);
+
+    const topRef = useRef<HTMLDivElement>(null);
 
     // Input validation custom hook
     const { 
@@ -100,7 +104,6 @@ export const DocumentEditor = ({ brukerId, journalpostId, tittel, journalposttyp
       }
     };
 
-
     const handleNestedInputChangeBruker =
     <T extends keyof DocumentEditorInput["bruker"]>(
       parentField: "bruker",
@@ -152,7 +155,42 @@ export const DocumentEditor = ({ brukerId, journalpostId, tittel, journalposttyp
         (field === "type" ? value : newMetadata.avsenderMottaker.type).toString()
       );
     };
+
+    const validateInputs = () => {
+        // Validate all relevant fields
+        validateBrukerId(newMetadata.bruker.id);
+        validateBrukerType(newMetadata.bruker.type);
+        // Got a weird error with the id so I had to toString() it
+        validateAvsenderMottaker(
+            newMetadata.avsenderMottaker.id.toString(),
+            newMetadata.avsenderMottaker.navn,
+            newMetadata.avsenderMottaker.land,
+            newMetadata.avsenderMottaker.type
+        );
+        validateTittel(newMetadata.tittel);
+        validateTema(newMetadata.tema);
+    
+        console.log("Bruker ID Error: " + brukerIdError);
+        console.log("Bruker Type Error: " + brukerTypeError);
+        console.log("Avsender/Mottaker ID Error: " + avsenderMottakerIdError);
+        console.log("Avsender/Mottaker Name Error: " + avsenderMottakerNameError);
+        console.log("Avsender/Mottaker Land Error: " + avsenderMottakerLandError);
+        console.log("Avsender/Mottaker Type Error: " + avsenderMottakerTypeError);
+        console.log("Tittel Error: " + tittelError);
+        console.log("Tema Error: " + temaError);
+        console.log("Brevkode Error: " + tittBrev);
+        // Check if any validation errors exist
+        return !(
+            brukerIdError || brukerTypeError ||
+            avsenderMottakerIdError || avsenderMottakerNameError ||
+            avsenderMottakerLandError || avsenderMottakerTypeError ||
+            tittelError || temaError || tittBrev
+        );
+    };
       
+    const mottaTittBrev = (tittBrev: string) => {
+        setTittBrev(tittBrev);
+      };
 
     const splitDocs = async () => {
         const token = sessionStorage.getItem("token");
@@ -171,6 +209,15 @@ export const DocumentEditor = ({ brukerId, journalpostId, tittel, journalposttyp
 
         console.log(oldMetadata)
         console.log(newMetadata)
+
+        if (!validateInputs()) {
+            console.log("Inputs IKKE VALIDATED")
+            setErrorMessage("Vennligst fyll ut alle feltene riktig før du splitter.");
+            topRef.current?.scrollIntoView({ behavior: 'smooth' });
+            return;
+        }
+
+        console.log("Validation passed");
 
         fetch("/createJournalpost", {
             method: 'POST',
@@ -250,6 +297,8 @@ export const DocumentEditor = ({ brukerId, journalpostId, tittel, journalposttyp
 
             <Modal ref={ref} header={{ heading: "Splitt Opp Dokumenter" }} width={"40%"}>
                 <Modal.Body>
+                <div ref={topRef} />
+                    {errorMessage && <Alert variant="error">{errorMessage}</Alert>}
                     <div className="submit-body">
                         <TextField      
                             label="Journalpost ID"      
@@ -334,6 +383,7 @@ export const DocumentEditor = ({ brukerId, journalpostId, tittel, journalposttyp
                             handleSelectedIdandTitle={handleSelectedDocumentsChange}
                             handleUnselectedIdandTitle={handleUnselectedDocumentsChange}
                             handleIsVisible={handleIsVisible}
+                            handleInputValidation={mottaTittBrev}
                         />
                     </div>        
                 </Modal.Body>
