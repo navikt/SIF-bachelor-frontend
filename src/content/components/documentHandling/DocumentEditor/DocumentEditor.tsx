@@ -4,7 +4,7 @@ import { PencilIcon } from "@navikt/aksel-icons";
 import { IDocument, Journalpost, DocumentEditorProps } from "../../../../assets/types/export";
 import { DocumentEditorInput } from "../../../../assets/types/export";
 import {DocumentViewer} from "../DocumentViewer/DocumentViewer";
-import { convertStatus, displayType, metadataTemplate } from "../../../../assets/utils/FormatUtils";
+import { convertStatus, displayType, metadataTemplate, isReadOnly, Status } from "../../../../assets/utils/FormatUtils";
 import "./DocumentEditor.css";
 import { useValidation } from "../../../hooks/useValidation";
 
@@ -169,16 +169,7 @@ export const DocumentEditor = ({ brukerId, journalpostId, tittel, journalposttyp
         );
         validateTittel(newMetadata.tittel);
         validateTema(newMetadata.tema);
-    
-        console.log("Bruker ID Error: " + brukerIdError);
-        console.log("Bruker Type Error: " + brukerTypeError);
-        console.log("Avsender/Mottaker ID Error: " + avsenderMottakerIdError);
-        console.log("Avsender/Mottaker Name Error: " + avsenderMottakerNameError);
-        console.log("Avsender/Mottaker Land Error: " + avsenderMottakerLandError);
-        console.log("Avsender/Mottaker Type Error: " + avsenderMottakerTypeError);
-        console.log("Tittel Error: " + tittelError);
-        console.log("Tema Error: " + temaError);
-        console.log("Brevkode Error: " + tittBrev);
+
         // Check if any validation errors exist
         return !(
             brukerIdError || brukerTypeError ||
@@ -187,7 +178,7 @@ export const DocumentEditor = ({ brukerId, journalpostId, tittel, journalposttyp
             tittelError || temaError || tittBrev
         );
     };
-      
+
     const mottaTittBrev = (tittBrev: string) => {
         setTittBrev(tittBrev);
       };
@@ -312,11 +303,13 @@ export const DocumentEditor = ({ brukerId, journalpostId, tittel, journalposttyp
                                 label="Bruker-ID" 
                                 value={newMetadata.bruker.id} 
                                 onChange={handleNestedInputChangeBruker("bruker", "id")}
+                                readOnly={isReadOnly(journalstatus as Status, "bruker.id")}
                                 error={brukerIdError} />
                             <TextField 
                                 label="ID-Type" 
                                 value={newMetadata.bruker.type}  
                                 onChange={handleNestedInputChangeBruker("bruker","type")}
+                                readOnly={isReadOnly(journalstatus as Status, "bruker.type")}
                                 error={brukerTypeError} />
                         </div>
                         <h3>Avsender / Mottaker</h3>
@@ -325,27 +318,32 @@ export const DocumentEditor = ({ brukerId, journalpostId, tittel, journalposttyp
                                     label="ID" 
                                     value={newMetadata.avsenderMottaker.id}
                                     onChange={handleNestedInputChangeAM("avsenderMottaker", "id")}
+                                    readOnly={isReadOnly(journalstatus as Status, "avsenderMottaker.id")}
                                     error={avsenderMottakerIdError} />
                                 <TextField 
                                     label="ID-Type" 
                                     value={newMetadata.avsenderMottaker.type} 
                                     onChange={handleNestedInputChangeAM("avsenderMottaker", "type")}
+                                    readOnly={isReadOnly(journalstatus as Status, "avsenderMottaker.type")}
                                     error={avsenderMottakerTypeError} />
                                 <TextField 
                                     label="Navn" 
                                     value={newMetadata.avsenderMottaker.navn} 
                                     onChange={handleNestedInputChangeAM("avsenderMottaker", "navn")}
+                                    readOnly={isReadOnly(journalstatus as Status, "avsenderMottaker.navn")}
                                     error={avsenderMottakerNameError} />
                                 <TextField 
                                     label="Land" 
                                     value={newMetadata.avsenderMottaker.land} 
                                     onChange={handleNestedInputChangeAM("avsenderMottaker", "land")}
+                                    readOnly={isReadOnly(journalstatus as Status, "avsenderMottaker.land")}
                                     error={avsenderMottakerLandError} />
                             </div>         
                         <TextField      
                             label="Tittel"      
                             value={newMetadata.tittel}
                             onChange={handleInputChange("tittel")}
+                            readOnly={isReadOnly(journalstatus as Status, "tittel")}
                             className="inputBox"
                             error={tittelError}
                         />
@@ -371,6 +369,7 @@ export const DocumentEditor = ({ brukerId, journalpostId, tittel, journalposttyp
                             label="Tema"      
                             value={newMetadata.tema}
                             onChange={handleInputChange("tema")}
+                            readOnly={isReadOnly(journalstatus as Status, "tema")}
                             className="inputBox"
                             error={temaError}
                         />
