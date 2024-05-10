@@ -4,7 +4,7 @@ import { useNavigate, useLocation} from "react-router-dom";
 import './Navbar.css';
 import { SearchEngine } from "../../search/export";
 import useError from "../../../hooks/useError";
-import { sessionAPI } from "../../../http/sessionAPI";
+import sessionAPI from "../../../http/sessionAPI";
 
 const Navbar = () => {
   const { setErrorMessage } = useError()
@@ -22,6 +22,11 @@ const Navbar = () => {
       if (!isTokenValid()) {
         // Handle token expiration
         setErrorMessage({message: "Din sesjon har utløpt. Vennligst logg inn igjen.", variant: "info"})
+        sessionStorage.removeItem('token'); // Remove the token from sessionStorage
+        sessionStorage.removeItem('token_expiration');
+        setIsLoggedIn(false);
+        setErrorMessage({message: "Logget ut!", variant:"info"})
+        setButtonText("Logg inn");
        // toggleLogin(); // Comment out or remove this if we don't want to automatically log in again
       }
     }, 60000); // Check every minute

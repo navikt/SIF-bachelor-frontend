@@ -2,6 +2,7 @@ import { useContext, useCallback, useState } from "react";
 import { useError } from "./export";
 import { Journalpost, UseSplitDocsProps } from "../../assets/types/export";
 import { convertStatus } from "../../assets/utils/FormatUtils";
+import { splitDocumentsAPI } from "../http/SplitAPI";
 
 const useSplitDocs = ({journalpostId, oldMetadata, newMetadata, journalstatus, journalposttype, appendNewJournalpost, onStatusChange, selectedDocuments, unselectedDocuments, setLocalErr}: UseSplitDocsProps) => { 
     
@@ -23,21 +24,7 @@ const useSplitDocs = ({journalpostId, oldMetadata, newMetadata, journalstatus, j
         }
         
         try {
-            const response = await fetch("/createJournalpost", {
-                method: 'POST',
-                headers: {
-                Authorization: `Bearer ${token}`,
-                "Content-Type": "application/json",
-                },
-                body: JSON.stringify(requestBody),
-            });
-
-            if (!response.ok) {
-                setErrorMessage({message: "Intern server feil: " + response.status, variant: "error"})
-            }
-
-            const data = await response.json();
-            const newJournalpostIds = data.map((journalpost: Journalpost) => journalpost.journalpostId);
+            const newJournalpostIds = await splitDocumentsAPI(journalpostId, token, oldMetadata, newMetadata);
 
             const newJournalPost: Journalpost = {
                 journalpostId: newJournalpostIds[1], 

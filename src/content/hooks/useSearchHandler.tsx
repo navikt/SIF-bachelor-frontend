@@ -7,7 +7,7 @@ import useError from './useError';
 const useSearchHandler = ({ brukerId, brukerIdError, filterData}: SearchHandlerProps) => {
     //const [errorMessage, setErrorMessage] = useState('');
     const [ serverExceptionError, setExceptionError ] = useState('');
-    const { errorMessage, setErrorMessage } = useError()
+    const { setErrorMessage } = useError()
     const navigate = useNavigate();
 
     const handleSearch = () => {
@@ -60,13 +60,13 @@ const useSearchHandler = ({ brukerId, brukerIdError, filterData}: SearchHandlerP
             data.userkey = brukerId;
             navigate("/SearchResults", { state: data });
         })
-        .catch(error => {
-            if (error.status) {
-                navigate('/error', { state: { errorCode: error.status, errorMessage: error.errorMessage || 'An unexpected error occurred.' } });
-            } else {
-                console.error('Error fetching data:', error);   
-                navigate('/error', { state: { errorCode: 'Unknown Error', errorMessage: 'An unexpected error occurred. Please try again later.' } });
-            }
+        .catch((error) => {
+            navigate('/error', {
+                state: {
+                    errorCode: error.status || 'Unknown Error',
+                    errorMessage: error.errorMessage || 'An unexpected error occurred. Please try again later.',
+                },
+            });
         });
     };
 

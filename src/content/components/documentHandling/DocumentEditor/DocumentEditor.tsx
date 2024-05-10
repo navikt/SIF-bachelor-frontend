@@ -1,10 +1,10 @@
 import {useRef, useState, useEffect } from "react"
 import {Button, Modal, TextField, Alert } from "@navikt/ds-react"
 import { PencilIcon } from "@navikt/aksel-icons";
-import { IDocument, Journalpost, DocumentEditorProps, Metadata } from "../../../../assets/types/export";
+import { IDocument, DocumentEditorProps, Metadata } from "../../../../assets/types/export";
 import { DocumentEditorInput } from "../../../../assets/types/export";
 import {DocumentViewer} from "../DocumentViewer/DocumentViewer";
-import { convertStatus, displayType, metadataTemplate, isReadOnly, Status } from "../../../../assets/utils/FormatUtils";
+import { displayType, metadataTemplate, isReadOnly, Status } from "../../../../assets/utils/FormatUtils";
 import "./DocumentEditor.css";
 import { useError, useValidation, useSplitDocs } from "../../../hooks/export";
 
@@ -33,7 +33,7 @@ export const DocumentEditor = ({ brukerId, journalpostId, tittel, journalposttyp
     const [newMetadata, setNewMetadata] = useState<Metadata>(metadataTemplate(brukerId, tittel, journalposttype, datoOpprettet, tema, avsenderMottaker));
 
     // Error message
-    const { errorMessage, setErrorMessage } = useError()
+    const { setErrorMessage } = useError()
     const [localErr, setLocalErr] = useState<string>("")
 
     const [tittBrev, setTittBrev] = useState("");
@@ -84,6 +84,7 @@ export const DocumentEditor = ({ brukerId, journalpostId, tittel, journalposttyp
         unselectedDocuments: unselectedDocuments,
         setLocalErr: setLocalErr
     });
+
     const mottaTittBrev = (tittBrev: string) => {
         setTittBrev(tittBrev)
     }
@@ -99,7 +100,7 @@ export const DocumentEditor = ({ brukerId, journalpostId, tittel, journalposttyp
             setErrorMessage({message: "Splitt vellykket!", variant:"success"})
             splitDocs()
             ref.current?.close()
-        }   
+    }   
         
     }
     useEffect(() => {
