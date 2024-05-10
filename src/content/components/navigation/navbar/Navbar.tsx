@@ -17,10 +17,15 @@ const Navbar = () => {
 
   useEffect(() => {
     const interval = setInterval(() => {
-      console.log("The useEffect is triggered");
+      console.log("Checking token validity...");
       if (!isTokenValid()) {
         // Handle token expiration
         setErrorMessage({message: "Din sesjon har utløpt. Vennligst logg inn igjen.", variant: "info"})
+        sessionStorage.removeItem('token'); // Remove the token from sessionStorage
+        sessionStorage.removeItem('token_expiration');
+        setIsLoggedIn(false);
+        setErrorMessage({message: "Logget ut!", variant:"info"})
+        setButtonText("Logg inn");
        // toggleLogin(); // Comment out or remove this if we don't want to automatically log in again
       }
     }, 60000); // Check every minute
