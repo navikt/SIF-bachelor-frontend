@@ -59,7 +59,7 @@ const useSearchHandler = ({isAuthenticated, getToken}:{isAuthenticated: boolean,
           console.log(isAuthenticated)
           setNotificationMessage({message: "Du må logge inn for å søkkjhygue!", variant: "warning"});
           return;
-      }
+      } 
       
       if(!sessionStorage.getItem("filterData") || !sessionStorage.getItem("userkey")){
           setNotificationMessage({message: "Søkedata er ikke tilgjengelig.", variant: "error"})
