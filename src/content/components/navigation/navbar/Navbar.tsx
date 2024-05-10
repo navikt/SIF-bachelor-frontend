@@ -4,6 +4,7 @@ import { useNavigate, useLocation} from "react-router-dom";
 import './Navbar.css';
 import { SearchEngine } from "../../search/export";
 import useError from "../../../hooks/useError";
+import { sessionAPI } from "../../../http/sessionAPI";
 
 const Navbar = () => {
   const { setErrorMessage } = useError()
@@ -17,7 +18,7 @@ const Navbar = () => {
 
   useEffect(() => {
     const interval = setInterval(() => {
-      console.log("The useEffect is triggered");
+      console.log("Checking token validity...");
       if (!isTokenValid()) {
         // Handle token expiration
         setErrorMessage({message: "Din sesjon har utløpt. Vennligst logg inn igjen.", variant: "info"})
@@ -42,23 +43,17 @@ const Navbar = () => {
   const toggleLogin = async () => {
     if (!isLoggedIn) { 
       try {
-       
-        const response = await fetch("/login");
-        // If the response status is 200 - 299, then we go into the if statement
-        if (response.ok) {
-          const data = await response.json();
-          const expirationTime = new Date().getTime() + data.expires_in * 1000;
-          console.log(data.access_token + "  " + expirationTime.toString());
-          sessionStorage.setItem('token', data.access_token); // Store the token in sessionStorage
-          sessionStorage.setItem('token_expiration', expirationTime.toString()); // Convert expirationTime to string
-          setIsLoggedIn(true);
-          setButtonText("Logg ut");
-          setErrorMessage({message: "Logget inn!", variant:"success"})
-        } else {
-          setErrorMessage({message: "Kunne ikke hente sesjonstoken. Vennligst prøv igjen senere", variant:"warning"})
-        }
-      } catch (error) {
-        setErrorMessage({message: "Kunne ikke logge deg inn. Vennligst prøv igjen senere", variant:"warning"})
+        const data = await sessionAPI();
+        
+        const expirationTime = new Date().getTime() + data.expires_in * 1000;
+        console.log(data.access_token + "  " + expirationTime.toString());
+        sessionStorage.setItem("token", data.access_token); // Store the token in sessionStorage
+        sessionStorage.setItem("token_expiration", expirationTime.toString()); // Convert expirationTime to string
+        setIsLoggedIn(true);
+        setButtonText("Logg ut");
+        setErrorMessage({ message: "Logget inn!", variant: "success" });
+      } catch (error: any) {
+        setErrorMessage({ message: error.message, variant: "warning" });
       }
     } else {
       sessionStorage.removeItem('token'); // Remove the token from sessionStorage
