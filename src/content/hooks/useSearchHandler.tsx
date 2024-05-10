@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-
+import { searchAPI } from "../http/SearchAPI";
 import { SearchHandlerProps } from '../../assets/types/export';
 import useError from './useError';
 
@@ -10,7 +10,7 @@ const useSearchHandler = ({ brukerId, brukerIdError, filterData}: SearchHandlerP
     const { setErrorMessage } = useError()
     const navigate = useNavigate();
 
-    const handleSearch = () => {
+    const handleSearch = async () => {
         if (brukerIdError || !brukerId) {
             setErrorMessage({message: "Du må skrive inn et gyldig 3 til 11 sifret tall før du kan søke!", variant: "warning"});
             return;
@@ -23,51 +23,21 @@ const useSearchHandler = ({ brukerId, brukerIdError, filterData}: SearchHandlerP
             return;
         }
 
-        const requestBody = {
-            brukerId: {
-              id: brukerId,
-              type: "FNR"
-            },
-            fraDato: filterData.startDate,
-            tilDato: filterData.endDate,
-            journalposttyper: filterData.selectedType,
-            journalstatuser: filterData.selectedStatus,
-            tema: filterData.filter,
-        };
-
-        fetch("/hentJournalpostListe", {
-            method: 'POST',
-            headers: {
-                Authorization: `Bearer ${token}`,
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify(requestBody),
-        })
-        .then(response => {
-            if (!response.ok) {
-                return response.json().then((body) => {
-                    setErrorMessage(body.errorMessage)
-                    throw { status: response.status, errorMessage: body.errorMessage };
-                });
-            }
-            setErrorMessage(null)
-            return response.json();
-        })
-        .then(data => {
-            console.log("DATA SOM GÅR VIDERE:")
-            console.log(data)
+        try {
+            const data = await searchAPI(brukerId, filterData.startDate, filterData.endDate, filterData.selectedType, filterData.selectedStatus, filterData.filter, token);
             data.filterOptions = filterData;
             data.userkey = brukerId;
+            setErrorMessage(null);
             navigate("/SearchResults", { state: data });
-        })
-        .catch((error) => {
-            navigate('/error', {
-                state: {
-                    errorCode: error.status || 'Unknown Error',
-                    errorMessage: error.errorMessage || 'An unexpected error occurred. Please try again later.',
-                },
+          } catch (error: any) {
+            setErrorMessage(error.errorMessage);
+            navigate("/error", {
+              state: {
+                errorCode: error.status || "Unknown Error",
+                errorMessage: error.errorMessage || "An unexpected error occurred. Please try again later.",
+              },
             });
-        });
+          }
     };
 
     return {

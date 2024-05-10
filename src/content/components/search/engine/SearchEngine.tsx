@@ -40,7 +40,6 @@ export const SearchEngine = () => {
 
     const { handleSearch, serverExceptionError } = useSearchHandler({ brukerId, brukerIdError, filterData});
 
-
     useEffect(() => {
         setErrorMessage(null); // Reset the error message on component mount
         setUserHasInteracted(false)
