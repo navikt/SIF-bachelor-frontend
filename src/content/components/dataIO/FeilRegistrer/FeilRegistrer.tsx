@@ -3,6 +3,7 @@ import { useState } from "react";
 import { TasklistStartIcon, XMarkOctagonIcon } from "@navikt/aksel-icons";
 import { convertStatus } from "../../../../assets/utils/FormatUtils";
 import { useError } from "../../../hooks/export"
+import feilRegistrerAPI from "../../../http/FeilRegistrerAPI";
 
 export const FeilRegistrer = ({ journalposttype, journalpostId, onStatusChange, formatStatus}: {
     journalposttype: string,
@@ -12,11 +13,11 @@ export const FeilRegistrer = ({ journalposttype, journalpostId, onStatusChange, 
 }) => {
 
     // Error message
-    const {errorMessage, setErrorMessage} = useError()
+    const { setErrorMessage } = useError()
 
     const [open, setOpen] = useState(false);
 
-    const registrerFeil = () => {
+    const registrerFeil = async () => {
 
         const token = sessionStorage.getItem("token");
 
@@ -26,6 +27,23 @@ export const FeilRegistrer = ({ journalposttype, journalpostId, onStatusChange, 
             return;
         }
 
+        try {
+            const success = await feilRegistrerAPI(journalpostId, journalposttype, token);
+      
+            if (success) {
+              const newJournalStatus = convertStatus(journalposttype);
+              onStatusChange(newJournalStatus, journalpostId);
+              setErrorMessage({ message: "Feilregistrert", variant: "success" });
+            } else {
+              setErrorMessage({
+                message: "Kunne ikke feilregistrere. Prøv igjen senere.",
+                variant: "error",
+              });
+            }
+          } catch (error: any) {
+            setErrorMessage({ message: error.message, variant: "error" });
+          }
+        /*
         fetch(`/feilregistrer?journalpostId=${journalpostId}&type=${journalposttype}`, {
             method: "GET",
             headers: {
@@ -47,8 +65,9 @@ export const FeilRegistrer = ({ journalposttype, journalpostId, onStatusChange, 
         })
         .catch((error) => {
             setErrorMessage({message: error, variant: "error"})
-        });
+        }); 
         setErrorMessage({message: "Feilregistrert", variant: "success"})
+        */
         setOpen(false);
     }
 
