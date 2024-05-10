@@ -9,7 +9,7 @@ export const feilRegistrerAPI = async (journalpostId: string, journalposttype: s
           });
 
         if (!response.ok) {
-        throw new Error("Kunne ikke feilregistrere. Prøv igjen senere.");
+            throw new Error("Kunne ikke feilregistrere. Prøv igjen senere.");
         }
 
         const data = await response.json();

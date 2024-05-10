@@ -3,7 +3,7 @@ import { useState } from "react";
 import { TasklistStartIcon, XMarkOctagonIcon } from "@navikt/aksel-icons";
 import { convertStatus } from "../../../../assets/utils/FormatUtils";
 import { useError } from "../../../hooks/export"
-import feilRegistrerAPI from "../../../http/FeilRegistrerAPI";
+import { feilRegistrerAPI } from "../../../http/FeilRegistrerAPI";
 
 export const FeilRegistrer = ({ journalposttype, journalpostId, onStatusChange, formatStatus}: {
     journalposttype: string,
@@ -43,31 +43,7 @@ export const FeilRegistrer = ({ journalposttype, journalpostId, onStatusChange, 
           } catch (error: any) {
             setErrorMessage({ message: error.message, variant: "error" });
           }
-        /*
-        fetch(`/feilregistrer?journalpostId=${journalpostId}&type=${journalposttype}`, {
-            method: "GET",
-            headers: {
-                Authorization: `Bearer ${token}`
-            }
-        })
-        .then(response => {
-            if (!response.ok) {
-                setErrorMessage({message: "Kunne ikke feilregistrere. Prøv igjen senere.", variant: "error"})
-                throw new Error('Network response was not ok');
-            }
-            return response.json(); // Read the response body only once
-        })
-        .then(data => {
-            if(data === true){
-                const newJournalStatus = convertStatus(journalposttype);
-                onStatusChange(newJournalStatus, journalpostId);
-            }
-        })
-        .catch((error) => {
-            setErrorMessage({message: error, variant: "error"})
-        }); 
-        setErrorMessage({message: "Feilregistrert", variant: "success"})
-        */
+
         setOpen(false);
     }
 

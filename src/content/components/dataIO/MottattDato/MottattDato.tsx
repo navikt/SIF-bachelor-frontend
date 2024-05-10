@@ -2,15 +2,16 @@ import { Button, Modal, BodyLong } from "@navikt/ds-react";
 import { useState } from "react";
 import { TableIcon } from "@navikt/aksel-icons";
 import { useError } from "../../../hooks/export";
+import { registrerMottattDatoAPI } from "../../../http/MottattDatoAPI";
 
 export const MottattDato = ({journalpostId, handleMottattDato} : { journalpostId: string, handleMottattDato: (journalpostId: string) => void}) => {
 
     // Error message
-    const {errorMessage, setErrorMessage} = useError()
+    const { setErrorMessage} = useError()
 
     const [open, setOpen] = useState(false);
 
-    const registrerMottattDato = () => {
+    const registrerMottattDato = async () => {
         const token = sessionStorage.getItem("token");
 
         if(!token) {
@@ -19,37 +20,22 @@ export const MottattDato = ({journalpostId, handleMottattDato} : { journalpostId
             return;
         }
 
-        const currentDate = new Date();
-
-        const requestBody = {
-            journalpostId: journalpostId,
-            mottattDato: currentDate
-          };
-
-        fetch(`/oppdaterJournalpost`, {
-            method: "POST",
-            headers: {
-                Authorization: `Bearer ${token}`,
-                "Content-Type": "application/json",
-                },
-            body: JSON.stringify(requestBody),
-        })
-        .then(response => {
-            if (!response.ok) {
-                setErrorMessage({message:"Kunne ikke oppdatere journalen. Prøv igjen senere.", variant: "error"})
+        try {
+            const success = await registrerMottattDatoAPI(journalpostId, token);
+      
+            if (success) {
+              handleMottattDato(journalpostId);
+              setErrorMessage({ message: "Satt dato mottatt.", variant: "success" });
+            } else {
+              setErrorMessage({
+                message: "Kunne ikke oppdatere journalen. Prøv igjen senere.",
+                variant: "error",
+              });
             }
-            return response.json(); // Read the response body only once
-        })
-        .then(data => {
-            console.log(data);
-            if(data === true){
-                handleMottattDato(journalpostId);
-            }
-        })
-        .catch((error) => {
-            setErrorMessage({message:"Kunne ikke oppdatere journalen. Prøv igjen senere.", variant: "error"})
-        });
-        setErrorMessage({message: "Satt dato mottatt.", variant: "success"})
+          } catch (error: any) {
+            setErrorMessage({message: error.message,variant: "error",});
+          }
+
         setOpen(false);
     }
 
