@@ -3,24 +3,25 @@ import { useState } from "react";
 import { TableIcon } from "@navikt/aksel-icons";
 import { useNotification } from "../../../hooks/export";
 import { registrerMottattDatoAPI } from "../../../http/MottattDatoAPI";
+import { useKindeAuth } from "@kinde-oss/kinde-auth-react";
 
 export const MottattDato = ({journalpostId, handleMottattDato} : { journalpostId: string, handleMottattDato: (journalpostId: string) => void}) => {
 
-    // Error message
+    const { isAuthenticated, getToken } = useKindeAuth()
     const { setNotificationMessage } = useNotification()
-
     const [open, setOpen] = useState(false);
 
     const registrerMottattDato = async () => {
-        const token = sessionStorage.getItem("token");
+        
 
-        if(!token) {
+        if(!isAuthenticated) {
             setNotificationMessage({message: "Du må logge inn for å registrere dato!", variant:"warning"});
             setOpen(false)
             return;
         }
 
         try {
+            const token = await getToken()
             const success = await registrerMottattDatoAPI(journalpostId, token);
       
             if (success) {

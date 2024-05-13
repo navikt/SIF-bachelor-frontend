@@ -1,4 +1,4 @@
-export const registrerMottattDatoAPI = async (journalpostId: string, token: string) => {
+export const registrerMottattDatoAPI = async (journalpostId: string, token: string | undefined) => {
 
     const currentDate = new Date();
     const requestBody = {

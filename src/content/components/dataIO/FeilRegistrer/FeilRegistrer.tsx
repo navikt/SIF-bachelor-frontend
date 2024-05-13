@@ -4,30 +4,33 @@ import { TasklistStartIcon, XMarkOctagonIcon } from "@navikt/aksel-icons";
 import { convertStatus } from "../../../../assets/utils/FormatUtils";
 import { useNotification } from "../../../hooks/export"
 import { feilRegistrerAPI } from "../../../http/FeilRegistrerAPI";
+import { useKindeAuth } from "@kinde-oss/kinde-auth-react";
 
 export const FeilRegistrer = ({ journalposttype, journalpostId, onStatusChange, formatStatus}: {
-    journalposttype: string,
-    journalpostId: string,
-    onStatusChange: (newStatus: string, journalpostId: string) => void,
-    formatStatus: (status: string) => string
-}) => {
+        journalposttype: string,
+        journalpostId: string,
+        onStatusChange: (newStatus: string, journalpostId: string) => void,
+        formatStatus: (status: string) => string
+    }) => {
 
-    // Error message
     const { setNotificationMessage } = useNotification()
-
     const [open, setOpen] = useState(false);
+    const { getToken, isAuthenticated } = useKindeAuth()
+
+
 
     const registrerFeil = async () => {
 
-        const token = sessionStorage.getItem("token");
+        
 
-        if(!token) {
+        if(!isAuthenticated) {
             setNotificationMessage({message: "Du må logge inn for å feilregistrere", variant:"warning"});
             setOpen(false);
             return;
         }
 
         try {
+            const token = await getToken()
             const success = await feilRegistrerAPI(journalpostId, journalposttype, token);
       
             if (success) {

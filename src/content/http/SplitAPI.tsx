@@ -1,7 +1,7 @@
 // api/splitDocsAPI.ts
 import { Metadata, Journalpost } from "../../assets/types/models";
 
-export const splitDocumentsAPI = async (journalpostId: string, token: string, oldMetadata: Metadata, newMetadata: Metadata)=> {
+export const splitDocumentsAPI = async (journalpostId: string, token: string | undefined, oldMetadata: Metadata, newMetadata: Metadata)=> {
   const requestBody = {
     journalpostID: journalpostId,
     oldMetadata: oldMetadata,

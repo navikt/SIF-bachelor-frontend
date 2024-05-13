@@ -1,29 +1,28 @@
 import { useEffect, useState } from "react";
-import { IDocument } from "../../assets/types/export";
-import useNotification from "./useNotification";
+import { IDocument, UseDocumentsProps } from "../../assets/types/export";
+import { useNotification } from "./export";
+import { useKindeAuth } from "@kinde-oss/kinde-auth-react";
 
-interface UseDocumentsProps {
-    initialDocuments: IDocument[];
-}
 
 const useDocuments = ({ initialDocuments }: UseDocumentsProps) => {
     const [documents, setDocuments] = useState<IDocument[]>(initialDocuments);
     const [documentUrls, setDocumentUrls] = useState<Map<string, string>>(new Map());
     const { setNotificationMessage } = useNotification()
+    const { getToken, isAuthenticated } = useKindeAuth()
 
     useEffect(() => {
         const fetchDocuments = async () => {
             const fetchedUrls = new Map<string, string>();
-            const token = sessionStorage.getItem("token");
 
-            if(!token){
+            if(!isAuthenticated){
                 setNotificationMessage({message: "Du må logge inn for tilgang til disse ressursene.", variant: "warning"})
                 setDocumentUrls(new Map())
             }
-
+            const token = await getToken()
             for (const document of documents) {
                 const docId: string = document.dokumentInfoId;
                 if (!documentUrls.has(docId)) {
+                    
                     const response = await fetch(`/hentDokumenter?dokumentInfoId=${docId}&journalpostId=1`, {
                         headers: {
                             Authorization: `Bearer ${token}`,

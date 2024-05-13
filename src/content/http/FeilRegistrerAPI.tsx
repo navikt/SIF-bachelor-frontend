@@ -1,5 +1,5 @@
 
-export const feilRegistrerAPI = async (journalpostId: string, journalposttype: string, token: string) => {
+export const feilRegistrerAPI = async (journalpostId: string, journalposttype: string, token: string | undefined) => {
     try {
         const response = await fetch(`/feilregistrer?journalpostId=${journalpostId}&type=${journalposttype}`, {
             method: "GET",

@@ -3,16 +3,15 @@ import { useNotification } from "./export";
 import { Journalpost, UseSplitDocsProps } from "../../assets/types/export";
 import { convertStatus } from "../../assets/utils/FormatUtils";
 import { splitDocumentsAPI } from "../http/SplitAPI";
+import { useKindeAuth } from "@kinde-oss/kinde-auth-react";
 
 const useSplitDocs = ({journalpostId, oldMetadata, newMetadata, journalstatus, journalposttype, appendNewJournalpost, onStatusChange, selectedDocuments, unselectedDocuments, setLocalErr}: UseSplitDocsProps) => { 
     
     const { setNotificationMessage } = useNotification()
-    
+    const { isAuthenticated, getToken } = useKindeAuth()
     const splitDocs = useCallback(async () => {
 
-        const token = sessionStorage.getItem("token");
-
-        if (!token) {
+        if (!isAuthenticated) {
             setNotificationMessage({message: "Du må logge inn for å splitte dokumenter!", variant: "warning"});
             return;
         }
@@ -24,6 +23,7 @@ const useSplitDocs = ({journalpostId, oldMetadata, newMetadata, journalstatus, j
         }
         
         try {
+            const token = await getToken()
             const newJournalpostIds = await splitDocumentsAPI(journalpostId, token, oldMetadata, newMetadata);
 
             const newJournalPost: Journalpost = {
