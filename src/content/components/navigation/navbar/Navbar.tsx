@@ -3,71 +3,31 @@ import { useState, useEffect } from "react";
 import { useNavigate, useLocation} from "react-router-dom";
 import './Navbar.css';
 import { SearchEngine } from "../../search/export";
-import useNotification from "../../../hooks/useNotification";
-import sessionAPI from "../../../http/sessionAPI";
+import { useNotification }from "../../../hooks/export";
+import {useKindeAuth} from '@kinde-oss/kinde-auth-react';
 
 const Navbar = () => {
+  const { login, logout, isAuthenticated } = useKindeAuth()
   const { setNotificationMessage } = useNotification()
   const navigate = useNavigate();
   const location = useLocation();
   
   // We have a useState hook to check if there is a token stored in sessionStorage and we set the isLoggedIn to true if found.
-  const [isLoggedIn, setIsLoggedIn] = useState(sessionStorage.getItem('token') !== null);
   // Another boolean hook which sets itself to true if a token stored in sessionStorage is found and we set the button's content to "Logg ut" if true.
-  const [buttonText, setButtonText] = useState(sessionStorage.getItem('token') ? "Logg ut" : "Logg inn");
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      console.log("Checking token validity...");
-      if (!isTokenValid()) {
-        // Handle token expiration
-        setNotificationMessage({message: "Din sesjon har utløpt. Vennligst logg inn igjen.", variant: "info"})
-        sessionStorage.removeItem('token'); // Remove the token from sessionStorage
-        sessionStorage.removeItem('token_expiration');
-        setIsLoggedIn(false);
-        setNotificationMessage({message: "Logget ut!", variant:"info"})
-        setButtonText("Logg inn");
-       // toggleLogin(); // Comment out or remove this if we don't want to automatically log in again
-      }
-    }, 60000); // Check every minute
-  
-    // Need the cleanup function when the component unmounts or before it re-renders to prevent memory leak from older unused intervals
-    return () => clearInterval(interval);
-  }, []);
 
   const returnHome = () =>{
     navigate("/")
   }
 
-  const isTokenValid = (): boolean => {
-    const expirationTime = sessionStorage.getItem('token_expiration');
-    return expirationTime !== null && new Date().getTime() < Number(expirationTime);
-  };
 
-   // Function to toggle login/logout
   const toggleLogin = async () => {
-    if (!isLoggedIn) { 
-      try {
-        const data = await sessionAPI();
-        
-        const expirationTime = new Date().getTime() + data.expires_in * 1000;
-        console.log(data.access_token + "  " + expirationTime.toString());
-        sessionStorage.setItem("token", data.access_token); // Store the token in sessionStorage
-        sessionStorage.setItem("token_expiration", expirationTime.toString()); // Convert expirationTime to string
-        setIsLoggedIn(true);
-        setButtonText("Logg ut");
-        setNotificationMessage({ message: "Logget inn!", variant: "success" });
-      } catch (error: any) {
-        setNotificationMessage({ message: error.message, variant: "warning" });
-      }
-    } else {
-      sessionStorage.removeItem('token'); // Remove the token from sessionStorage
-      sessionStorage.removeItem('token_expiration');
-      setIsLoggedIn(false);
-      setNotificationMessage({message: "Logget ut!", variant:"info"})
-      setButtonText("Logg inn");
-    }
-  };
+    await login()
+    setNotificationMessage({message: "Logget inn!", variant:"info"})
+  }
+  const toggleLogout = async () => {
+    await logout()
+    setNotificationMessage({message: "Logget ut!", variant:"info"})
+  }
 
 
   return (
@@ -81,12 +41,11 @@ const Navbar = () => {
         </div>
         )
       }
-      <Button
-        className={`log-in-button ${isLoggedIn ? 'logged-in' : ''}`}
-        onClick={toggleLogin}
-      >
-        {buttonText}
-      </Button>
+      {(!isAuthenticated) ? (
+        <Button className={`log-in-button`} onClick={toggleLogin}>Logg inn</Button>
+      ) : (
+        <Button className={`log-in-button logged-in`} onClick={toggleLogout}>Logg ut</Button>
+      )}
     </nav>
   );
 };

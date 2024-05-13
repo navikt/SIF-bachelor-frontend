@@ -1,8 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Alert, AlertProps } from '@navikt/ds-react';
 import { useNotification } from '../../hooks/export';
-import { XMarkIcon } from '@navikt/aksel-icons';
-import "./ErrorAlert.css";
+import "./NotificationAlert.css";
 
 const NotificationAlert = () => {
     const { notificationMessage, setNotificationMessage } = useNotification();

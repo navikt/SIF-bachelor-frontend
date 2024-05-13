@@ -3,12 +3,17 @@ import { useNavigate } from 'react-router-dom';
 import { searchAPI } from "../http/SearchAPI";
 import { SearchHandlerProps } from '../../assets/types/export';
 import useNotification from './useNotification';
+import {useKindeAuth} from '@kinde-oss/kinde-auth-react';
+
 
 const useSearchHandler = ({ brukerId, brukerIdError, filterData}: SearchHandlerProps) => {
-    //const [errorMessage, setErrorMessage] = useState('');
+
     const [ serverExceptionError, setExceptionError ] = useState('');
     const { setNotificationMessage } = useNotification()
     const navigate = useNavigate();
+    const { isAuthenticated, getToken } = useKindeAuth()
+
+    
 
     const handleSearch = async () => {
         if (brukerIdError || !brukerId) {
@@ -16,14 +21,14 @@ const useSearchHandler = ({ brukerId, brukerIdError, filterData}: SearchHandlerP
             return;
         }
 
-        const token = sessionStorage.getItem("token");
 
-        if (!token) {
+        if (!isAuthenticated) {
             setNotificationMessage({message: "Du må logge inn for å søke!", variant: "warning"});
             return;
         }
 
         try {
+            const token = await getToken()
             const data = await searchAPI(brukerId, filterData.startDate, filterData.endDate, filterData.selectedType, filterData.selectedStatus, filterData.filter, token);
             data.filterOptions = filterData;
             data.userkey = brukerId;

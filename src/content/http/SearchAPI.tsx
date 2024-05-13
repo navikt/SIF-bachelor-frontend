@@ -1,5 +1,5 @@
 
-export const searchAPI = async (brukerId: string, fraDato: Date | undefined, tilDato: Date | undefined, type: string[], status: string[], tema: string[], token: string) => {
+export const searchAPI = async (brukerId: string, fraDato: Date | undefined, tilDato: Date | undefined, type: string[], status: string[], tema: string[], token: string | undefined) => {
 
     const requestBody = {
         brukerId: {
