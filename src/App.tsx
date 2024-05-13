@@ -7,7 +7,7 @@ import ErrorDisplay from './routes/error/ErrorPage';
 import {Navbar, Footer} from './content/components/navigation/export';
 import { Route, Routes } from "react-router-dom";
 import { ErrorProvider } from './content/state/export';
-import ErrorAlert from './content/components/global/ErrorAlert';
+import NotificationAlert from './content/components/global/ErrorAlert';
 
 function App() {
   return (
@@ -21,7 +21,7 @@ function App() {
           <Route path="/error" element={<ErrorDisplay />} />
         </Routes>
       {/*<Footer />*/}
-      <ErrorAlert />
+      <NotificationAlert />
       </ErrorProvider>
     </div>
     

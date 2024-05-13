@@ -1,6 +1,5 @@
 import React, { Dispatch, ReactNode, SetStateAction } from 'react';
-import { IDocument, AvsenderMottaker, Metadata } from "./models";
-import { FilterOptions, SetErrorProp } from './misc';
+import { IDocument, AvsenderMottaker, Metadata, FilterOptions } from "./export";
 
 export interface FilterPopoverContentProps {
     onClose: () => void;
@@ -11,7 +10,7 @@ export interface FilterPopoverContentProps {
         selectedStatus: string[],
         selectedType: string[],
     }) => void; 
-    onSuccess: (errorProp: SetErrorProp) => void;
+    onSuccess: (errorProp: SetNotificationProp) => void;
 };
 
 export interface DocumentViewerProps {
@@ -31,7 +30,7 @@ export interface FilterPopoverProps {
     openState: boolean;
     setOpenState: Dispatch<SetStateAction<boolean>>;
     onClose: () => void;
-    onSuccess: (errorProp: SetErrorProp) => void;
+    onSuccess: (errorProp: SetNotificationProp) => void;
     onFilterSubmit: (filterData: {
       startDate?: Date,
       endDate?: Date,
@@ -83,6 +82,10 @@ export interface PDFViewerProps {
     documents: IDocument[]
 }
 
-export interface ErrorProviderProps{
+export interface NotificationProviderProps{
     children: ReactNode;
+}
+export interface SetNotificationProp {
+    message: string;
+    variant: "info" | "warning" | "error" | "success";
 }

@@ -3,11 +3,11 @@ import { useState, useEffect } from "react";
 import { useNavigate, useLocation} from "react-router-dom";
 import './Navbar.css';
 import { SearchEngine } from "../../search/export";
-import useError from "../../../hooks/useError";
+import useNotification from "../../../hooks/useNotification";
 import sessionAPI from "../../../http/sessionAPI";
 
 const Navbar = () => {
-  const { setErrorMessage } = useError()
+  const { setNotificationMessage } = useNotification()
   const navigate = useNavigate();
   const location = useLocation();
   
@@ -21,11 +21,11 @@ const Navbar = () => {
       console.log("Checking token validity...");
       if (!isTokenValid()) {
         // Handle token expiration
-        setErrorMessage({message: "Din sesjon har utløpt. Vennligst logg inn igjen.", variant: "info"})
+        setNotificationMessage({message: "Din sesjon har utløpt. Vennligst logg inn igjen.", variant: "info"})
         sessionStorage.removeItem('token'); // Remove the token from sessionStorage
         sessionStorage.removeItem('token_expiration');
         setIsLoggedIn(false);
-        setErrorMessage({message: "Logget ut!", variant:"info"})
+        setNotificationMessage({message: "Logget ut!", variant:"info"})
         setButtonText("Logg inn");
        // toggleLogin(); // Comment out or remove this if we don't want to automatically log in again
       }
@@ -56,15 +56,15 @@ const Navbar = () => {
         sessionStorage.setItem("token_expiration", expirationTime.toString()); // Convert expirationTime to string
         setIsLoggedIn(true);
         setButtonText("Logg ut");
-        setErrorMessage({ message: "Logget inn!", variant: "success" });
+        setNotificationMessage({ message: "Logget inn!", variant: "success" });
       } catch (error: any) {
-        setErrorMessage({ message: error.message, variant: "warning" });
+        setNotificationMessage({ message: error.message, variant: "warning" });
       }
     } else {
       sessionStorage.removeItem('token'); // Remove the token from sessionStorage
       sessionStorage.removeItem('token_expiration');
       setIsLoggedIn(false);
-      setErrorMessage({message: "Logget ut!", variant:"info"})
+      setNotificationMessage({message: "Logget ut!", variant:"info"})
       setButtonText("Logg inn");
     }
   };

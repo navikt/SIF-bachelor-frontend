@@ -4,14 +4,14 @@ import { FilterIcon } from '@navikt/aksel-icons';
 import { FilterPopover } from "../export";
 import { useLocation } from "react-router-dom";
 import { FilterOptions } from "../../../../assets/types/export";
-import {useError, useSearchHandler, useValidation} from "../../../hooks/export";
+import { useNotification, useSearchHandler, useValidation} from "../../../hooks/export";
 
 import "./SearchEngine.css";
 import "../../../../routes/landing/LandingPage.css"
 
 export const SearchEngine = () => {
 
-    const { setErrorMessage } = useError()
+    const { setNotificationMessage } = useNotification()
 
     const [brukerId, setBrukerId] = useState('');
     // Manage state for rotating the filterIcon when clicking on it, initially false, aka not rotated
@@ -41,14 +41,14 @@ export const SearchEngine = () => {
     const { handleSearch, serverExceptionError } = useSearchHandler({ brukerId, brukerIdError, filterData});
 
     useEffect(() => {
-        setErrorMessage(null); // Reset the error message on component mount
+        setNotificationMessage(null); // Reset the error message on component mount
         setUserHasInteracted(false)
       }, []); // The empty dependency array ensures this effect runs only once on mount
 
     useEffect(()=>{
         console.log("brukerid")
         console.log(brukerIdError)
-        setErrorMessage({message: brukerIdError, variant: "warning"})
+        setNotificationMessage({message: brukerIdError, variant: "warning"})
     }, [brukerIdError])
 
     useEffect(() => {
@@ -75,7 +75,7 @@ export const SearchEngine = () => {
 
     // Conditional rendering based on the error state
     if (serverExceptionError) {
-        setErrorMessage({message: serverExceptionError, variant: "error"})
+        setNotificationMessage({message: serverExceptionError, variant: "error"})
     }
 
 return(
@@ -99,7 +99,7 @@ return(
                 setOpenState={setOpenState}
                 onFilterSubmit={handleSubmitFilter}
                 onClose={toggleIconRotation}
-                onSuccess={setErrorMessage}
+                onSuccess={setNotificationMessage}
             />
         </div>
     </div>

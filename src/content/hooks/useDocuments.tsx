@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { IDocument } from "../../assets/types/export";
-import useError from "./useError";
+import useNotification from "./useNotification";
 
 interface UseDocumentsProps {
     initialDocuments: IDocument[];
@@ -9,7 +9,7 @@ interface UseDocumentsProps {
 const useDocuments = ({ initialDocuments }: UseDocumentsProps) => {
     const [documents, setDocuments] = useState<IDocument[]>(initialDocuments);
     const [documentUrls, setDocumentUrls] = useState<Map<string, string>>(new Map());
-    const { setErrorMessage } = useError()
+    const { setNotificationMessage } = useNotification()
 
     useEffect(() => {
         const fetchDocuments = async () => {
@@ -17,7 +17,7 @@ const useDocuments = ({ initialDocuments }: UseDocumentsProps) => {
             const token = sessionStorage.getItem("token");
 
             if(!token){
-                setErrorMessage({message: "Du må logge inn for tilgang til disse ressursene.", variant: "warning"})
+                setNotificationMessage({message: "Du må logge inn for tilgang til disse ressursene.", variant: "warning"})
                 setDocumentUrls(new Map())
             }
 
@@ -31,14 +31,14 @@ const useDocuments = ({ initialDocuments }: UseDocumentsProps) => {
                     });
                     if (!response.ok) {
                         if(response.status === 401){
-                            setErrorMessage({message:"Logg inn for tilgang til denne ressursen", variant:"warning"})
+                            setNotificationMessage({message:"Logg inn for tilgang til denne ressursen", variant:"warning"})
                             return
                         }else{
-                            setErrorMessage({message: "Kunne ikke hente dokumenter. Prøv igjen senere.", variant:"error"})
+                            setNotificationMessage({message: "Kunne ikke hente dokumenter. Prøv igjen senere.", variant:"error"})
                             return
                         }   
                     }
-                    setErrorMessage(null)
+                    setNotificationMessage(null)
                     const blob = await response.blob();
                     fetchedUrls.set(docId, URL.createObjectURL(blob));
                 }

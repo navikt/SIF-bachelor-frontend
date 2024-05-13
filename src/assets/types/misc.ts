@@ -17,7 +17,3 @@ export interface SortState {
     direction: "ascending" | "descending";
 }
 
-export interface SetErrorProp {
-    message: string;
-    variant: "info" | "warning" | "error" | "success";
-}

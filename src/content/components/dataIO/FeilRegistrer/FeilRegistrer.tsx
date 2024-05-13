@@ -2,7 +2,7 @@ import { Button, Modal, BodyLong } from "@navikt/ds-react";
 import { useState } from "react";
 import { TasklistStartIcon, XMarkOctagonIcon } from "@navikt/aksel-icons";
 import { convertStatus } from "../../../../assets/utils/FormatUtils";
-import { useError } from "../../../hooks/export"
+import { useNotification } from "../../../hooks/export"
 import { feilRegistrerAPI } from "../../../http/FeilRegistrerAPI";
 
 export const FeilRegistrer = ({ journalposttype, journalpostId, onStatusChange, formatStatus}: {
@@ -13,7 +13,7 @@ export const FeilRegistrer = ({ journalposttype, journalpostId, onStatusChange, 
 }) => {
 
     // Error message
-    const { setErrorMessage } = useError()
+    const { setNotificationMessage } = useNotification()
 
     const [open, setOpen] = useState(false);
 
@@ -22,7 +22,7 @@ export const FeilRegistrer = ({ journalposttype, journalpostId, onStatusChange, 
         const token = sessionStorage.getItem("token");
 
         if(!token) {
-            setErrorMessage({message: "Du må logge inn for å feilregistrere", variant:"warning"});
+            setNotificationMessage({message: "Du må logge inn for å feilregistrere", variant:"warning"});
             setOpen(false);
             return;
         }
@@ -33,15 +33,15 @@ export const FeilRegistrer = ({ journalposttype, journalpostId, onStatusChange, 
             if (success) {
               const newJournalStatus = convertStatus(journalposttype);
               onStatusChange(newJournalStatus, journalpostId);
-              setErrorMessage({ message: "Feilregistrert", variant: "success" });
+              setNotificationMessage({ message: "Feilregistrert", variant: "success" });
             } else {
-              setErrorMessage({
+              setNotificationMessage({
                 message: "Kunne ikke feilregistrere. Prøv igjen senere.",
                 variant: "error",
               });
             }
           } catch (error: any) {
-            setErrorMessage({ message: error.message, variant: "error" });
+            setNotificationMessage({ message: error.message, variant: "error" });
           }
 
         setOpen(false);

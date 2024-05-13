@@ -1,19 +1,19 @@
 import { useContext, useCallback, useState } from "react";
-import { useError } from "./export";
+import { useNotification } from "./export";
 import { Journalpost, UseSplitDocsProps } from "../../assets/types/export";
 import { convertStatus } from "../../assets/utils/FormatUtils";
 import { splitDocumentsAPI } from "../http/SplitAPI";
 
 const useSplitDocs = ({journalpostId, oldMetadata, newMetadata, journalstatus, journalposttype, appendNewJournalpost, onStatusChange, selectedDocuments, unselectedDocuments, setLocalErr}: UseSplitDocsProps) => { 
     
-    const { setErrorMessage } = useError()
+    const { setNotificationMessage } = useNotification()
     
     const splitDocs = useCallback(async () => {
 
         const token = sessionStorage.getItem("token");
 
         if (!token) {
-            setErrorMessage({message: "Du må logge inn for å splitte dokumenter!", variant: "warning"});
+            setNotificationMessage({message: "Du må logge inn for å splitte dokumenter!", variant: "warning"});
             return;
         }
 
@@ -66,9 +66,9 @@ const useSplitDocs = ({journalpostId, oldMetadata, newMetadata, journalstatus, j
             onStatusChange(convertStatus(journalposttype), journalpostId);
 
         } catch (error) {
-            setErrorMessage({message: "Internal server error", variant: "error"})
+            setNotificationMessage({message: "Internal server error", variant: "error"})
         }
-    }, [journalpostId, oldMetadata, newMetadata, journalposttype, appendNewJournalpost, onStatusChange, setErrorMessage]);
+    }, [journalpostId, oldMetadata, newMetadata, journalposttype, appendNewJournalpost, onStatusChange, setNotificationMessage]);
 
     return {
         splitDocs

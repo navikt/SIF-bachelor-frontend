@@ -1,43 +1,43 @@
 import { useState, useEffect } from 'react';
 import { Alert, AlertProps } from '@navikt/ds-react';
-import { useError } from '../../hooks/export';
+import { useNotification } from '../../hooks/export';
 import { XMarkIcon } from '@navikt/aksel-icons';
 import "./ErrorAlert.css";
 
-const ErrorAlert = () => {
-    const { errorMessage, setErrorMessage } = useError();
+const NotificationAlert = () => {
+    const { notificationMessage, setNotificationMessage } = useNotification();
     const [show, setShow] = useState(false);
 
     useEffect(() => {
-        if (errorMessage?.message) {
+        if (notificationMessage?.message) {
             setShow(true)
             const timer = setTimeout(() => {
                 setShow(false)
-                setErrorMessage(null)
+                setNotificationMessage(null)
             }, 3000)
 
             return () => clearTimeout(timer);
         }
-    }, [errorMessage]);
+    }, [notificationMessage]);
 
     useEffect(() => {
-        if (!show && errorMessage) {
+        if (!show && notificationMessage) {
             const timer = setTimeout(() => {
 
-                setErrorMessage(errorMessage)
+                setNotificationMessage(notificationMessage)
             }, 300)
 
             return () => clearTimeout(timer);
         }
-    }, [show, errorMessage, setErrorMessage]);
+    }, [show, notificationMessage, setNotificationMessage]);
 
-    if (!errorMessage?.message) return null;
+    if (!notificationMessage?.message) return null;
 
     return (
-        <Alert className={`error-box ${show ? 'show' : ''}`} variant={errorMessage.variant} closeButton onClose={() => setShow(false)}>
-            {errorMessage.message}
+        <Alert className={`error-box ${show ? 'show' : ''}`} variant={notificationMessage.variant} closeButton onClose={() => setShow(false)}>
+            {notificationMessage.message}
         </Alert>
     );
 };
 
-export default ErrorAlert;
+export default NotificationAlert;

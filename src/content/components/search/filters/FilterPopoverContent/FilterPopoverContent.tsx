@@ -4,7 +4,7 @@ import { ArrowRightLeftIcon } from '@navikt/aksel-icons';
 import { useState, useEffect } from 'react';
 import { FilterPopoverContentProps } from "../../../../../assets/types/export";
 import { tema } from "../../../../../assets/utils/FormatUtils";
-import useError from "../../../../hooks/useError";
+import useNotification from "../../../../hooks/useNotification";
 
 const FilterPopoverContent = ( props : FilterPopoverContentProps) => {
 
@@ -29,7 +29,7 @@ const FilterPopoverContent = ( props : FilterPopoverContentProps) => {
     const [selectedType, setSelectedType] = useState<string[]>([]);
 
     // New state for error message visibility
-    const {errorMessage, setErrorMessage} = useError();
+    const { setNotificationMessage} = useNotification();
 
     // Change the state of the input once we type in it
     const handleInputChange = (value : string) => {
@@ -137,7 +137,7 @@ const FilterPopoverContent = ( props : FilterPopoverContentProps) => {
         setFilter([]);
         setSelectedStatus([]);
         setSelectedType([]);
-        setErrorMessage(null);
+        setNotificationMessage(null);
     }
 
     const submitFilter = () => {
@@ -146,7 +146,7 @@ const FilterPopoverContent = ( props : FilterPopoverContentProps) => {
         if ((!startDate && endDate) || (!endDate && startDate)) {
             // Prevent form submission and show error message
             console.log("Error: Please select both a start date and an end date.");
-            setErrorMessage({message: "Du må ha velge både startdato og sluttdato!", variant:"info"}); // Show error message
+            setNotificationMessage({message: "Du må ha velge både startdato og sluttdato!", variant:"info"}); // Show error message
             return; // Exit the function to prevent further execution
         }
 
@@ -159,7 +159,7 @@ const FilterPopoverContent = ( props : FilterPopoverContentProps) => {
         };
         props.onFilterSubmit(filterData);
         props.onClose();
-        setErrorMessage(null); // Reset error message
+        setNotificationMessage(null); // Reset error message
         props.onSuccess({message: "Lagret!", variant:"success"});
     }
 

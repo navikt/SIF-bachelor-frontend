@@ -8,7 +8,7 @@ import "./PDFViewer.css"
 import { Alert } from "@navikt/ds-react";
 import { RotateLeftIcon, RotateRightIcon, ZoomPlusIcon, ZoomMinusIcon } from '@navikt/aksel-icons';
 import { Page, Document, Outline } from 'react-pdf';
-import { useError } from "../../../hooks/export"
+import { useNotification } from "../../../hooks/export"
 
 
 pdfjs.GlobalWorkerOptions.workerSrc = new URL(
@@ -25,7 +25,7 @@ export const PDFViewer = ({ documentUrls, documents }: PDFViewerProps) => {
     const pageRefs = useRef<(HTMLDivElement | null)[]>([]);
     const [mergeTrigger, setMergeTrigger] = useState<number>(Math.random)
 
-    const { setErrorMessage } = useError()
+    const { setNotificationMessage } = useNotification()
 
     const handleScroll = () => {
         // Iterate through page refs to check intersection with viewport
@@ -72,7 +72,7 @@ export const PDFViewer = ({ documentUrls, documents }: PDFViewerProps) => {
                 const pdfBytes = await fetch(url).then(async response => {
                     if (!response.ok) {
                         const errorResponse = await response.json(); 
-                        setErrorMessage({message: "Kunne ikke hente dokument med ID: " + document.dokumentInfoId, variant: "error"})
+                        setNotificationMessage({message: "Kunne ikke hente dokument med ID: " + document.dokumentInfoId, variant: "error"})
                         throw new Error(errorResponse.errorMessage || `Failed to fetch document with ID ${document.dokumentInfoId}: ${response.statusText}`);
                     }
                     const buffer = await response.arrayBuffer()
@@ -112,11 +112,11 @@ export const PDFViewer = ({ documentUrls, documents }: PDFViewerProps) => {
                 // The error is an HTTP response from the backend
                 const errorData: ErrorResponse = await error.json();
                 console.error("There was an error merging the PDFs: ", errorData.errorMessage);
-                setErrorMessage({message: "Kunne ikke laste inn dokumentene. Prøv igjen senere", variant: "error"} );
+                setNotificationMessage({message: "Kunne ikke laste inn dokumentene. Prøv igjen senere", variant: "error"} );
             } else {
                 // The error is a JavaScript error
                 console.error("There was an error merging the PDFs: ", error);
-                setErrorMessage({message:"Kunne ikke laste inn dokumentene. Prøv igjen senere", variant:"error"});
+                setNotificationMessage({message:"Kunne ikke laste inn dokumentene. Prøv igjen senere", variant:"error"});
             }
         }
     }
@@ -196,10 +196,10 @@ export const PDFViewer = ({ documentUrls, documents }: PDFViewerProps) => {
                 console.log(`Rotation information not available for document ${currentDocument.dokumentInfoId}`);
             }
         } else {
-            setErrorMessage({message: "Fant ingen dokument relatert til denne siden.", variant:"error"})
+            setNotificationMessage({message: "Fant ingen dokument relatert til denne siden.", variant:"error"})
             console.log("No document found for the current page");
         }
-        setErrorMessage(null)
+        setNotificationMessage(null)
         setMergeTrigger(Math.random)
         console.log(documents)
     };

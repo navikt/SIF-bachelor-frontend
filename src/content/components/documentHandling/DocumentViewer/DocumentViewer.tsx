@@ -3,7 +3,7 @@ import { Table, TextField } from "@navikt/ds-react";
 import { EyeSlashIcon, EyeIcon } from '@navikt/aksel-icons';
 import { IDocument, DocumentViewerProps } from "../../../../assets/types/export";
 import "./DocumentViewer.css";
-import { useValidation, useError } from "../../../hooks/export";
+import { useValidation, useNotification } from "../../../hooks/export";
 
 export const DocumentViewer = ({ documentsToView, addGlobalDocument, documents, isModal, handleSelectedIdandTitle, handleUnselectedIdandTitle, handleIsVisible, handleInputValidation}: DocumentViewerProps) => {
     const [selectedDocuments, setSelectedDocuments] = useState<IDocument[]>([])
@@ -16,7 +16,7 @@ export const DocumentViewer = ({ documentsToView, addGlobalDocument, documents, 
    
     const { validateTittel, tittelError, brevkodeError, validateBrevkode } = useValidation();
 
-    const { setErrorMessage } = useError()
+    const { setNotificationMessage } = useNotification()
    
     const addDocument = (documentToAdd: IDocument) => {
         // Find the document to add based on its ID
@@ -121,10 +121,6 @@ export const DocumentViewer = ({ documentsToView, addGlobalDocument, documents, 
         setUnselectedDocuments(prevDocs => updateDocumentBrevkode(prevDocs));
 
         validateBrevkode(newBrevkode);
-
-        console.log(localDocumentsToView)
-        console.log(selectedDocuments)
-        console.log(unselectedDocuments)
     }
     const handleTittelInput = (documentId: string, newTittel: string) => {
         const updatedDocuments = localDocumentsToView.map(doc => {
@@ -148,9 +144,6 @@ export const DocumentViewer = ({ documentsToView, addGlobalDocument, documents, 
 
         validateTittel(newTittel);
 
-        console.log(localDocumentsToView)
-        console.log(selectedDocuments)
-        console.log(unselectedDocuments)
     };
 
 

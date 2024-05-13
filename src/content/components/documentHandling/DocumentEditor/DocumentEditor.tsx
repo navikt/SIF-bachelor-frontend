@@ -6,7 +6,7 @@ import { DocumentEditorInput } from "../../../../assets/types/export";
 import {DocumentViewer} from "../DocumentViewer/DocumentViewer";
 import { displayType, metadataTemplate, isReadOnly, Status } from "../../../../assets/utils/FormatUtils";
 import "./DocumentEditor.css";
-import { useError, useValidation, useSplitDocs } from "../../../hooks/export";
+import { useNotification, useValidation, useSplitDocs } from "../../../hooks/export";
 
 export const DocumentEditor = ({ brukerId, journalpostId, tittel, journalposttype, datoOpprettet, journalstatus, tema, avsenderMottaker, documentsToView, addGlobalDocument, documents, appendNewJournalpost, handleIsVisible, onStatusChange}: DocumentEditorProps ) => {
 
@@ -33,7 +33,7 @@ export const DocumentEditor = ({ brukerId, journalpostId, tittel, journalposttyp
     const [newMetadata, setNewMetadata] = useState<Metadata>(metadataTemplate(brukerId, tittel, journalposttype, datoOpprettet, tema, avsenderMottaker));
 
     // Error message
-    const { setErrorMessage } = useError()
+    const { setNotificationMessage } = useNotification()
     const [localErr, setLocalErr] = useState<string>("")
 
     const [tittBrev, setTittBrev] = useState("");
@@ -97,7 +97,7 @@ export const DocumentEditor = ({ brukerId, journalpostId, tittel, journalposttyp
             topRef.current?.scrollIntoView({ behavior: 'smooth' });
         }else{
             setLocalErr("")
-            setErrorMessage({message: "Splitt vellykket!", variant:"success"})
+            setNotificationMessage({message: "Splitt vellykket!", variant:"success"})
             splitDocs()
             ref.current?.close()
     }   
