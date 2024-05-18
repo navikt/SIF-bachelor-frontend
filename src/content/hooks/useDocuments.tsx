@@ -5,7 +5,7 @@ import { useKindeAuth } from "@kinde-oss/kinde-auth-react";
 
 
 const useDocuments = ({ initialDocuments }: UseDocumentsProps) => {
-    const [documents, setDocuments] = useState<IDocument[]>(initialDocuments);
+    const [documents, setDocuments] = useState<IDocument[]>([]);
     const [documentUrls, setDocumentUrls] = useState<Map<string, string>>(new Map());
     const { setNotificationMessage } = useNotification()
     const { getToken, isAuthenticated } = useKindeAuth()

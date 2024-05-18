@@ -38,7 +38,7 @@ export const SearchEngine = () => {
 
     const { brukerIdError, validateBrukerId } = useValidation();
 
-    const { handleSearch, serverExceptionError } = useSearchHandler({ brukerId, brukerIdError, filterData});
+    const { handleSearch, serverExceptionError } = useSearchHandler();
 
     useEffect(() => {
         setNotificationMessage(null); // Reset the error message on component mount
@@ -86,7 +86,7 @@ return(
                 className="search-bar"
                 placeholder="Skriv inn bruker-ID"
                 onChange={handleInputChange}
-                onSearchClick={handleSearch} />            
+                onSearchClick={()=>handleSearch({brukerId, brukerIdError, filterData})} />            
             <FilterIcon
                 className={`filter-icon ${isRotated ? 'rotated' : ''}`} 
                 ref={FilterIconRef} 

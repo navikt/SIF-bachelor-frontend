@@ -11,21 +11,23 @@ import { IDocument, Journalpost, FilterOptions, RelevantDato } from "../../asset
 import './SearchResults.css';
 import { formatDate, transformFilterOptionsToList, formatStatus, selectTagVariant, shouldShowFeilRegistrer,  } from "../../assets/utils/FormatUtils";
 
-import { useDocuments, useSort, useTitle } from "../../content/hooks/export";
+import { useDocuments, useSearchHandler, useSort, useTitle } from "../../content/hooks/export";
   // Manage state for the filterData object that we receive in the dropdown to use in handleSearch
   
 export const SearchResults = () => {
 
     const location = useLocation()
-    const [userkey, setUserkey] = useState<string>(location.state.userkey)
-    const [journalpostList, setJournalpostList] = useState<Journalpost[]>(location.state.dokumentoversikt.journalposter as Journalpost[]) || []
-    const [filterOptions, setFilterOptions] = useState<FilterOptions>(location.state.filterOptions);
+    //const [userkey, setUserkey] = useState<string>(location.state.userkey)
+    //const [journalpostList, setJournalpostList] = useState<Journalpost[]>(location.state.dokumentoversikt.journalposter as Journalpost[]) || []
+    //const [filterOptions, setFilterOptions] = useState<FilterOptions>(location.state.filterOptions);
+    
     const [filterList, setFilterList] = useState<string[]>([])
     const [isModalOpen, setIsModalOpen] = useState<boolean>(false)
     const [selectedRows, selectRow] = useState<string[]>([]);
-    const { documents, setDocuments, documentUrls } = useDocuments({
-        initialDocuments: location.state.dokumentoversikt.journalposter[0].dokumenter,
-    });
+
+    const { documents, setDocuments, documentUrls } = useDocuments({});
+
+    const { fetchData, userkey, journalpostList, setJournalpostList, filterOptions, setFilterOptions} = useSearchHandler()
 
     useTitle("Vju - Resultat")
 
@@ -43,13 +45,17 @@ export const SearchResults = () => {
 
     /* Kjempe mye redundant kode her, kanskje fjerne noen av disse og instansiere noen av de i selve useState()? */
     useEffect(()=>{
+        fetchData()
+        /*
         setDocuments(location.state.dokumentoversikt.journalposter[0].dokumenter)
         setUserkey(location.state.userkey)
-        setFilterOptions(location.state.filterOptions)
-        setFilterList(transformFilterOptionsToList(filterOptions))
-        selectRow([location.state.dokumentoversikt.journalposter[0].journalpostId])
-        console.log(location.state)
-    }, [location.state, filterOptions])
+        setFilterOptions(location.state.filterOptions)*/
+        if(filterOptions){
+            setFilterList(transformFilterOptionsToList(filterOptions))
+        }
+        //selectRow([location.state.dokumentoversikt.journalposter[0].journalpostId])
+        //console.log(location.state)
+    }, [location.state])
 
 
 

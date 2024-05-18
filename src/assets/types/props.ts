@@ -90,5 +90,5 @@ export interface SetNotificationProp {
     variant: "info" | "warning" | "error" | "success";
 }
 export interface UseDocumentsProps {
-    initialDocuments: IDocument[];
+    initialDocuments?: IDocument[];
 }
