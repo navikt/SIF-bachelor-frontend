@@ -1,12 +1,12 @@
-import { useState } from 'react';
+import { Dispatch, SetStateAction, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { searchAPI } from "../http/SearchAPI";
-import { FilterOptions, Journalpost, SearchHandlerProps } from '../../assets/types/export';
+import { FilterOptions, IDocument, Journalpost, SearchHandlerProps } from '../../assets/types/export';
 import useNotification from './useNotification';
 
 const useSearchHandler = ({isAuthenticated, getToken}:{isAuthenticated: boolean, getToken: () => Promise<string | undefined>}) => {
 
-    const [ serverExceptionError, setExceptionError ] = useState('');
+    const [ serverExceptionError ] = useState('');
     const { setNotificationMessage } = useNotification()
     const navigate = useNavigate();
     
@@ -14,7 +14,7 @@ const useSearchHandler = ({isAuthenticated, getToken}:{isAuthenticated: boolean,
     const [userkey, setUserkey] = useState<string>("")
     const [journalpostList, setJournalpostList] = useState<Journalpost[]>([])
     const [filterOptions, setFilterOptions] = useState<FilterOptions>();
-
+    const [selectedRows, selectRow] = useState<string[]>([]);
 
     
 
@@ -53,7 +53,7 @@ const useSearchHandler = ({isAuthenticated, getToken}:{isAuthenticated: boolean,
             });
           }
     };
-    const fetchData = async() => {
+    const fetchData = async(setDocuments: Dispatch<SetStateAction<IDocument[]>>) => {
       
       if (!isAuthenticated) {
           console.log(isAuthenticated)
@@ -78,6 +78,8 @@ const useSearchHandler = ({isAuthenticated, getToken}:{isAuthenticated: boolean,
           setJournalpostList(data.dokumentoversikt.journalposter as Journalpost[])
           setFilterOptions(filterData)
           setUserkey(userkey)
+          setDocuments(data.dokumentoversikt.journalposter[0].dokumenter as IDocument[])
+          selectRow([data.dokumentoversikt.journalposter[0].journalpostId])
         }else{
           setNotificationMessage({message:"Kunne ikke hente søkedata.", variant:"error"})
           return;
@@ -107,8 +109,8 @@ const useSearchHandler = ({isAuthenticated, getToken}:{isAuthenticated: boolean,
         setUserkey,
         journalpostList,
         setJournalpostList,
-        filterOptions,
-        setFilterOptions,
+        selectRow,
+        selectedRows,
         serverExceptionError,
     };
 };

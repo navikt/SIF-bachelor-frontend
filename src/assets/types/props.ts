@@ -89,6 +89,3 @@ export interface SetNotificationProp {
     message: string;
     variant: "info" | "warning" | "error" | "success";
 }
-export interface UseDocumentsProps {
-    initialDocuments?: IDocument[];
-}

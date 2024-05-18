@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
-import { IDocument, UseDocumentsProps } from "../../assets/types/export";
+import { IDocument } from "../../assets/types/export";
 import { useNotification } from "./export";
 import { useKindeAuth } from "@kinde-oss/kinde-auth-react";
 
 
-const useDocuments = ({ initialDocuments }: UseDocumentsProps) => {
+const useDocuments = () => {
     const [documents, setDocuments] = useState<IDocument[]>([]);
     const [documentUrls, setDocumentUrls] = useState<Map<string, string>>(new Map());
     const { setNotificationMessage } = useNotification()

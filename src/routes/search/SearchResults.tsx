@@ -7,7 +7,7 @@ import { useKindeAuth } from "@kinde-oss/kinde-auth-react";
 import { DocumentViewer, DocumentEditor, PDFViewer } from "../../content/components/documentHandling/export"
 import { FeilRegistrer, MottattDato } from "../../content/components/dataIO/export"
 
-import { IDocument, Journalpost, FilterOptions, RelevantDato } from "../../assets/types/export";
+import { IDocument, Journalpost, RelevantDato } from "../../assets/types/export";
 
 import './SearchResults.css';
 import { formatDate, transformFilterOptionsToList, formatStatus, selectTagVariant, shouldShowFeilRegistrer,  } from "../../assets/utils/FormatUtils";
@@ -18,17 +18,12 @@ import { useDocuments, useSearchHandler, useSort, useTitle } from "../../content
 export const SearchResults = () => {
 
     const location = useLocation()
-    //const [userkey, setUserkey] = useState<string>(location.state.userkey)
-    //const [journalpostList, setJournalpostList] = useState<Journalpost[]>(location.state.dokumentoversikt.journalposter as Journalpost[]) || []
-    //const [filterOptions, setFilterOptions] = useState<FilterOptions>(location.state.filterOptions);
     const { isAuthenticated, getToken } = useKindeAuth()
     const [filterList, setFilterList] = useState<string[]>([])
     const [isModalOpen, setIsModalOpen] = useState<boolean>(false)
-    const [selectedRows, selectRow] = useState<string[]>([]);
 
-    const { documents, setDocuments, documentUrls } = useDocuments({});
-
-    const { fetchData, userkey, journalpostList, setJournalpostList, filterOptions, setFilterOptions} = useSearchHandler({isAuthenticated, getToken})
+    const { fetchData, userkey, selectedRows, selectRow, journalpostList, setJournalpostList} = useSearchHandler({isAuthenticated, getToken })
+    const { documents, setDocuments, documentUrls } = useDocuments();
 
     useTitle("Vju - Resultat")
 
@@ -44,21 +39,11 @@ export const SearchResults = () => {
 
     const { sort, handleSort, sortedData } = useSort<Journalpost>();
 
-    /* Kjempe mye redundant kode her, kanskje fjerne noen av disse og instansiere noen av de i selve useState()? */
     useEffect(()=>{
         if(isAuthenticated){
-            fetchData()
+            fetchData(setDocuments)
+            //setDocuments(journalpostList[0].dokumenter)
         }
-        
-        /*
-        setDocuments(location.state.dokumentoversikt.journalposter[0].dokumenter)
-        setUserkey(location.state.userkey)
-        setFilterOptions(location.state.filterOptions)*/
-        if(filterOptions){
-            setFilterList(transformFilterOptionsToList(filterOptions))
-        }
-        //selectRow([location.state.dokumentoversikt.journalposter[0].journalpostId])
-        //console.log(location.state)
     }, [location.state, isAuthenticated])
 
 

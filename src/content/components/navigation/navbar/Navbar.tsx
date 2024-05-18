@@ -6,7 +6,7 @@ import { SearchEngine } from "../../search/export";
 import { useNotification }from "../../../hooks/export";
 import {useKindeAuth} from '@kinde-oss/kinde-auth-react';
 const Navbar = () => {
-  const { login, logout, isAuthenticated } = useKindeAuth()
+  const { login, logout, isAuthenticated, user } = useKindeAuth()
   const { setNotificationMessage } = useNotification()
   const navigate = useNavigate();
   const location = useLocation();
@@ -35,7 +35,10 @@ const Navbar = () => {
       {(!isAuthenticated) ? (
         <Button className={`log-in-button`} onClick={toggleLogin}>Logg inn</Button>
       ) : (
-        <Button className={`log-in-button logged-in`} onClick={toggleLogout}>Logg ut</Button>
+        <div className="user-display">
+          <p>Hei, {user?.given_name + " " + user?.family_name}</p>
+          <Button className={`log-in-button logged-in`} onClick={toggleLogout}>Logg ut</Button>
+        </div>
       )}
     </nav>
   );
