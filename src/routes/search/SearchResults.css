@@ -84,3 +84,10 @@
     width: 100%;
     background-color: rgb(179, 179, 179);
 }
+.search-result-loading{
+    display: flex;
+    width: 100%;
+    height: calc(100vh - 85px);
+    background-color: white;
+    justify-content: center;
+}
