@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useLocation } from "react-router-dom";
 import { Table, Tag, Chips } from "@navikt/ds-react";
+import { useKindeAuth } from "@kinde-oss/kinde-auth-react";
 
 import { DocumentViewer, DocumentEditor, PDFViewer } from "../../content/components/documentHandling/export"
 import { FeilRegistrer, MottattDato } from "../../content/components/dataIO/export"
@@ -20,14 +21,14 @@ export const SearchResults = () => {
     //const [userkey, setUserkey] = useState<string>(location.state.userkey)
     //const [journalpostList, setJournalpostList] = useState<Journalpost[]>(location.state.dokumentoversikt.journalposter as Journalpost[]) || []
     //const [filterOptions, setFilterOptions] = useState<FilterOptions>(location.state.filterOptions);
-    
+    const { isAuthenticated, getToken } = useKindeAuth()
     const [filterList, setFilterList] = useState<string[]>([])
     const [isModalOpen, setIsModalOpen] = useState<boolean>(false)
     const [selectedRows, selectRow] = useState<string[]>([]);
 
     const { documents, setDocuments, documentUrls } = useDocuments({});
 
-    const { fetchData, userkey, journalpostList, setJournalpostList, filterOptions, setFilterOptions} = useSearchHandler()
+    const { fetchData, userkey, journalpostList, setJournalpostList, filterOptions, setFilterOptions} = useSearchHandler({isAuthenticated, getToken})
 
     useTitle("Vju - Resultat")
 
@@ -45,7 +46,10 @@ export const SearchResults = () => {
 
     /* Kjempe mye redundant kode her, kanskje fjerne noen av disse og instansiere noen av de i selve useState()? */
     useEffect(()=>{
-        fetchData()
+        if(isAuthenticated){
+            fetchData()
+        }
+        
         /*
         setDocuments(location.state.dokumentoversikt.journalposter[0].dokumenter)
         setUserkey(location.state.userkey)
@@ -55,7 +59,7 @@ export const SearchResults = () => {
         }
         //selectRow([location.state.dokumentoversikt.journalposter[0].journalpostId])
         //console.log(location.state)
-    }, [location.state])
+    }, [location.state, isAuthenticated])
 
 
 

@@ -3,16 +3,13 @@ import { useNavigate } from 'react-router-dom';
 import { searchAPI } from "../http/SearchAPI";
 import { FilterOptions, Journalpost, SearchHandlerProps } from '../../assets/types/export';
 import useNotification from './useNotification';
-import {useKindeAuth} from '@kinde-oss/kinde-auth-react';
 
-
-const useSearchHandler = () => {
+const useSearchHandler = ({isAuthenticated, getToken}:{isAuthenticated: boolean, getToken: () => Promise<string | undefined>}) => {
 
     const [ serverExceptionError, setExceptionError ] = useState('');
     const { setNotificationMessage } = useNotification()
     const navigate = useNavigate();
-    const { isAuthenticated, getToken } = useKindeAuth()
-
+    
     //searchresult props in use
     const [userkey, setUserkey] = useState<string>("")
     const [journalpostList, setJournalpostList] = useState<Journalpost[]>([])
@@ -88,8 +85,15 @@ const useSearchHandler = () => {
         
         
         
-      }catch{
-        setNotificationMessage({message: "Noe gikk galt under innhenting av data.", variant:"error"})
+      }catch(error: any){
+        setNotificationMessage(error.errorMessage);
+        navigate("/error", {
+          state: {
+            errorCode: error.status || "Unknown Error",
+            errorMessage: error.errorMessage || "An unexpected error occurred. Please try again later.",
+          },
+        });
+  
       }
 
 

@@ -2,7 +2,7 @@ import "./FilterPopoverContent.css";
 import { Search, DatePicker, useDatepicker, Chips, Checkbox, CheckboxGroup, Button } from "@navikt/ds-react"; 
 import { ArrowRightLeftIcon } from '@navikt/aksel-icons';
 import { useState, useEffect } from 'react';
-import { FilterPopoverContentProps } from "../../../../../assets/types/export";
+import { FilterOptions, FilterPopoverContentProps } from "../../../../../assets/types/export";
 import { tema } from "../../../../../assets/utils/FormatUtils";
 import useNotification from "../../../../hooks/useNotification";
 
@@ -150,7 +150,7 @@ const FilterPopoverContent = ( props : FilterPopoverContentProps) => {
             return; // Exit the function to prevent further execution
         }
 
-        const filterData = {
+        const filterData: FilterOptions = {
             startDate,
             endDate,
             filter,

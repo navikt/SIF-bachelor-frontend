@@ -5,6 +5,7 @@ import { FilterPopover } from "../export";
 import { useLocation } from "react-router-dom";
 import { FilterOptions } from "../../../../assets/types/export";
 import { useNotification, useSearchHandler, useValidation} from "../../../hooks/export";
+import { useKindeAuth } from "@kinde-oss/kinde-auth-react";
 
 import "./SearchEngine.css";
 import "../../../../routes/landing/LandingPage.css"
@@ -12,7 +13,7 @@ import "../../../../routes/landing/LandingPage.css"
 export const SearchEngine = () => {
 
     const { setNotificationMessage } = useNotification()
-
+    const { isAuthenticated, getToken } = useKindeAuth()
     const [brukerId, setBrukerId] = useState('');
     // Manage state for rotating the filterIcon when clicking on it, initially false, aka not rotated
     const [isRotated, setIsRotated] = useState<boolean>(false);
@@ -38,7 +39,7 @@ export const SearchEngine = () => {
 
     const { brukerIdError, validateBrukerId } = useValidation();
 
-    const { handleSearch, serverExceptionError } = useSearchHandler();
+    const { handleSearch, serverExceptionError } = useSearchHandler({isAuthenticated, getToken});
 
     useEffect(() => {
         setNotificationMessage(null); // Reset the error message on component mount
