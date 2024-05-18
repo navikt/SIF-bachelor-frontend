@@ -6,7 +6,7 @@ import SearchResults from './routes/search/SearchResults';
 import ErrorDisplay from './routes/error/ErrorPage';
 import {Navbar, Footer} from './content/components/navigation/export';
 import { Route, Routes } from "react-router-dom";
-import { ErrorProvider } from './content/state/export';
+import { NotificationProvider } from './content/state/export';
 import { NotificationAlert } from './content/components/global/export';
 import { KindeProvider } from "@kinde-oss/kinde-auth-react";
 
@@ -20,7 +20,7 @@ function App() {
         audience="https://bachelor.kinde.com/api"
         logoutUri={window.location.origin}
         redirectUri={window.location.origin}>
-      <ErrorProvider>
+      <NotificationProvider>
       <Navbar></Navbar>
         <Routes>
           <Route path="/" element={<LandingPage />} />
@@ -29,7 +29,7 @@ function App() {
         </Routes>
       {/*<Footer />*/}
       <NotificationAlert />
-      </ErrorProvider>
+      </NotificationProvider>
       </KindeProvider>
     </div>
     

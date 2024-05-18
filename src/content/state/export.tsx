@@ -1,2 +1,2 @@
-export { NotificationProvider as ErrorProvider } from "./NotificationContext"
+export { NotificationProvider} from "./NotificationContext"
 export { NotificationContext } from "./NotificationContext"
