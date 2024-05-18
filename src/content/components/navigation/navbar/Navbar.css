@@ -42,3 +42,11 @@
   transform: scale(110%);
 
 }
+.user-display{
+  display: flex;
+  gap: 2rem;
+  align-items: center;
+}
+.user-display>p{
+  margin: 0;
+}
