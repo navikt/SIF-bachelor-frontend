@@ -47,6 +47,8 @@ export const selectTagVariant = (journalStatus: string) => {
     switch(journalStatus.toUpperCase()){
         case("UNDER_ARBEID"):
             return "alt1"
+        case("MOTTATT"):
+            return "alt2"
         case("JOURNALFOERT"):
             return "info"  
         case("FERDIGSTILT"):
@@ -66,6 +68,7 @@ export const shouldShowFeilRegistrer = (journalposttype: string, journalstatus: 
     return (journalposttype === "I" || journalposttype === "U") && 
            (journalstatus !== "FERDIGSTILT") && 
            (journalstatus !== "AVBRUTT") && 
+           (journalstatus !== "JOURNALFOERT") &&
            (journalstatus !== "UTGAAR");
 }
 
