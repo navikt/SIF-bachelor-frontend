@@ -1,5 +1,10 @@
 # Vju - Frontend for dokumentvisning
 
+|React versjon|2.0.5     | 
+|-------------|----------|
+|Node versjon | 16.18.76 |
+| initalisert med | create-react-app |
+
 Vju er et frontend-prosjekt designet for saksbehandlere for å hente og se dokumenter. Dette grensesnittet er kompatibelt med backend-tjenesten som er tilgjengelig på: [NAV-IT-SIF-bachelor-backend](https://github.com/Bad-chelor-ITPE3200/NAV-IT-SIF-bachelor-backend).
 
 ## Installasjon
@@ -38,4 +43,7 @@ Siden vi ikke har direkte tilgang på data, mocker vi alt. For testing av fronte
 2. Start **VjuLocalApplication** under test-mappen.
 3. Start frontend-applikasjonen ved å kjøre `npm start` i terminalen.
 4. Åpne nettleseren og gå til `http://localhost:3000` for å bruke Vju-grensesnittet.
-
+5. For å kjøre en statisk server så kan du følge disse stegene: 
+    5.1: start med å bygge prosjektet: `npm run build`
+    5.2: vi har serve installert så denne kan testes med `npx serve -S build`
+    
