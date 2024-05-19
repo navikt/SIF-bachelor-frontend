@@ -1,10 +1,9 @@
 {
   "name": "my-app",
   "version": "0.1.0",
-  "proxy": "https://nav-it-sif-bachelor-backend.onrender.com/",
+  "proxy": "http://localhost:8080",
   "private": true,
   "dependencies": {
-    "@kinde-oss/kinde-auth-react": "^3.0.28",
     "@navikt/aksel-icons": "^5.15.1",
     "@navikt/ds-css": "^5.15.1",
     "@navikt/ds-react": "^5.15.1",
