@@ -12,7 +12,7 @@ import { IDocument, Journalpost, RelevantDato } from "../../assets/types/export"
 import './SearchResults.css';
 import { formatDate, transformFilterOptionsToList, formatStatus, selectTagVariant, shouldShowFeilRegistrer,  } from "../../assets/utils/FormatUtils";
 
-import { useDocuments, useSearchHandler, useSort, useTitle } from "../../content/hooks/export";
+import { useDocuments, useSearchHandler, useSort, useTitle, useNotification } from "../../content/hooks/export";
   // Manage state for the filterData object that we receive in the dropdown to use in handleSearch
   
 export const SearchResults = () => {
@@ -22,6 +22,7 @@ export const SearchResults = () => {
     const { isAuthenticated, getToken, isLoading } = useKindeAuth()
     const [filterList, setFilterList] = useState<string[]>([])
     const [isModalOpen, setIsModalOpen] = useState<boolean>(false)
+    const { setNotificationMessage } = useNotification()
 
     const { fetchData, userkey, selectedRows, selectRow, journalpostList, setJournalpostList} = useSearchHandler({isAuthenticated, getToken })
     const { documents, setDocuments, documentUrls } = useDocuments();
@@ -46,7 +47,7 @@ export const SearchResults = () => {
                 fetchData({ setDocuments, setIsLoading: setIsDataLoading })
                 //setDocuments(journalpostList[0].dokumenter)
             }else{
-                console.log("Du er ikke autorisert til å hente data")
+                setNotificationMessage({message: "Du må logge inn for å kunne hente data!", variant: "warning"})
             }
         }else{
             console.log("laster...")
