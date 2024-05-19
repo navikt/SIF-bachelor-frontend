@@ -1,10 +1,12 @@
 import { Button } from "@navikt/ds-react";
-import { useState, useEffect } from "react";
 import { useNavigate, useLocation} from "react-router-dom";
 import './Navbar.css';
 import { SearchEngine } from "../../search/export";
 import { useNotification }from "../../../hooks/export";
 import {useKindeAuth} from '@kinde-oss/kinde-auth-react';
+
+
+
 const Navbar = () => {
   const { login, logout, isAuthenticated, user } = useKindeAuth()
   const { setNotificationMessage } = useNotification()

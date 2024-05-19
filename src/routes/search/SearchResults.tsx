@@ -18,8 +18,8 @@ import { useDocuments, useSearchHandler, useSort, useTitle } from "../../content
 export const SearchResults = () => {
 
     const location = useLocation()
-    const [isLoading, setIsLoading] = useState<boolean>(false)
-    const { isAuthenticated, getToken } = useKindeAuth()
+    const [isDataLoading, setIsDataLoading] = useState<boolean>(false)
+    const { isAuthenticated, getToken, isLoading } = useKindeAuth()
     const [filterList, setFilterList] = useState<string[]>([])
     const [isModalOpen, setIsModalOpen] = useState<boolean>(false)
 
@@ -41,11 +41,18 @@ export const SearchResults = () => {
     const { sort, handleSort, sortedData } = useSort<Journalpost>();
 
     useEffect(()=>{
-        if(isAuthenticated){
-            fetchData({ setDocuments, setIsLoading })
-            //setDocuments(journalpostList[0].dokumenter)
+        if(!isLoading){
+            if(isAuthenticated){
+                fetchData({ setDocuments, setIsLoading: setIsDataLoading })
+                //setDocuments(journalpostList[0].dokumenter)
+            }else{
+                console.log("Du er ikke autorisert til å hente data")
+            }
+        }else{
+            console.log("laster...")
         }
-    }, [location.state, isAuthenticated])
+        
+    }, [location.state, isLoading])
 
 
 
@@ -166,7 +173,7 @@ export const SearchResults = () => {
         );
     }
 
-    if(isLoading){
+    if(isDataLoading || isLoading){
         return (
             <div className="search-result-loading">
                             <Loader size="3xlarge" title="Venter..." variant="interaction" />
