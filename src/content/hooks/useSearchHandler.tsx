@@ -53,7 +53,7 @@ const useSearchHandler = ({isAuthenticated, getToken}:{isAuthenticated: boolean,
             });
           }
     };
-    const fetchData = async(setDocuments: Dispatch<SetStateAction<IDocument[]>>) => {
+    const fetchData = async({setDocuments, setIsLoading}:{setDocuments: Dispatch<SetStateAction<IDocument[]>>, setIsLoading: Dispatch<SetStateAction<boolean>>}) => {
       
       if (!isAuthenticated) {
           console.log(isAuthenticated)
@@ -73,8 +73,9 @@ const useSearchHandler = ({isAuthenticated, getToken}:{isAuthenticated: boolean,
           const filterData = JSON.parse(filterData_unparsed)
           const token = await getToken()
           console.log(token)
+          setIsLoading(true)
           const data = await searchAPI(userkey, filterData.startDate, filterData.endDate, filterData.selectedType, filterData.selectedStatus, filterData.filter, token);
-
+          setIsLoading(false)
           setJournalpostList(data.dokumentoversikt.journalposter as Journalpost[])
           setFilterOptions(filterData)
           setUserkey(userkey)
