@@ -4,7 +4,6 @@
   "proxy": "https://nav-it-sif-bachelor-backend.onrender.com/",
   "private": true,
   "dependencies": {
-    "@kinde-oss/kinde-auth-react": "^3.0.28",
     "@navikt/aksel-icons": "^5.15.1",
     "@navikt/ds-css": "^5.15.1",
     "@navikt/ds-react": "^5.15.1",
