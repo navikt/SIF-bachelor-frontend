@@ -5,6 +5,9 @@
 |Node versjon | 16.18.76 |
 | initalisert med | create-react-app |
 
+#### NB: 
+HUSK å bytt proxy i package.json om du ønsker å kjøre applikasjonen våres lokalt, linje 4 til: http://localhost:8080
+
 Vju er et frontend-prosjekt designet for saksbehandlere for å hente og se dokumenter. Dette grensesnittet er kompatibelt med backend-tjenesten som er tilgjengelig på: [NAV-IT-SIF-bachelor-backend](https://github.com/Bad-chelor-ITPE3200/NAV-IT-SIF-bachelor-backend).
 
 ## Installasjon
