@@ -5,26 +5,23 @@
 |Node versjon | 16.18.76 |
 | initalisert med | create-react-app |
 
-#### NB: 
-HUSK å bytt proxy i package.json om du ønsker å kjøre applikasjonen våres lokalt, linje 4 til: http://localhost:8080
-
 Vju er et frontend-prosjekt designet for saksbehandlere for å hente og se dokumenter. Dette grensesnittet er kompatibelt med backend-tjenesten som er tilgjengelig på: [NAV-IT-SIF-bachelor-backend](https://github.com/Bad-chelor-ITPE3200/NAV-IT-SIF-bachelor-backend).
 
 ## Installasjon
 
-1. Klon dette repositoryet til din lokale maskin.
+1. Klon "main" grenen av repositoriet til din lokale maskin.
 2. Åpne terminalen og naviger til rotkatalogen av prosjektet.
 3. Installer avhengigheter ved å kjøre `npm install`.
+4. Bytt "proxy" i package.json til: http://localhost:8080, om du ønsker å kjøre applikasjonen våres lokalt sammen med backenden.
 
 ## Kompatibilitet
-
 Vju-frontenden er kompatibel med NAV-IT-SIF-bachelor-backend, og er spesielt tilpasset for bruk av saksbehandlere.
 
 ## Testing
 
 Siden vi ikke har direkte tilgang på data, mocker vi alt. For testing av frontend-grensesnittet, kan følgende filterkombinasjoner brukes:
 
-- **Filter for brukerID 002:**
+- **Filter for brukerID 11111111111111:**
     - TIL
     - TIL - SYM
     - Ferdigstilt
@@ -50,3 +47,6 @@ Siden vi ikke har direkte tilgang på data, mocker vi alt. For testing av fronte
     5.1: start med å bygge prosjektet: `npm run build`
     5.2: vi har serve installert så denne kan testes med `npx serve -S build`
     
+## Docker
+
+For å bygge en dockercontainer kalt "frontend" så kjører du kommandoen `docker build -t frontend .` i roten av prosjektet.
