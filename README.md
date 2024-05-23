@@ -20,23 +20,12 @@ Vju-frontenden er kompatibel med NAV-IT-SIF-bachelor-backend, og er spesielt til
 ## Testing
 
 Siden vi ikke har direkte tilgang på data, mocker vi alt. For testing av frontend-grensesnittet, kan følgende filterkombinasjoner brukes:
-
-- **Filter for brukerID 11111111111111:**
-    - TIL
-    - TIL - SYM
-    - Ferdigstilt
-    - Ferdigstilt - N
-    - Journalført
-    - Journalført - N
-    - Ekspedert
-    - Ferdigstilt - Journalført
-    - Ferdigstilt - Journalført - I
-    - Ferdigstilt - Journalført - I - N
-    - Ferdigstilt - Ekspedert
-    - Journalført - Ekspedert
-    - Fra 01.01.22 Til 31.12.22
-    - Fra 01.01.23 Til 31.12.23
-
+- **Standard brukerID: 11111111111**
+- **Tilgjengelige filtere**
+    - Status: Ferdigstilt
+    - Fradato: 1. Desemeber 2023 - Tildato: 1. Mai 2024
+    - Typen: Inngående - Tema: Syk
+   
 ## Bruk
 
 1. Klon backend-tjenesten: [NAV-IT-SIF-bachelor-backend](https://github.com/Bad-chelor-ITPE3200/NAV-IT-SIF-bachelor-backend).
