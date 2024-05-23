@@ -243,7 +243,7 @@ export const DocumentEditor = ({ brukerId, journalpostId, tittel, journalposttyp
                                 label="ID-Type" 
                                 value={newMetadata.bruker.type}  
                                 onChange={handleNestedInputChangeBruker("bruker","type")}
-                                readOnly={isReadOnly(journalstatus as Status, "bruker.type")}
+                                readOnly
                                 error={brukerTypeError} />
                         </div>
                         <h3>Avsender / Mottaker</h3>
@@ -258,7 +258,7 @@ export const DocumentEditor = ({ brukerId, journalpostId, tittel, journalposttyp
                                     label="ID-Type" 
                                     value={newMetadata.avsenderMottaker.type} 
                                     onChange={handleNestedInputChangeAM("avsenderMottaker", "type")}
-                                    readOnly={isReadOnly(journalstatus as Status, "avsenderMottaker.type")}
+                                    readOnly
                                     error={avsenderMottakerTypeError} />
                                 <TextField 
                                     label="Navn" 

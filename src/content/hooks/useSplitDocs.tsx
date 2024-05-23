@@ -15,12 +15,6 @@ const useSplitDocs = ({journalpostId, oldMetadata, newMetadata, journalstatus, j
             setNotificationMessage({message: "Du må logge inn for å splitte dokumenter!", variant: "warning"});
             return;
         }
-
-        const requestBody = {
-            journalpostID: journalpostId,
-            oldMetadata: oldMetadata,
-            newMetadata: newMetadata,
-        }
         
         try {
             const token = await getToken()
@@ -33,6 +27,7 @@ const useSplitDocs = ({journalpostId, oldMetadata, newMetadata, journalstatus, j
                 datoOpprettet: (new Date()).toString(), 
                 journalstatus: journalstatus, 
                 tema: newMetadata.tema, 
+                brukerid: newMetadata.bruker.id,
                 avsenderMottaker: newMetadata.avsenderMottaker,
                 relevanteDatoer: [],
                 dokumenter: selectedDocuments.map(doc => ({
@@ -51,6 +46,7 @@ const useSplitDocs = ({journalpostId, oldMetadata, newMetadata, journalstatus, j
                 datoOpprettet: (new Date()).toString(), 
                 journalstatus: journalstatus, 
                 tema: oldMetadata.tema, 
+                brukerid: oldMetadata.bruker.id,
                 avsenderMottaker: oldMetadata.avsenderMottaker,
                 relevanteDatoer: [],
                 dokumenter: unselectedDocuments.map(doc => ({
@@ -66,7 +62,7 @@ const useSplitDocs = ({journalpostId, oldMetadata, newMetadata, journalstatus, j
             onStatusChange(convertStatus(journalposttype), journalpostId);
 
         } catch (error) {
-            setNotificationMessage({message: "Internal server error", variant: "error"})
+            setNotificationMessage({message: "Kunne ikke splitte dokumenter, prøv igjen senere.", variant: "error"})
         }
     }, [journalpostId, oldMetadata, newMetadata, journalposttype, appendNewJournalpost, onStatusChange, setNotificationMessage]);
 

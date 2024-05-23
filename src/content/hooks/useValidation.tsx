@@ -2,7 +2,7 @@ import { useState } from "react";
 import { tema, brukerIdType, amType, landListe } from "../../assets/utils/FormatUtils";
 
 // Regular expressions for validation
-const idRegex = /^\d{3,11}$/; // BrukerId validation: 3 to 11 digits
+const idRegex = /^[0-9]{11}$/; // BrukerId validation: 3 to 11 digits
 const fnrRegex = /^[0-9]{11}$/; // 11-digit number (example for FNR)
 const nameRegex = /^[A-Za-zæøåÆØÅ\s-]{2,30}$/; // Only letters, spaces, hyphens
 const tittelRegex = /^[A-Za-zæøåÆØÅ\s-]{2,30}$/; // Only letters, spaces, hyphens
@@ -22,7 +22,7 @@ const useValidation = () => {
 
   const validateBrukerId = (id: string) => {
     if (!idRegex.test(id)) {
-      setBrukerIdError("BrukerId må være et tresifret tall mellom 3 og 11");
+      setBrukerIdError("BrukerId må være et 11 siffret tall!");
     } else {
       setBrukerIdError("");
     }

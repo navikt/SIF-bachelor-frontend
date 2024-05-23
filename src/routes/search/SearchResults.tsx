@@ -45,7 +45,7 @@ export const SearchResults = () => {
         if(!isLoading){
             if(isAuthenticated){
                 fetchData({ setDocuments, setIsLoading: setIsDataLoading })
-                //setDocuments(journalpostList[0].dokumenter)
+                setJournalpostList(jp => ({ ...jp, brukerId: userkey }));
             }else{
                 setNotificationMessage({message: "Du må logge inn for å kunne hente data!", variant: "warning"})
             }
@@ -212,15 +212,15 @@ export const SearchResults = () => {
                             <Table.Row>
                                 <Table.HeaderCell>Utvid</Table.HeaderCell>
                                 <Table.ColumnHeader sortKey="journalpostId" sortable>ID</Table.ColumnHeader>
-                                <Table.HeaderCell scope="col">Title</Table.HeaderCell>
-                                <Table.HeaderCell scope="col">Inn/Ut</Table.HeaderCell>
+                                <Table.ColumnHeader sortKey="tittel" sortable>Tittel</Table.ColumnHeader>
+                                <Table.ColumnHeader sortKey="journalposttype" sortable>Inn/Ut</Table.ColumnHeader>
                                 <Table.ColumnHeader sortKey="datoOpprettet" sortable>Dato</Table.ColumnHeader>
                                 <Table.ColumnHeader sortKey="journalstatus" sortable>Status</Table.ColumnHeader>
-                                <Table.HeaderCell scope="col">Tema</Table.HeaderCell>
+                                <Table.ColumnHeader sortKey="tema" sortable>Tema</Table.ColumnHeader>
                             </Table.Row>
                         </Table.Header>
                         <Table.Body>
-                            {sortedData(journalpostList, comparator).map(({ journalpostId, tittel, journalposttype, datoOpprettet, journalstatus, tema, avsenderMottaker, relevanteDatoer }, i) => (
+                            {sortedData(journalpostList, comparator).map(({ journalpostId, brukerid, tittel, journalposttype, datoOpprettet, journalstatus, tema, avsenderMottaker, relevanteDatoer }, i) => (
                                 <Table.ExpandableRow 
                                     key={i + journalpostId}
                                     onClick={() => addRowDocuments(journalpostId)}
@@ -229,7 +229,9 @@ export const SearchResults = () => {
                                     content={
                                         <div className="jp-content">
                                             <div className="jp-info-section">
-                                                <h4 className="jp-title">Avsender/mottaker: </h4>
+                                                <h4 className="jp-title">
+                                                    {journalposttype === "I" ? "Avsender:" : "Mottaker:"}
+                                                </h4>
                                                 <div className="avsendermottaker-info">
                                                     <p>FNR: {avsenderMottaker.id}</p>
                                                     <p>Navn: {avsenderMottaker.navn}</p>
@@ -260,9 +262,9 @@ export const SearchResults = () => {
                                             </div>
                                             
                                            
-                                                <div className="row-buttons">
+                                            <div className="row-buttons">
                                                 <DocumentEditor
-                                                        brukerId={userkey}
+                                                        brukerId={brukerid || userkey}
                                                         journalpostId={journalpostId}
                                                         tittel={tittel}
                                                         journalposttype={journalposttype}
@@ -277,7 +279,7 @@ export const SearchResults = () => {
                                                         appendNewJournalpost={addNewJournalPosts}
                                                         handleIsVisible={isVisible}
                                                         onStatusChange={changeStatus}
-                                                    />
+                                                />
                                                     {shouldShowFeilRegistrer(journalposttype, journalstatus) && 
                                                         <FeilRegistrer
                                                             journalposttype={journalposttype}

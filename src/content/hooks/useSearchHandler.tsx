@@ -19,14 +19,13 @@ const useSearchHandler = ({isAuthenticated, getToken}:{isAuthenticated: boolean,
     
 
     const handleSearch = async ({ brukerId, brukerIdError, filterData}: SearchHandlerProps) => {
-        if (brukerIdError || !brukerId) {
-            setNotificationMessage({message: "Du må skrive inn et gyldig 3 til 11 sifret tall før du kan søke!", variant: "warning"});
-            return;
+        if (!isAuthenticated) {
+          setNotificationMessage({message: "Du må logge inn for å søke!", variant: "warning"});
+          return;
         }
 
-
-        if (!isAuthenticated) {
-            setNotificationMessage({message: "Du må logge inn for å søke!", variant: "warning"});
+        if (brukerIdError || !brukerId) {
+            setNotificationMessage({message: "Du må skrive inn et gyldig 11 sifret tall før du kan søke!", variant: "warning"});
             return;
         }
 

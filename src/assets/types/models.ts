@@ -5,6 +5,7 @@ export interface Journalpost {
     datoOpprettet: string;
     journalstatus: string;
     tema: string;
+    brukerid: string;
     relevanteDatoer: RelevantDato[];
     avsenderMottaker: AvsenderMottaker;
     dokumenter: IDocument[];

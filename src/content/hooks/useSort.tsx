@@ -21,12 +21,12 @@ const useSort = <T,>() => {
     };
 
     const sortedData = (data: T[], comparator: (a: T, b: T, orderBy: keyof T) => number) => {
-        return data.slice().sort((a, b) => {
+        return Array.isArray(data) ? data.slice().sort((a, b) => {
             if (!sort) return 0;
             return sort.direction === "descending"
                 ? comparator(b, a, sort.orderBy as keyof T)
                 : comparator(a, b, sort.orderBy as keyof T);
-        });
+        }) : [];
     };
 
     return { sort, handleSort, sortedData };
