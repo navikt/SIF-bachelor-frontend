@@ -246,7 +246,7 @@ export const DocumentEditor = ({ brukerId, journalpostId, tittel, journalposttyp
                                 readOnly
                                 error={brukerTypeError} />
                         </div>
-                        <h3>Avsender / Mottaker</h3>
+                        <h3>{journalposttype === "I" ? "Avsender" : "Mottaker"}</h3>
                             <div className="input-group bordered">
                                 <TextField 
                                     label="ID" 
