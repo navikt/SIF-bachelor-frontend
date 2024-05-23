@@ -17,7 +17,7 @@ Vju er et frontend-prosjekt designet for saksbehandlere for å hente og se dokum
 ## Kompatibilitet
 Vju-frontenden er kompatibel med NAV-IT-SIF-bachelor-backend, og er spesielt tilpasset for bruk av saksbehandlere.
 
-## Testing
+## Playground
 
 Siden vi ikke har direkte tilgang på data, mocker vi alt. For testing av frontend-grensesnittet, kan følgende filterkombinasjoner brukes:
 - **Standard brukerID: 11111111111**
