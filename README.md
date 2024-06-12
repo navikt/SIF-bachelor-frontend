@@ -1,3 +1,8 @@
+# Bachelor project for Team sykdom-i-familien. 
+## Fork before continuing development.
+
+---
+
 # Vju - Frontend for dokumentvisning
 
 |React versjon|2.0.5     | 
